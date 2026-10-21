@@ -13,7 +13,7 @@
 | V4 | Akademik makaleler (TDV, Balaban, Elbir & Uludüz) yalnızca **kural tasarımı** için okunur. Metinleri korpusa kopyalanmaz. | Telif |
 | V5 | Gutenberg metinlerinin başlık ve dipnot bölümleri silinir. Metadataya `kaynak: Project Gutenberg #926` yazılır. | Gutenberg lisansı |
 | V6 | OpenITI'den türetilen çeviriler paylaşılırsa aynı lisansla (CC BY-NC-SA 4.0) ve atıfla paylaşılır. | ShareAlike koşulu |
-| V7 | `data/` klasörü git'e eklenmez. Repo herkese açık olsa bile veri dağıtılmamış olur. | NC ve SA koşulları, rüya gizliliği |
+| V7 | Veri yalnızca senin Google Drive'ında durur, git'e eklenmez. Drive klasörü kimseyle paylaşılmaz. Repo herkese açık olsa bile veri dağıtılmamış olur. | NC ve SA koşulları, rüya gizliliği |
 | V8 | Proje ticarileşirse önce NC lisanslı bütün kayıtlar çıkarılır: `lisans` alanına göre tek bir filtre. | NC koşulu |
 | V9 | `docs/KAYNAKLAR.md` dosyasında her kaynağın tam künyesi ve lisansı tutulur. | Atıf yükümlülüğü (CC BY) |
 
@@ -45,8 +45,10 @@ Bu kurallar sentez talimatına yazılır ve değerlendirmede otomatik olarak tar
 
 - **Neden önemli:** Rüyalar sağlık, din ve cinsel hayat gibi **özel nitelikli** bilgiler içerebilir (KVKK md. 6).
 - **Bugünkü durum:** Yalnızca kendi rüyalarını yerelde işliyorsun. Bu kişisel kullanım istisnasına giriyor (KVKK md. 28/1-a; madde metni doğrulanacak). Ancak rüya metni sentez için Claude API'ye, yani yurt dışına gidiyor. Kendi rüyan için bu senin tercihin.
+- **Drive notu:** Rüya geçmişi ve loglar senin Google Drive'ında, yani Google'ın sunucularında durur. Kendi verin olduğu için bu da senin tercihin. Drive klasörünü kimseyle paylaşma.
 - **Kurallar:**
   - Varsayılan olarak rüya metni loglanmaz.
+  - Notebook çıktıları commit'ten önce `nbstripout` ile temizlenir. Böylece rüya metni GitHub'a gitmez.
   - Rüya geçmişi isteğe bağlıdır.
   - Test setine başkalarının rüyaları **izinsiz** konmaz.
 - **Uygulamayı başkalarına açarsan:** Açık rıza, aydınlatma metni ve yurt dışı aktarım (md. 9) yükümlülükleri doğar. Bu kapsam dışı. Gündeme gelirse bu belge yeniden yazılır.
