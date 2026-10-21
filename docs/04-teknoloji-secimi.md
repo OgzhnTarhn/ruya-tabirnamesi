@@ -3,13 +3,15 @@
 > Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
 > Biçim: Her karar için bağlam, seçenekler, karar, gerekçe ve ne zaman yeniden düşünüleceği. Kararlar **TK-xx** koduyla numaralı.
 > Sürüm numaraları kurulum sırasında `pyproject.toml` dosyasında sabitlenecek. Bu belgede yazanlar 21 Ekim 2026 itibarıyla geçerli.
+> Güncelleme (22 Ekim 2026): Çalıştırma ortamı Colab ve Drive oldu (TK-13). Arayüz Streamlit yerine Gradio (TK-09).
 
 ## Özet tablo
 
 | Alan | Karar | Durum |
 |---|---|---|
-| Dil ve sürüm | Python 3.12 | ✅ Kararlaştırıldı |
-| Paket yöneticisi | uv | ✅ |
+| Çalışma ortamı | Kod bilgisayarda; çalıştırma **Google Colab**'de; veri **Google Drive**'da | ✅ Kararlaştırıldı |
+| Dil ve sürüm | Python ≥3.11 (Colab'in sunduğu sürüm) | ✅ |
+| Paket yönetimi | `pyproject.toml`; Colab'de `pip install -e`, bilgisayarda uv | ✅ |
 | LLM sağlayıcı | Claude API (Anthropic Python SDK) | ✅ |
 | LLM modeli | `claude-opus-5-5` (varsayılan); Sonnet 5.5 ve Haiku 5.5 Aşama 4'te karşılaştırılacak | ⚠️ **Senin onayın gerekli** |
 | Embedding | `intfloat/multilingual-e5-large`; aday: `Qwen/Qwen3-Embedding-0.6B` | ✅ (Aşama 2'de ölçülecek) |
@@ -17,30 +19,30 @@
 | Reranker | `BAAI/bge-reranker-v2-m3` | 🕓 Aşama 2 |
 | Türkçe morfoloji | zeyrek | ✅ |
 | Veri doğrulama | Pydantic v2 | ✅ |
-| Arayüz | Streamlit | ✅ |
-| Test ve kalite | pytest, ruff | ✅ |
+| Arayüz | Gradio (notebook içinde, `share` kapalı) | ✅ |
+| Test ve kalite | pytest, ruff, nbstripout | ✅ |
 | Sürüm kontrolü | Git ve GitHub (özel repo) | ⚠️ **Senin onayın gerekli** |
-| Yerel LLM | Ollama ile Gemma 4 / Qwen | 🕓 Aşama 4 deneyi |
+| Açık model LLM | Colab GPU'sunda Gemma 4 / Qwen | 🕓 Aşama 4 deneyi |
 
 ---
 
-## TK-01 · Python 3.12
+## TK-01 · Python ≥3.11
 
 - **Seçenekler:** 3.11, 3.12, 3.13
-- **Karar:** 3.12
-- **Gerekçe:** PyTorch, sentence-transformers ve chromadb Windows için 3.12'de hazır kurulum paketi (wheel) sunuyor ve en az sürprizi bu sürüm çıkarır. 3.13'te bazı bilimsel paketler geç destek verebiliyor (doğrulanmadı). uv istenen Python sürümünü kendisi indirebildiği için sistemdeki Python'a dokunmak gerekmiyor.
-- **Yeniden düşün:** Bütün bağımlılıklar 3.13'ü sorunsuz desteklediğinde.
+- **Karar:** `requires-python = ">=3.11"`. Kod, Colab hangi Python sürümünü sunuyorsa onunla çalışacak şekilde yazılır. Yazım tarihinde Colab'in 3.12 kullandığı biliniyordu; ilk oturumda `python --version` ile doğrulanacak.
+- **Gerekçe:** Colab'in Python sürümünü biz seçemiyoruz. PyTorch zaten kurulu geliyor. Bilgisayarda yalnızca hafif testler çalışacağı için orada da aynı alt sınır yeterli.
+- **Yeniden düşün:** Colab sürüm değiştirirse ya da bir bağımlılık 3.11'i bırakırsa.
 
-## TK-02 · Paket yöneticisi: uv
+## TK-02 · Paket yönetimi: pyproject + pip (Colab) / uv (bilgisayar)
 
 - **Seçenekler:** `venv` ve `pip`, Poetry, uv
-- **Karar:** uv
+- **Karar:** Bağımlılıkların tek kaynağı `pyproject.toml`. Colab'de `pip install -e .` kullanılır. Bilgisayarda kod denetimi ve verisiz testler için uv kullanılır (isteğe bağlı).
 - **Gerekçe:**
   - Tek araç hem Python sürümünü hem sanal ortamı hem bağımlılıkları yönetiyor.
   - Çok hızlı.
   - `uv.lock` dosyası kurulumu tekrarlanabilir kılıyor.
   - Windows'ta venv betiklerinin Türkçe karakterli yollarda yaşattığı sorunları da azaltıyor.
-- **Not:** `pip` yolu da [10-kurulum-rehberi.md](10-kurulum-rehberi.md) belgesinde yedek olarak anlatılacak.
+- **Not:** Colab'in hazır kurulu paketleriyle (torch, transformers) sürüm çakışması yaşanmaması için bu paketler `pyproject.toml` dosyasında sabitlenmez, alt sınırla yazılır.
 
 ## TK-03 · LLM sağlayıcı: Claude API
 
@@ -94,13 +96,14 @@
 
 - **Seçenekler:** Chroma, Qdrant (yerel mod), LanceDB, FAISS, pgvector
 - **Karar:** Chroma, kalıcı istemci modunda (`PersistentClient`)
-- **Gerekçe:** Windows'ta sunucusuz çalışıyor ve pip ya da uv ile kuruluyor. Metadata filtresi (`where={"symbol_id": ...}`) projenin ana getirme yolu için birebir uygun. Tam metin filtresi de (`where_document`) var.
+- **Gerekçe:** Sunucusuz çalışıyor ve pip ile kuruluyor. Metadata filtresi (`where={"symbol_id": ...}`) projenin ana getirme yolu için birebir uygun. Tam metin filtresi de (`where_document`) var.
+- **Colab notu:** Chroma SQLite kullandığı için Drive bağlantısı üzerinde çalıştırılmaz. İndeks Colab'in yerel diskinde (`/content/calisma/chroma`) kurulur ve Drive'a zip olarak yedeklenir (bkz. [11](11-calisma-ortami-colab-drive.md), bölüm 4).
 - **Yeniden düşün:** Gerçek hibrit (BM25 ve vektör) arama gerekirse. Bu durumda Qdrant'a geçilir.
 
 ## TK-07 · Reranker (Aşama 2)
 
 - **Karar:** `BAAI/bge-reranker-v2-m3` (0,6B parametre, Apache-2.0, çok dilli)
-- **Ne zaman kullanılır:** Yalnızca bir sembol için kaynak başına N'den fazla madde varsa. Böylece CPU'da gereksiz yük oluşmaz.
+- **Ne zaman kullanılır:** Yalnızca bir sembol için kaynak başına N'den fazla madde varsa. Colab GPU'su varsa onu kullanır, yoksa CPU'da da çalışır.
 
 ## TK-08 · Türkçe morfoloji: zeyrek
 
@@ -109,23 +112,27 @@
 - **Gerekçe:** pip ile kuruluyor ve Java gerektirmiyor. Sembolleri zaten LLM'den yalın hâlde aldığımız için zeyrek yalnızca ikinci bir kontrol katmanı. Hâlâ alfa aşamasında olması bu yüzden kabul edilebilir.
 - **Kendin yazacağın parça:** Türkçe küçük harf dönüşümü. Python'da `"I".lower()` "i" verir, oysa Türkçede "ı" olmalı.
 
-## TK-09 · Arayüz: Streamlit
+## TK-09 · Arayüz: Gradio (22 Ekim'de Streamlit'ten değişti)
 
 - **Seçenekler:** Streamlit, Gradio, Chainlit, FastAPI ile ayrı bir ön yüz
-- **Karar:** Streamlit
-- **Gerekçe:** En az kodla çalışan bir web sayfası çıkarıyor. Sekmeler, genişleyen kutular ve tablolar hata ayıklama ekranı için birebir uygun.
+- **Karar:** Gradio, `gr.Blocks` ile
+- **Gerekçe:** Uygulama Colab'de çalışacak. Gradio notebook hücresinin içinde doğrudan açılıyor; Streamlit ise Colab'de ek bir tünel servisi gerektiriyor. Gradio'da da sekme (`gr.Tab`), açılır kutu (`gr.Accordion`) ve tablo (`gr.Dataframe`) var, yani hata ayıklama ekranı aynen yapılabiliyor.
+- **Güvenlik:** `launch(share=True)` **kullanılmaz**. Bu ayar herkese açık bir link üretir ve linki bulan herkes senin API anahtarınla sorgu çalıştırabilir.
+- **Yeniden düşün:** Uygulama bir gün sunucuya taşınırsa.
 
 ## TK-10 · Kalite araçları
 
 - **pytest:** Birim testleri.
 - **ruff:** Hem kod denetimi (lint) hem biçimlendirme. Ayrı bir black kurulumuna gerek bırakmıyor.
 - **Pydantic v2:** Şemalar ve `.env` okuma (pydantic-settings).
+- **nbstripout:** Notebook çıktıları commit'ten önce otomatik temizlenir. Çıktılarda rüya metni ya da API yanıtı kalmaz.
 - **Ragas veya DeepEval yok, en azından şimdilik.** Önce elle yazılmış basit ölçüm betikleri. Ölçütleri kendin yazmak, neyin neden ölçüldüğünü öğretir.
 
 ## TK-11 · Sürüm kontrolü ⚠️ senin kararın
 
 - **Karar:** Git kullanılacak. Uzak depo için önerim **GitHub'da özel (private) bir repo**.
-- **Neden özel:** `data/` zaten git'e eklenmiyor. Ama prompt dosyalarında ve testlerde kendi rüyaların bulunabilir. Herkese açık yapmak istersen önce bu dosyalar temizlenmeli.
+- **Neden özel:** `data/` zaten git'e eklenmiyor; veri Drive'da duruyor. Ama prompt dosyalarında ve testlerde kendi rüyaların bulunabilir. Herkese açık yapmak istersen önce bu dosyalar temizlenmeli.
+- **Colab bağlantısı:** Repo özel olursa Colab'in kodu çekebilmesi için yalnızca okuma yetkili bir GitHub tokenı (fine-grained) Colab Secrets'a eklenir. Repo açık olursa token gerekmez.
 - **Commit düzeni:**
   - Commitler **atomik** olacak: her commit tek bir mantıksal değişiklik içerir.
   - Mesajlar Türkçe ve emir kipinde yazılacak.
@@ -134,9 +141,28 @@
   - Aşama sonlarında etiket atılacak (`v0.1-mvp` gibi).
   - Bu kurallar repo kökündeki `CLAUDE.md` dosyasında da yazılı.
 
-## TK-12 · Yerel LLM (Aşama 4, isteğe bağlı)
+## TK-12 · Açık model LLM (Aşama 4, isteğe bağlı)
 
-- **Seçenekler:** Ollama ya da LM Studio ile Gemma 4 (12b sürümü yaklaşık 8 GB) veya güncel Qwen modelleri
-- **Karar:** Ertelendi. Aşama 4'te deney olarak yapılacak.
-- **Kısıt:** Yerel modellerde Claude'un atıf API'si yok. Atıflar `[S1]` biçimli kimliklerle ve kod tarafında doğrulamayla yapılacak.
-- **Gerekli bilgi:** Ekran kartın ve VRAM miktarın (bkz. [09-riskler-ve-acik-sorular.md](09-riskler-ve-acik-sorular.md)).
+- **Seçenekler:** Colab GPU'sunda Gemma 4 ya da güncel Qwen modelleri. Ollama ile çalıştırılabilir ya da `transformers` ile 4-bit sıkıştırmayla yüklenebilir.
+- **Karar:** Ertelendi. Aşama 4'te deney olarak yapılacak. Senin bilgisayarının ekran kartı kullanılmaz.
+- **Kısıt:** Açık modellerde Claude'un atıf API'si yok. Atıflar `[S1]` biçimli kimliklerle ve kod tarafında doğrulamayla yapılacak.
+- **Bilinmeyen:** Ücretsiz Colab GPU'sunun (T4, 16 GB) hangi model boyutunu kaldıracağı. Aşama 4'te denenecek, sığmazsa daha küçük bir model seçilecek.
+
+## TK-13 · Çalışma ortamı: Colab ve Drive (22 Ekim 2026)
+
+- **Seçenekler:**
+  - Her şey bilgisayarda
+  - Kod bilgisayarda; çalıştırma Colab'de; veri Drive'da
+  - Bulut sunucu (VM)
+- **Karar:** Kod bilgisayarda yazılır ve GitHub'a gider. Bütün çalıştırma Colab'de yapılır. Veri, önbellekler ve raporlar Google Drive'da (`MyDrive/ruya-tabirnamesi/`) durur. Ayrıntılar: [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md).
+- **Gerekçe:** Senin tercihin: veri seti bilgisayara inmesin, GPU gerektiren işler Colab'de yapılsın. Ek faydaları:
+  - Ücretsiz GPU.
+  - Gizli bilgiler için Colab Secrets.
+  - Drive sayesinde oturumlar arası kalıcılık.
+- **Bedeli:**
+  - Kod değişikliğini Colab'de görmek için önce commit ve push, sonra `git pull` gerekir. Bu, geliştirme döngüsünü biraz yavaşlatır.
+  - Colab oturumları zaman aşımına uğrar.
+  - Drive bağlantısı yavaştır.
+
+  Bu bedeller "notebook'lar ince, mantık `src/` paketinde" kuralıyla ve [11](11-calisma-ortami-colab-drive.md)'deki Drive kurallarıyla hafifletilir.
+- **Yeniden düşün:** Colab sınırları işi gerçekten engellerse. Bu durumda Colab Pro ya da küçük bir bulut sunucu düşünülür.
