@@ -1,0 +1,22 @@
+# Ortam ve gizli bilgiler
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Önbellekler (Hugging Face modelleri, LLM yanıtları)
+.cache/
+
+# Veri: lisans (NC/SA) ve gizlilik nedeniyle git'e eklenmez
+data/
+
+# Loglar (rüya içeriği barındırabilir)
+logs/
+
+# İşletim sistemi / editör
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
