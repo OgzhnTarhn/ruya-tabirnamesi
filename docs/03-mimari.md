@@ -22,7 +22,7 @@ flowchart TB
         ING --> INT[data/interim/*.jsonl]
         INT --> ENR[enrich/<br/>sembol atama · çeviri · koşullar<br/>Claude Batch API]
         ENR --> ENT[data/processed/entries.jsonl]
-        ENT --> SYM[index/build_symbols<br/>symbols.json]
+        ENT --> SYM[index/build_symbols<br/>sozluk/symbols.json · git]
         ENT --> VEC[index/build_vectors<br/>Chroma + embedding]
     end
 
@@ -112,6 +112,8 @@ C:\ruya-tabirnamesi\
 │   ├── 01_kaynaklari_indir.ipynb … 06_degerlendirme.ipynb
 │   └── deneyler/
 ├── prompts/                  # sürümlü sistem talimatları (cikarim_v1.md, sentez_v1.md, ceviri_v1.md)
+├── sozluk/
+│   └── symbols.json          # elle onaylanan kanonik sembol indeksi (veri değil, sözlük → git'te)
 ├── scripts/
 │   └── download_sources.py   # ham kaynakları indirir, SHA256 kaydeder
 ├── src/ruya/

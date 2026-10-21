@@ -64,7 +64,9 @@ data/processed/entries.jsonl  Zenginleştirilmiş, son kayıtlar
    │  index/build_symbols.py  ← kanonik sembol indeksi
    │  index/build_vectors.py  ← Chroma (Aşama 2)
    ▼
-data/index/  symbols.json + chroma.zip (Chroma, Colab'in yerel diskinde açılır)
+data/index/  chroma.zip (Chroma, Colab'in yerel diskinde açılır)
+
+(git) sozluk/symbols.json   ← elle onaylanan sembol indeksi repoda durur
 ```
 
 Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore` yalnızca önlem olarak duruyor. Bunun üç nedeni var: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `01_kaynaklari_indir.ipynb` (içinde `scripts/download_sources.py`) Colab'den doğrudan Drive'a indirir.
@@ -107,6 +109,8 @@ Alan kuralları:
 - `lisans` hiçbir zaman boş olamaz. Doğrulama betiği boş bırakılırsa hata verir.
 
 ### 4.2 `symbols.json`: kanonik sembol indeksi
+
+> **Konum: git'te, `sozluk/symbols.json`.** Bu dosya veri setinin kendisi değil. Senin elle onayladığın bir sözlük. Değişiklikleri sürümlenmeli ve commit geçmişinde görünmeli. İçinde yalnızca kelimeler ve eşlemeler var, lisanslı metin yok. Colab bu dosyayı repodan okur.
 
 ```json
 {

@@ -83,7 +83,7 @@ gantt
 
 ### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
 
-- [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `symbols.json` dosyasına Türkçe, Arapça ve İngilizce varyantlar eklenecek.
+- [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
 - [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir. Bu işler `03_zenginlestir.ipynb` üzerinden yapılır; Batch iş kimlikleri Drive'a yazılır.
 - [ ] `docs/terimler.md`: tabir terimleri sözlüğü
