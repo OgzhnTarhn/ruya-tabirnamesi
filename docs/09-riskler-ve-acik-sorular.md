@@ -9,7 +9,7 @@ Bu sorular planı değiştirebilir. Cevaplar geldikçe ilgili belgeler güncelle
 | # | Soru | Neden önemli | Benim varsayımım |
 |---|---|---|---|
 | S1 | Haftada kaç saat ayırabilirsin? | Takvim buna göre ölçekleniyor | 8–10 saat. Takvim 12 hafta. |
-| S2 | Bilgisayarında ekran kartı var mı, varsa modeli ve VRAM miktarı ne? | Embedding hızını ve yerel model denemesini belirliyor | Yok ya da zayıf. Her şey CPU'da çalışacak şekilde planlandı. |
+| S2 | ~~Ekran kartın ne?~~ **Cevaplandı (22 Ekim):** GPU işleri Colab'de, veri Drive'da yapılacak. | — | Bkz. [11](11-calisma-ortami-colab-drive.md) |
 | S3 | Model önerisini (Opus 5.5 ile başla, Aşama 4'te ucuz modelleri ölç) onaylıyor musun? Aylık bütçe tavanın ne? | Maliyet | Önerilen tavan 10 $/ay |
 | S4 | Repo GitHub'da özel mi olsun, herkese açık mı? | Rüyaların ve prompt dosyalarının görünürlüğü | Özel |
 | S5 | İleride uygulamayı başkalarına açmayı düşünüyor musun? | Açarsan KVKK ve NC lisanslar baştan ele alınmalı | Hayır, kişisel kalacak |
@@ -26,11 +26,13 @@ Olasılık ve etki: D = düşük, O = orta, Y = yüksek.
 | R3 | **Model kaynakta olmayan yorum uyduruyor.** | D | Y | `search_result` atıfları; "bulunamadı" kuralı; sadakatin elle kontrolü; bulunamaz testi | Sadakat kontrolünde ihlal görülmesi |
 | R4 | **Maliyet beklenenden yüksek.** Düşünme tokenları, Türkçe tokenizasyon. | O | O | Disk önbelleği; Batch API; harcama limiti; her sorguda maliyet logu; ucuz model deneyi | Rüya başına > 0,15 $ |
 | R5 | **Kapsam büyür ve takvim kayar.** | Y | O | Aşamalar sabit; yeni fikirler "isteğe bağlı devam" listesine yazılır; Hafta 10 tampon | İki hafta üst üste görevlerin %50'sinden azının bitmesi |
-| R6 | **Windows ortam sorunları.** Türkçe karakterli yol, PyTorch kurulumu. | O | D | Proje `C:\ruya-tabirnamesi` altında; uv; `HF_HOME` proje içinde; Python 3.12 | Kurulumda hata |
+| R6 | **Colab oturumu kopar ya da GPU verilmez.** | O | O | Notebook'lar ince; her adımın çıktısı Drive'a yazılır; Batch işleri oturumdan bağımsız; GPU yalnızca Aşama 2 ve 4'te gerekli | Bir iş arka arkaya iki kez yarıda kalır |
 | R7 | **Lisans hatası.** Yanlışlıkla telifli bir metnin korpusa girmesi. | D | Y | `lisans` alanı zorunlu; kontrat testi; `KAYNAKLAR.md`; site kazıma yasağı | Lisansı belirsiz bir kaynak eklenmek istenmesi |
 | R8 | **Etik açıdan sakıncalı çıktı.** Korkutucu ya da otoriter dil. | O | O | Yorum dili kuralları ([07](07-etik-ve-hukuk.md)); otomatik yasak ifade taraması; ağır içerik testi | Taramada ihlal görülmesi |
 | R9 | **Motivasyon düşer.** | O | Y | Her hafta görünür bir çıktı; 5. haftada çalışan bir MVP; ölçüm tablosuyla ilerlemenin görünmesi | Bir hafta hiç commit olmaması |
 | R10 | **zeyrek alfa aşamasında ve hata verebiliyor.** | O | D | Yalnızca ikinci kontrol katmanı; LLM zaten yalın biçim döndürüyor | Birim testlerinde hata |
+| R11 | **Drive bağlantısı yavaş ya da SQLite ile sorunlu.** | O | O | Chroma ve modeller `/content` altında; Drive'a yalnızca zip ve tek tek JSON dosyaları yazılır | İndeks bozulması, dakikalar süren okumalar |
+| R12 | **Geliştirme döngüsü yavaşlar.** Bilgisayarda yaz, push et, Colab'de pull et. | Y | D | Mantık `src/` paketinde; verisiz birim testleri bilgisayarda hızlı çalışır; Colab'e yalnızca entegrasyon için gidilir | Küçük bir değişikliği denemek 5 dakikadan uzun sürer |
 
 ## 3. Doğrulanması gereken bilgiler
 
