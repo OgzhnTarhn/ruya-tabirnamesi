@@ -49,6 +49,8 @@ Dosyalar indirildi ve yapıları incelendi. Kod yazılmadı. Bulgular veri tasar
 
 ## 3. Veri işleme hattı
 
+Bütün veri **Google Drive**'da, `MyDrive/ruya-tabirnamesi/` altında durur. Bilgisayara inmez. İşleri Colab notebook'ları çalıştırır (bkz. [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)). Aşağıdaki yollar bu Drive klasörüne göredir.
+
 ```
 data/raw/            Ham dosyalar (indirildiği gibi, değiştirilmez)
    │  ingest/<kaynak>.py      ← kurallarla ayrıştırma, temizlik
@@ -62,10 +64,10 @@ data/processed/entries.jsonl  Zenginleştirilmiş, son kayıtlar
    │  index/build_symbols.py  ← kanonik sembol indeksi
    │  index/build_vectors.py  ← Chroma (Aşama 2)
    ▼
-data/index/  symbols.json + chroma/
+data/index/  symbols.json + chroma.zip (Chroma, Colab'in yerel diskinde açılır)
 ```
 
-`data/` klasörü git'e **eklenmez**. Gerekçeler: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `scripts/download_sources.py` tekrar indirir.
+Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore` yalnızca önlem olarak duruyor. Bunun üç nedeni var: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `01_kaynaklari_indir.ipynb` (içinde `scripts/download_sources.py`) Colab'den doğrudan Drive'a indirir.
 
 ## 4. Veri şeması
 

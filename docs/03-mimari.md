@@ -2,6 +2,7 @@
 
 > Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
 > Teknoloji kararlarının gerekçeleri: [04-teknoloji-secimi.md](04-teknoloji-secimi.md)
+> Çalışma ortamı (Colab, Drive, GitHub): [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)
 
 ## 1. Temel tasarım ilkeleri
 
@@ -26,7 +27,7 @@ flowchart TB
     end
 
     subgraph CEVRIMICI["Çevrimiçi: Sorgu (her rüya)"]
-        UI[Streamlit arayüzü] --> P1[1. Sembol çıkarımı<br/>Claude · JSON çıktı]
+        UI[Gradio arayüzü · Colab] --> P1[1. Sembol çıkarımı<br/>Claude · JSON çıktı]
         P1 --> P2[2. Eşleme<br/>symbols.json + zeyrek<br/>yoksa vektör yedeği]
         P2 --> P3[3. Getirme<br/>symbol_id ile · kaynak başı top-N<br/>bağlam filtresi]
         P3 --> P4[4. Sentez<br/>Claude · search_result atıfları]
@@ -103,15 +104,18 @@ def yorumla(girdi: RuyaGirdisi) -> SorguKaydi:
 ```
 C:\ruya-tabirnamesi\
 ├── README.md
-├── pyproject.toml            # bağımlılıklar, ruff, pytest ayarları (uv)
-├── .env.example              # ANTHROPIC_API_KEY=, HF_HOME=C:\ruya-tabirnamesi\.cache\hf
-├── .gitignore                # data/, .env, .cache/, logs/
-├── docs/                     # bu belgeler + arastirma/ + deneyler/
+├── pyproject.toml            # bağımlılıklar, ruff, pytest ayarları
+├── .gitignore                # data/, .env, .cache/, logs/ (önlem)
+├── docs/                     # bu belgeler + arastirma/ + deneyler/ + olcumler.md
+├── notebooks/                # ince Colab notebook'ları (bkz. docs/11)
+│   ├── _kurulum.py           # her notebook'un ilk hücresi: Drive, Secrets, git pull, pip install
+│   ├── 01_kaynaklari_indir.ipynb … 06_degerlendirme.ipynb
+│   └── deneyler/
 ├── prompts/                  # sürümlü sistem talimatları (cikarim_v1.md, sentez_v1.md, ceviri_v1.md)
 ├── scripts/
 │   └── download_sources.py   # ham kaynakları indirir, SHA256 kaydeder
 ├── src/ruya/
-│   ├── config.py             # ayarlar (.env okur), sabitler
+│   ├── config.py             # ortamı algılar (Colab/bilgisayar), yollar, model adları
 │   ├── schemas.py            # Pydantic veri sınıfları: Madde, Sembol, Eslesme, Yorum…
 │   ├── text/turkce.py        # Türkçe küçük harf, normalleştirme, zeyrek sarmalayıcı
 │   ├── llm/client.py         # Anthropic istemcisi, disk önbelleği, maliyet hesabı, yeniden deneme
@@ -120,37 +124,42 @@ C:\ruya-tabirnamesi\
 │   ├── index/                # build_symbols.py, build_vectors.py, store.py
 │   └── pipeline/             # extract.py, map.py, retrieve.py, synthesize.py, run.py
 ├── app/
-│   └── streamlit_app.py
+│   └── gradio_app.py         # arayüz; notebooks/05_arayuz.ipynb içinden açılır
 ├── eval/
-│   ├── dataset/              # ruyalar_v1.jsonl (test seti)
-│   ├── run_eval.py
-│   └── reports/              # tarihli sonuç tabloları (git'e eklenir)
-├── tests/                    # pytest birim testleri
-└── data/                     # git'e EKLENMEZ: raw/ interim/ processed/ index/
+│   ├── dataset/              # ruyalar_v1.jsonl (test seti; kendi rüyaların → repo özel kalmalı)
+│   └── run_eval.py           # raporu Drive'daki raporlar/ klasörüne yazar
+└── tests/                    # pytest birim testleri + fixtures/ (birkaç satırlık örnekler)
 ```
+
+Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında durur (bkz. [11](11-calisma-ortami-colab-drive.md), bölüm 3). Ölçüm raporları da Drive'da tutulur. Her kilometre taşında özet tablo `docs/olcumler.md` dosyasına işlenip commit edilir.
 
 ## 5. Kesişen konular
 
 ### 5.1 Yapılandırma
 
-- `config.py` ayarları `.env` dosyasından okur (pydantic-settings).
-- **Gizli bilgiler:** `ANTHROPIC_API_KEY` yalnızca `.env` dosyasında durur, `.env` git'e eklenmez. `.env.example` örnek olarak repoda tutulur.
+- `config.py` ayarları ortam değişkenlerinden okur (pydantic-settings).
+- **Ortam algılama:** Kod `"google.colab" in sys.modules` ile Colab'de çalışıp çalışmadığını anlar. Colab'deyse yollar şöyle ayarlanır:
+  - `RUYA_DATA_DIR=/content/drive/MyDrive/ruya-tabirnamesi`
+  - `RUYA_WORK_DIR=/content/calisma`
+
+  Bilgisayarda veri yolu tanımlı değildir. Veri isteyen bir fonksiyon çağrılırsa açık bir hata verir.
+- **Gizli bilgiler:** `ANTHROPIC_API_KEY` Colab Secrets panelinde durur. `notebooks/_kurulum.py` anahtarı `google.colab.userdata.get` ile okur ve ortam değişkenine aktarır. Anahtar hiçbir dosyaya yazılmaz.
 - **Model adları tek bir yerde:** `MODEL_CIKARIM`, `MODEL_SENTEZ`, `MODEL_CEVIRI`. Model değiştirmek tek satırlık bir iş.
-- `HF_HOME` proje içindeki `.cache\hf` klasörünü gösterir. Böylece modeller "Oğuzhan" yoluna inmez.
+- `HF_HOME=/content/calisma/hf` olarak ayarlanır. Modeller Colab'in yerel diskine iner, Drive'a yazılmaz.
 
 ### 5.2 LLM istemcisi (`llm/client.py`)
 
 - **Tek sarmalayıcı:** Bütün Claude çağrıları buradan geçer.
-- **Disk önbelleği:** İstek içeriğinin özeti (hash) anahtar olur. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile kapatılabilir.
+- **Disk önbelleği (Drive'da `cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). SQLite kullanılmaz, çünkü Drive bağlantısında güvenli değil. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile kapatılabilir.
 - **Ölçüm:** Her yanıttaki `usage` bilgisi okunur ve tutar hesaplanıp `SorguKaydi`'ya yazılır.
 - **Hata yönetimi:** Hata sınıfları ayrı ayrı yakalanır. 429 ve 5xx hataları SDK'nın yeniden deneme mekanizmasıyla tekrarlanır. 400 hatası tekrarlanmaz, loglanır ve kullanıcıya anlaşılır bir mesaj gösterilir. Yanıtta `stop_reason` her zaman kontrol edilir; değer `refusal` ise kullanıcıya bilgi verilir.
 - **Prompt önbelleği:** Sabit sistem talimatı önbelleklenir. Bir oturumda arka arkaya yapılan sorgularda maliyeti düşürür. Önbelleğin çalıştığı `usage.cache_read_input_tokens` ile doğrulanır.
 
 ### 5.3 Loglama ve gizlilik
 
-- **Log içeriği:** `logs/sorgular.jsonl` dosyasına zaman, adım süreleri, token sayıları, maliyet, sembol kimlikleri ve eşleme yöntemleri yazılır. **Rüya metni yazılmaz.**
-- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar yerelde `data/gecmis/` altında tutulur.
-- `logs/` ve `data/` klasörleri git'e eklenmez.
+- **Log içeriği:** Drive'daki `logs/sorgular.jsonl` dosyasına zaman, adım süreleri, token sayıları, maliyet, sembol kimlikleri ve eşleme yöntemleri yazılır. **Rüya metni yazılmaz.**
+- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar Drive'da `gecmis/` altında tutulur.
+- Loglar ve veri Drive'da durur, git'e girmez. Notebook çıktıları `nbstripout` ile temizlenir.
 
 ### 5.4 Hata durumları
 
@@ -170,7 +179,8 @@ C:\ruya-tabirnamesi\
   - Eşleme: varyanttan doğru `symbol_id`'ye ulaşılması.
   - Getirme: kaynak başına N sınırının uygulanması.
 - **Kontrat testleri:** `entries.jsonl` dosyasındaki her kayıt şemaya uyuyor ve `lisans` alanı dolu.
-- **Boru hattı testleri:** `eval/run_eval.py` ile test seti üzerinde ölçüm yapılır (bkz. [06-degerlendirme.md](06-degerlendirme.md)). Bu testler LLM çağırdığı için ücretli. Elle çalıştırılır, CI'da çalışmaz.
+- **Boru hattı testleri:** `eval/run_eval.py` ile test seti üzerinde ölçüm yapılır (bkz. [06-degerlendirme.md](06-degerlendirme.md)). Bu testler LLM çağırdığı için ücretli. Colab'de `06_degerlendirme.ipynb` ile elle çalıştırılır, CI'da çalışmaz.
+- **Nerede çalışır:** Birim testleri veri gerektirmez. `tests/fixtures/` altındaki birkaç satırlık örnekleri kullanır. Bu yüzden hem bilgisayarda hem Colab'de çalışır.
 
 ## 6. Bilerek yapılmayanlar (ve nedenleri)
 

@@ -34,7 +34,7 @@ Kullanıcının anlattığı rüyadaki sembolleri bulan, her sembol için **bird
 ## Hedef olmayanlar
 
 - Başkalarının kullanacağı, internete açık bir ürün. Proje kişisel ve yerel kalacak.
-- Mobil uygulama ya da şık bir arayüz. Streamlit yeterli.
+- Mobil uygulama ya da şık bir arayüz. Notebook içinde açılan bir Gradio arayüzü yeterli.
 - Rüyadan psikolojik analiz ya da teşhis.
 - Para kazanmak. Bu yüzden NC (ticari olmayan) lisanslı kaynaklar kullanılabiliyor.
 - Bütün tabirname geleneğini kapsamak. Önce 50 sembolle başlanacak.

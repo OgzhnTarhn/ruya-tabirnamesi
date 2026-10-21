@@ -67,9 +67,9 @@
 |---|---|---|
 | İOG-01 | **Yanıt süresi** | Tipik bir rüya için ≤ 30 saniye (MVP), ≤ 20 saniye (Aşama 3) |
 | İOG-02 | **Sorgu maliyeti** | Rüya başına ≤ 0,15 $. Aylık harcama limiti API panelinden ayarlanır. |
-| İOG-03 | **Gizlilik** | Rüyalar yalnızca yerelde saklanır, kayıt tutma varsayılan olarak kapalıdır. API'ye yalnızca kullanıcının kendi rüyası gider. |
+| İOG-03 | **Gizlilik** | Rüyalar yalnızca senin Google Drive'ında saklanır, kayıt tutma varsayılan olarak kapalıdır. API'ye yalnızca senin kendi rüyan gider. |
 | İOG-04 | **Tekrarlanabilirlik** | Veri hattı tek komutla baştan kurulabilir. LLM çağrıları geliştirme sırasında diske önbelleklenir. |
-| İOG-05 | **Platform** | Windows 11 ve Python 3.12. Proje yolunda Türkçe karakter ve boşluk olmamalı (`C:\ruya-tabirnamesi`). |
+| İOG-05 | **Platform** | Çalıştırma Google Colab'de (Python ≥3.11), veri Google Drive'da. Bilgisayarda (Windows 11, `C:\ruya-tabirnamesi`) yalnızca kod yazılır ve verisiz testler çalışır. |
 | İOG-06 | **Lisans izlenebilirliği** | Her kaydın `lisans` alanı dolu. NC lisanslı kayıtlar tek bir filtreyle çıkarılabilir. |
 | İOG-07 | **Gözlemlenebilirlik** | Her sorguda adım süreleri, token sayıları ve maliyet loglanır (rüya metni loglanmaz). |
 | İOG-08 | **Test edilebilirlik** | Ayrıştırıcılar ve eşleme mantığı birim testlerle, boru hattı test setiyle sınanır. |
