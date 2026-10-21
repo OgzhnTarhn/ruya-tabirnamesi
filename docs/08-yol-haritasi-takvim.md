@@ -51,11 +51,15 @@ gantt
 - [x] Proje belgeleri (00–10)
 - [ ] Belgeleri oku, açık soruları cevapla ([09](09-riskler-ve-acik-sorular.md))
 - [ ] Hesaplar: Claude Developer Platform, API anahtarı, harcama limiti; GitHub özel repo ([10-kurulum-rehberi.md](10-kurulum-rehberi.md))
-- [ ] Python ortamı: uv, Python 3.12, iskelet `pyproject.toml`
+- [ ] Google Drive'da `ruya-tabirnamesi` klasörü; Colab Secrets'a `ANTHROPIC_API_KEY` (ve repo özelse `GITHUB_TOKEN`)
+- [ ] İlk push: Colab'in repoyu çekebilmesi için
 
 ### Hafta 1 · 26 Ekim – 1 Kasım · Deneme (atılabilir kod)
 
-**Amaç:** Projenin iki büyük bilinmeyenini cevaplamak.
+**Amaç:** Projenin iki büyük bilinmeyenini cevaplamak. Hepsi Colab'de, `notebooks/deneyler/01_veri_ve_ceviri.ipynb` içinde yapılır. Veri doğrudan Drive'a iner.
+
+- [ ] `notebooks/_kurulum.py`: Drive bağlama, Secrets, git pull, pip install (bütün notebook'ların ortak ilk hücresi)
+- [ ] Colab'in Python sürümünü ve GPU erişimini kontrol et
 
 - [ ] `scripts/download_sources.py`: Nablusi ve Miller'ı indir, SHA256 değerlerini kaydet.
 - [ ] Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.
@@ -68,7 +72,9 @@ gantt
 
 ### Hafta 2 · 2–8 Kasım · Aşama 0: Ayrıştırıcılar
 
-- [ ] Repo iskeleti: `src/ruya/`, `tests/`, ruff ve pytest ayarları
+- [ ] Repo iskeleti: `pyproject.toml`, `src/ruya/`, `tests/`, ruff ve pytest ayarları, `nbstripout` git kancası
+- [ ] `config.py`: Colab ya da bilgisayar algılama, Drive yolları
+- [ ] `notebooks/01_kaynaklari_indir.ipynb` ve `02_ayristir.ipynb`
 - [ ] `schemas.py`: `Madde` ve `SymbolKaydi` Pydantic modelleri
 - [ ] `ingest/miller.py` ve birim testleri (~2.256 madde)
 - [ ] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
@@ -79,7 +85,7 @@ gantt
 
 - [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `symbols.json` dosyasına Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
-- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir
+- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir. Bu işler `03_zenginlestir.ipynb` üzerinden yapılır; Batch iş kimlikleri Drive'a yazılır.
 - [ ] `docs/terimler.md`: tabir terimleri sözlüğü
 - [ ] `docs/kurallar.md`: TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
 - [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
@@ -96,15 +102,15 @@ gantt
 
 - [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: `search_result` ve atıflar
 - [ ] `pipeline/run.py` ve `SorguKaydi`
-- [ ] `app/streamlit_app.py`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni
-- [ ] `eval/run_eval.py` ve ilk ölçüm raporu
+- [ ] `app/gradio_app.py` ve `05_arayuz.ipynb`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
+- [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (Drive) ve `docs/olcumler.md`
 - [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
 
 ### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
 
 - [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (Batch API, bütçe kontrolüyle)
 - [ ] `symbols.json` dosyasını ~150 sembole genişlet
-- [ ] `index/build_vectors.py`: Chroma ve multilingual-e5-large
+- [ ] `index/build_vectors.py` ve `04_indeks.ipynb`: Chroma ve multilingual-e5-large, **Colab GPU**'sunda; indeks Drive'a zip olarak yedeklenir
 - [ ] Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla
 
 ### Hafta 7 · 7–13 Aralık · Aşama 2: Reranker, Freud, deneyler → **v0.2**
@@ -139,7 +145,7 @@ gantt
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
 
 - [ ] D4: Opus 5.5, Sonnet 5.5 ve Haiku 5.5 karşılaştırması (sentez ve çıkarım)
-- [ ] D5 (isteğe bağlı): Ollama ile yerel model
+- [ ] D5 (isteğe bağlı): Colab GPU'sunda açık model (Gemma, Qwen)
 - [ ] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim
 - [ ] `v1.0` etiketi
 

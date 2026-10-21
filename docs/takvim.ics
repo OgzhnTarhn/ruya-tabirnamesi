@@ -41,7 +41,7 @@ DTSTAMP:20261021T120000Z
 DTSTART;VALUE=DATE:20261123
 DTEND;VALUE=DATE:20261130
 SUMMARY:RT Hafta 5: Aşama 1 - Sentez ve arayüz
-DESCRIPTION:search_result atıfları\, Streamlit\, ilk ölçüm\, v0.1-mvp.
+DESCRIPTION:search_result atıfları\, Gradio (Colab)\, ilk ölçüm\, v0.1-mvp.
 END:VEVENT
 BEGIN:VEVENT
 UID:h06@ruya-tabirnamesi
@@ -49,7 +49,7 @@ DTSTAMP:20261021T120000Z
 DTSTART;VALUE=DATE:20261130
 DTEND;VALUE=DATE:20261207
 SUMMARY:RT Hafta 6: Aşama 2 - Tüm korpus ve vektör
-DESCRIPTION:Tam çeviri\, 150 sembol\, Chroma + e5\, vektör yedeği.
+DESCRIPTION:Tam çeviri\, 150 sembol\, Chroma + e5 (Colab GPU)\, vektör yedeği.
 END:VEVENT
 BEGIN:VEVENT
 UID:h07@ruya-tabirnamesi
