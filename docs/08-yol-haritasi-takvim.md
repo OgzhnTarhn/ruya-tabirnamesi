@@ -1,0 +1,151 @@
+# 08 · Yol Haritası ve Takvim
+
+> Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
+> **Varsayım:** Haftada 8–10 saat çalışma. Daha az ya da daha çok vakit ayırabileceksen takvim yeniden ölçeklenir (bkz. [09-riskler-ve-acik-sorular.md](09-riskler-ve-acik-sorular.md), S1).
+> **Takvim dosyası:** [`takvim.ics`](takvim.ics). Google Takvim'e ya da Outlook'a içe aktarılabilir. Haftalık hedefleri ve kilometre taşlarını içerir.
+
+## Genel bakış
+
+```mermaid
+gantt
+    title Rüya Tabirnamesi RAG · 12 hafta
+    dateFormat  YYYY-MM-DD
+    axisFormat  %d %b
+    section Hazırlık
+    Belgeler ve kurulum            :done,    h0, 2026-10-21, 5d
+    Deneme (veri ve çeviri)        :         h1, 2026-10-26, 7d
+    section Aşama 0 · Veri
+    Ayrıştırıcılar                 :         h2, 2026-11-02, 7d
+    Zenginleştirme ve indeks       :         h3, 2026-11-09, 7d
+    section Aşama 1 · MVP
+    Boru hattı (1-3)               :         h4, 2026-11-16, 7d
+    Sentez, arayüz, ölçüm          :         h5, 2026-11-23, 7d
+    section Aşama 2 · Getirme
+    Tüm korpus ve vektör yedeği    :         h6, 2026-11-30, 7d
+    Reranker, Freud, deneyler      :         h7, 2026-12-07, 7d
+    section Aşama 3 · Klasik yöntem
+    İbn Sirin ve koşullar          :         h8, 2026-12-14, 7d
+    Bağlam ve rüya türü            :         h9, 2026-12-21, 7d
+    Tampon (yılbaşı)               :         h10, 2026-12-28, 7d
+    Uzlaşı/ayrışma çıktısı         :         h11, 2027-01-04, 7d
+    section Aşama 4 · Deney
+    Model karşılaştırma ve kapanış :         h12, 2027-01-11, 7d
+```
+
+## Kilometre taşları
+
+| Tarih | Taş | "Bitti" ölçütü |
+|---|---|---|
+| **1 Kasım 2026** | K0 · Deneme tamam | `docs/deneyler/01-veri-ve-ceviri.md` yazılmış. Nablusi'nin ayrıştırılabilirliği ve çeviri kalitesi hakkında net bir karar alınmış. |
+| **15 Kasım 2026** | K1 · Veri hazır | `entries.jsonl` dosyasında Nablusi ve Miller var. 50 sembollük `symbols.json` gözden geçirilmiş. 20 rüyalık test seti yazılmış. |
+| **29 Kasım 2026** | K2 · `v0.1-mvp` | Uçtan uca çalışıyor. İlk ölçüm raporu var. [01-gereksinimler.md](01-gereksinimler.md)'deki MVP kabul ölçütleri sağlanmış. |
+| **13 Aralık 2026** | K3 · `v0.2` | Vektör yedeği ve reranker çalışıyor. D1–D3 deneyleri raporlanmış. |
+| **10 Ocak 2027** | K4 · `v0.3` | Koşullu yorum, rüya türü ve uzlaşı/ayrışma çıktısı tamam. 40–50 rüyalık test setinde ölçülmüş. |
+| **17 Ocak 2027** | K5 · `v1.0` | Model karşılaştırması bitti, README ve demo hazır. Proje tamam. |
+
+## Hafta hafta plan
+
+### Hafta 0 · 21–25 Ekim · Belgeler ve kurulum ✅ (büyük kısmı bitti)
+
+- [x] Proje fikri ve araştırma
+- [x] Proje belgeleri (00–10)
+- [ ] Belgeleri oku, açık soruları cevapla ([09](09-riskler-ve-acik-sorular.md))
+- [ ] Hesaplar: Claude Developer Platform, API anahtarı, harcama limiti; GitHub özel repo ([10-kurulum-rehberi.md](10-kurulum-rehberi.md))
+- [ ] Python ortamı: uv, Python 3.12, iskelet `pyproject.toml`
+
+### Hafta 1 · 26 Ekim – 1 Kasım · Deneme (atılabilir kod)
+
+**Amaç:** Projenin iki büyük bilinmeyenini cevaplamak.
+
+- [ ] `scripts/download_sources.py`: Nablusi ve Miller'ı indir, SHA256 değerlerini kaydet.
+- [ ] Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.
+- [ ] 10 Nablusi ve 10 Miller maddesini Claude ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.
+- [ ] 10 alt paragrafı "hangi sembole ait?" sorusuyla LLM'e sınıflandırt ve doğruluğu say.
+- [ ] Gerçek token sayılarını `count_tokens` ile ölç ve tüm korpusun çeviri maliyetini yeniden hesapla.
+- [ ] **Çıktı:** `docs/deneyler/01-veri-ve-ceviri.md`. Hipotez, sonuç ve karar.
+
+**Karar noktası (K0):** Çeviri kalitesi 3/5'in altındaysa çeviri talimatı iyileştirilir ya da İngilizce ara katman denenir. Bu durumda 1 hafta kayma olur.
+
+### Hafta 2 · 2–8 Kasım · Aşama 0: Ayrıştırıcılar
+
+- [ ] Repo iskeleti: `src/ruya/`, `tests/`, ruff ve pytest ayarları
+- [ ] `schemas.py`: `Madde` ve `SymbolKaydi` Pydantic modelleri
+- [ ] `ingest/miller.py` ve birim testleri (~2.256 madde)
+- [ ] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
+- [ ] `text/turkce.py`: Türkçe küçük harf ve normalleştirme, testleri
+- [ ] Kontrat testi: bütün kayıtlarda `lisans` dolu ve `entry_id` benzersiz
+
+### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
+
+- [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `symbols.json` dosyasına Türkçe, Arapça ve İngilizce varyantlar eklenecek.
+- [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
+- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir
+- [ ] `docs/terimler.md`: tabir terimleri sözlüğü
+- [ ] `docs/kurallar.md`: TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
+- [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
+
+### Hafta 4 · 16–22 Kasım · Aşama 1: Boru hattı (adım 1–3)
+
+- [ ] `llm/client.py`: disk önbelleği, maliyet hesabı, hata yönetimi, `stop_reason` kontrolü
+- [ ] `pipeline/extract.py` ve `prompts/cikarim_v1.md`: JSON şemalı sembol çıkarımı
+- [ ] `pipeline/map.py`: birebir eşleme, zeyrek ile kök eşleme ve testleri
+- [ ] `pipeline/retrieve.py`: `symbol_id` ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri
+- [ ] Test setindeki `beklenen_maddeler` alanlarını doldur
+
+### Hafta 5 · 23–29 Kasım · Aşama 1: Sentez, arayüz, ölçüm → **v0.1-mvp**
+
+- [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: `search_result` ve atıflar
+- [ ] `pipeline/run.py` ve `SorguKaydi`
+- [ ] `app/streamlit_app.py`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni
+- [ ] `eval/run_eval.py` ve ilk ölçüm raporu
+- [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
+
+### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
+
+- [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (Batch API, bütçe kontrolüyle)
+- [ ] `symbols.json` dosyasını ~150 sembole genişlet
+- [ ] `index/build_vectors.py`: Chroma ve multilingual-e5-large
+- [ ] Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla
+
+### Hafta 7 · 7–13 Aralık · Aşama 2: Reranker, Freud, deneyler → **v0.2**
+
+- [ ] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
+- [ ] bge-reranker-v2-m3 entegrasyonu
+- [ ] Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları
+- [ ] Gelenek seçimi arayüzü (İG-03), ardından `v0.2` etiketi
+
+### Hafta 8 · 14–20 Aralık · Aşama 3: İbn Sirin ve koşullar
+
+- [ ] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
+- [ ] `enrich/conditions.py`: koşul ayrıştırma (`kosullar`, `yontem`, `kapsam`). 20 maddeyi elle kontrol et.
+- [ ] Bab ve HVDC kategorilerini `symbols.json` dosyasına ekle
+
+### Hafta 9 · 21–27 Aralık · Aşama 3: Bağlam ve rüya türü
+
+- [ ] Arayüze bağlam formu (İG-02)
+- [ ] Getirmede bağlam koşulu eşleşmesi (İG-23)
+- [ ] Çıkarımda rüya türü ipucu ve hassas içerik bayrağı (İG-14, güvenlik ağı)
+
+### Hafta 10 · 28 Aralık – 3 Ocak · Tampon (yılbaşı)
+
+- [ ] Geride kalan işler
+- [ ] Test setini 40–50 rüyaya genişlet, özel testleri ekle
+
+### Hafta 11 · 4–10 Ocak · Aşama 3: Uzlaşı/ayrışma çıktısı → **v0.3**
+
+- [ ] `prompts/sentez_v2.md`: koşullu yorum, "Uzlaşılan / Ayrışan / Diğer vecihler" çıktısı ve yöntem açıklamaları
+- [ ] Tam ölçüm ve v1 ile karşılaştırma, ardından `v0.3` etiketi
+
+### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
+
+- [ ] D4: Opus 5.5, Sonnet 5.5 ve Haiku 5.5 karşılaştırması (sentez ve çıkarım)
+- [ ] D5 (isteğe bağlı): Ollama ile yerel model
+- [ ] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim
+- [ ] `v1.0` etiketi
+
+## İsteğe bağlı devam (Ocak sonrası)
+
+- *Zhougong Jiemeng* ve Talmud kaynaklarının eklenmesi
+- Hibrit BM25 araması
+- Sembol istatistikleri: "rüyalarında en sık görülen semboller"
+- Bir blog yazısı ya da sunum: "Türkçe rüya tabiri için RAG: öğrendiklerim"
