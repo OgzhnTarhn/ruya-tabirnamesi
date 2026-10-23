@@ -57,7 +57,7 @@ MyDrive/ruya-tabirnamesi/
 │   ├── raw/          # indirilen kaynaklar + SHA256 kayıtları (Colab doğrudan buraya indirir)
 │   ├── interim/      # ayrıştırılmış jsonl
 │   ├── processed/    # entries.jsonl
-│   └── index/        # symbols.json + chroma.zip (yedek)
+│   └── index/        # chroma.zip (yedek); sembol sözlüğü git'te: sozluk/symbols.json
 ├── cache/
 │   ├── llm/          # LLM yanıt önbelleği: istek başına bir JSON dosyası
 │   └── batch/        # gönderilmiş Batch işlerinin kimlikleri ve durumları
@@ -81,26 +81,27 @@ Drive, Colab'e bir dosya sistemi gibi bağlanır (`/content/drive`). Ancak bu ba
 ## 5. Kod Colab'e nasıl gelir?
 
 - **Notebook'lar ince tutulur.** Mantık `src/ruya/` paketinde durur. Notebook yalnızca sırayla fonksiyon çağırır. Böylece kod test edilebilir, sürümlenebilir ve bilgisayarda da okunabilir kalır.
-- **Her notebook'un ilk hücresi aynıdır (`notebooks/_kurulum.py`):**
-  1. Drive'ı bağla: `drive.mount('/content/drive')`.
-  2. Gizli bilgileri oku: `google.colab.userdata` içinden `ANTHROPIC_API_KEY`, repo özelse `GITHUB_TOKEN`.
-  3. Repoyu klonla ya da güncelle: `git clone` veya `git pull`.
-  4. Paketi kur: `pip install -e /content/ruya-tabirnamesi`.
-  5. Ortam değişkenlerini ayarla: `RUYA_DATA_DIR=/content/drive/MyDrive/ruya-tabirnamesi`, `RUYA_WORK_DIR=/content/calisma`, `HF_HOME`.
+- **Her notebook'un ilk hücresi aynıdır.** Hücre repo yoksa onu klonlar (repo özelse `GITHUB_TOKEN` ile), sonra `%run` ile `notebooks/_kurulum.py`'yi çalıştırır. Hücrenin metni: [`notebooks/README.md`](../notebooks/README.md). `_kurulum.py` sırasıyla:
+  1. Drive'ı bağlar: `drive.mount('/content/drive')`.
+  2. `ANTHROPIC_API_KEY`'i `google.colab.userdata` içinden ortam değişkenine aktarır. Yazdırmaz, dosyaya yazmaz.
+  3. Repoyu günceller: `git pull`. Token remote adresinde tutulmaz, yalnızca istek başlığında kullanılır.
+  4. Paketi kurar: `pip install -e /content/ruya-tabirnamesi`. Ağır paketler gerekiyorsa ilk hücrede `RUYA_EKLER=colab` ayarlanır (Chroma, sentence-transformers, Gradio).
+  5. Ortam değişkenlerini ayarlar: `RUYA_DATA_DIR=/content/drive/MyDrive/ruya-tabirnamesi`, `RUYA_WORK_DIR=/content/calisma`, `HF_HOME`. Drive alt klasörlerini açar ve `autoreload`'u etkinleştirir.
 - **`config.py` ortamı kendisi algılar.** Colab'de çalıştığını `"google.colab" in sys.modules` ile anlar ve yolları buna göre seçer. Bilgisayarda çalışırken veri yolu yoktur; yalnızca verisiz testler çalışır.
 - **Notebook planı:**
 
 | Notebook | İş | Aşama |
 |---|---|---|
+| `00_ortam_kontrolu.ipynb` | Python, GPU, Drive, Secrets kontrolü; birim testleri | Hazırlık |
 | `01_kaynaklari_indir.ipynb` | Ham kaynakları Drive'a indirir | 0 |
 | `02_ayristir.ipynb` | `interim/*.jsonl` üretir, istatistik gösterir | 0 |
 | `03_zenginlestir.ipynb` | Sembol atama ve çeviri Batch işlerini gönderir, sonuçları toplar | 0, 2, 3 |
-| `04_indeks.ipynb` | `symbols.json` ve Chroma indeksini kurar (GPU) | 0, 2 |
+| `04_indeks.ipynb` | Chroma indeksini kurar (GPU), Drive'a zip olarak yedekler | 2 |
 | `05_arayuz.ipynb` | Gradio arayüzünü notebook içinde açar | 1+ |
 | `06_degerlendirme.ipynb` | Test setini çalıştırır, raporu Drive'a yazar | 1+ |
 | `deneyler/*.ipynb` | Hafta 1 denemesi, D1–D5 deneyleri | 1, 2, 4 |
 
-- **Notebook çıktıları commit'ten önce temizlenir.** Çıktılarda rüya metni ya da API yanıtı kalabilir. Bunun için `nbstripout` bir git kancası (hook) olarak kurulur.
+- **Notebook çıktıları commit'ten önce temizlenir.** Çıktılarda rüya metni ya da API yanıtı kalabilir. Bunun için `nbstripout` bir git filtresi olarak kurulur (`.gitattributes`; her klonda bir kez `uv run nbstripout --install`). `tests/test_notebooklar.py` çıktısı kalmış notebook'u ayrıca yakalar. Colab'in "GitHub'a kopya kaydet" özelliği bu filtreyi atladığı için kullanılmaz.
 
 ## 6. Arayüz: Streamlit yerine Gradio
 

@@ -1,7 +1,8 @@
 # 06 · Değerlendirme ve Ölçme Planı
 
 > Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
-> İlke: **Ölçmediğin şeyi iyileştiremezsin.** Her aşama aynı test setiyle ölçülür, sonuçlar `eval/reports/` altına tarihli olarak kaydedilir.
+> İlke: **Ölçmediğin şeyi iyileştiremezsin.** Her aşama aynı test setiyle ölçülür, ayrıntılı raporlar Drive'da `raporlar/` altına tarihli olarak, özet satırı repoda [olcumler.md](olcumler.md)'ye kaydedilir.
+> Kod: ölçütler `src/ruya/degerlendirme/metrikler.py`, test seti şeması `ruya.schemas.TestOrnegi`.
 
 ## 1. Test seti
 
@@ -35,7 +36,7 @@
   "beklenen_nitelikler": {"yilan": ["siyah"]},
   "beklenen_duygular": ["korku"],
   "olmamasi_gerekenler": [],
-  "beklenen_maddeler": {"yilan": ["nablusi:0412", "miller:1871"]},
+  "beklenen_maddeler": {"yilan": ["nablusi:004310", "miller:018710"]},
   "notlar": "siyah yılan için ayrı Nablusi maddesi var mı kontrol et"
 }
 ```

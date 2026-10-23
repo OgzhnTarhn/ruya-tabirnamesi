@@ -61,13 +61,15 @@ data/interim/<kaynak>.jsonl  Paragraf başına bir kayıt (asıl dil)
    │  enrich/conditions.py       ← koşul ayrıştırma (LLM, Aşama 3)
    ▼
 data/processed/entries.jsonl  Zenginleştirilmiş, son kayıtlar
-   │  index/build_symbols.py  ← kanonik sembol indeksi
+   │  index/build_symbols.py  ← sözlük + maddelerden arama tabloları (bellekte, diske yazılmaz)
    │  index/build_vectors.py  ← Chroma (Aşama 2)
    ▼
 data/index/  chroma.zip (Chroma, Colab'in yerel diskinde açılır)
 
 (git) sozluk/symbols.json   ← elle onaylanan sembol indeksi repoda durur
 ```
+
+Her dosyayı kimin ürettiği ve kimin okuduğu: [12-kod-yapisi-ve-sozlesmeler.md](12-kod-yapisi-ve-sozlesmeler.md), bölüm 5.
 
 Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore` yalnızca önlem olarak duruyor. Bunun üç nedeni var: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `01_kaynaklari_indir.ipynb` (içinde `scripts/download_sources.py`) Colab'den doğrudan Drive'a indirir.
 
@@ -77,7 +79,7 @@ Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore
 
 ```json
 {
-  "entry_id": "nablusi:0412",
+  "entry_id": "nablusi:004310",
   "kaynak": "nablusi",
   "eser": "Ta'tîrü'l-enâm fî ta'bîri'l-menâm",
   "yazar": "Abdülganî en-Nablusî",
@@ -102,11 +104,13 @@ Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore
 
 Alan kuralları:
 
-- `entry_id` sabittir ve yeniden ayrıştırmada değişmez. Kimlik paragrafın sırasından değil, kaynak satır numarasından türetilir.
+- `entry_id` sabittir ve yeniden ayrıştırmada değişmez. Kimlik paragrafın sırasından değil, kaynak satır numarasından türetilir: `<kaynak>:<6 haneli satır no>`, örneğin `nablusi:004310`.
+- Bilinmeyen alan kabul edilmez. Kodda şema `ruya.schemas.Madde`; alan eklenecekse önce bu belge, sonra şema güncellenir.
 - `atif_notu` alanı İbn Sirin kayıtlarında `"Nispeti sahih değil (OpenITI metadatası)"` değerini alır.
 - `ust_madde_id` alt paragrafları başlıklı maddelerine bağlar.
 - `kosullar`, `yontem` ve `kapsam` alanları Aşama 3'te doldurulur. O zamana kadar `null` kalır.
-- `lisans` hiçbir zaman boş olamaz. Doğrulama betiği boş bırakılırsa hata verir.
+- `lisans` hiçbir zaman boş olamaz. Şema boş bırakılırsa hata verir; kodlar [KAYNAKLAR.md](KAYNAKLAR.md), bölüm 5'te.
+- `yontem` bir etiket listesidir (`["zit"]` gibi; bkz. [terimler.md](terimler.md), bölüm 4).
 
 ### 4.2 `symbols.json`: kanonik sembol indeksi
 
