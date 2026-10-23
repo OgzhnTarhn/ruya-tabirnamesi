@@ -1,0 +1,22 @@
+{
+  "yilan": {
+    "ad_tr": "yılan",
+    "varyantlar_tr": ["yılan", "engerek", "kobra", "piton"],
+    "ar": ["حية", "ثعبان", "أفعى"],
+    "en": ["snake", "snakes", "serpent", "serpents"],
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "hayvan",
+    "ilgili": ["ejderha", "solucan"],
+    "gozden_gecirildi": true
+  },
+  "deniz": {
+    "ad_tr": "deniz",
+    "varyantlar_tr": ["deniz", "okyanus"],
+    "ar": ["بحر"],
+    "en": ["sea", "ocean"],
+    "bab_kategorisi": "su",
+    "hvdc_kategorisi": "mekan_nesne",
+    "ilgili": [],
+    "gozden_gecirildi": false
+  }
+}
