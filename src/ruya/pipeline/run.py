@@ -14,12 +14,14 @@ from dataclasses import dataclass, field
 from typing import TypeVar
 
 from ruya.config import Ayarlar, ayarlar
+from ruya.dosya import jsonl_oku
 from ruya.etik import SEMBOL_YOK_MESAJI
-from ruya.index.store import MaddeDeposu, VektorArayici
+from ruya.index.build_symbols import sozlugu_yukle, varyant_tablosu
+from ruya.index.store import BellekDeposu, MaddeDeposu, VektorArayici
 from ruya.llm.client import LLMIstemcisi
 from ruya.pipeline import extract, retrieve, synthesize
 from ruya.pipeline import map as esleme
-from ruya.schemas import AdimOlcumu, RuyaGirdisi, SorguKaydi
+from ruya.schemas import AdimOlcumu, Madde, RuyaGirdisi, SorguKaydi
 
 T = TypeVar("T")
 
@@ -33,6 +35,22 @@ class Bagimliliklar:
     depo: MaddeDeposu
     vektor: VektorArayici | None = None  # Aşama 2
     ayar: Ayarlar = field(default_factory=ayarlar)
+
+
+def varsayilan_bagimliliklar(ayar: Ayarlar | None = None) -> Bagimliliklar:
+    """Colab'deki gerçek bağımlılıkları kurar: sözlük (git), maddeler (Drive), Claude istemcisi.
+
+    Arayüz notebook'u ve değerlendirme betiği bunu çağırır; testler kendi sahtelerini kurar.
+    """
+    ayar = ayar or ayarlar()
+    sozluk = sozlugu_yukle()
+    maddeler = list(jsonl_oku(ayar.maddeler_dosyasi, Madde))
+    return Bagimliliklar(
+        istemci=LLMIstemcisi(ayar),
+        varyantlar=varyant_tablosu(sozluk),
+        depo=BellekDeposu(maddeler),
+        ayar=ayar,
+    )
 
 
 def _zamanla(islev: Callable[..., T], *argumanlar: object) -> tuple[T, float]:

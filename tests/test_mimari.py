@@ -25,7 +25,7 @@ IZINLER: dict[str, set[str]] = {
     "ingest": {"config", "hatalar", "schemas", "dosya", "text"},
     "enrich": {"config", "hatalar", "schemas", "dosya", "text", "llm"},
     "index": {"config", "hatalar", "schemas", "dosya", "text"},
-    "pipeline": {"config", "hatalar", "schemas", "etik", "text", "llm", "index"},
+    "pipeline": {"config", "hatalar", "schemas", "etik", "dosya", "text", "llm", "index"},
     "kayit": {"config", "hatalar", "schemas", "dosya"},
     "degerlendirme": {
         "config",
