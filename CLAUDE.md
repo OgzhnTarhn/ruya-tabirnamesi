@@ -14,7 +14,10 @@
 - Gradio arayüzünde `share=True` kullanılmaz.
 
 ## Çalışma düzeni
-- Kod yazmadan önce `docs/` altındaki ilgili belgeyi oku (mimari: `docs/03-mimari.md`, takvim: `docs/08-yol-haritasi-takvim.md`).
+- Kod yazmadan önce `docs/` altındaki ilgili belgeyi oku (mimari: `docs/03-mimari.md`, kod yapısı ve modül sözleşmeleri: `docs/12-kod-yapisi-ve-sozlesmeler.md`, takvim: `docs/08-yol-haritasi-takvim.md`).
+- Katman kuralına uy: bir modül yalnızca `docs/12` bölüm 1'de izin verilen `ruya` birimlerini içe aktarır; ağır paketler (chromadb, sentence-transformers, gradio, torch) yalnızca işlev içinde içe aktarılır. `tests/test_mimari.py` bunu denetler.
+- Şema değişikliği önce belgede (`docs/02`, `docs/12`), sonra `src/ruya/schemas.py`'de yapılır.
+- Commit'ten önce `uv run pytest` ve `uv run ruff check .` temiz olmalı.
 - `data/`, `.env`, `.cache/`, `logs/` git'e eklenmez.
 - Gizli bilgiler (API anahtarı, GitHub token) yalnızca Colab Secrets'ta durur; hiçbir dosyaya yazılmaz.
 - Claude API model adları yalnızca `src/ruya/config.py` içinde tanımlanır.
