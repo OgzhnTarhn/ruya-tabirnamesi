@@ -47,7 +47,17 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 
 uv kurmazsan testleri yalnızca Colab'de çalıştırırsın, bu da sorun değil.
 
+uv kuruluysa repo klasöründe bir kez:
+
+```powershell
+uv sync                      # .venv ve hafif bağımlılıklar (Chroma, Gradio gibi ağır paketler kurulmaz)
+uv run nbstripout --install  # notebook çıktılarını commit'ten önce temizleyen git filtresi
+uv run pytest                # verisiz testler; hepsi geçmeli, kontrat testleri "skipped" görünür
+```
+
+Her değişiklikten sonra: `uv run pytest` ve `uv run ruff check . && uv run ruff format .`
+
 ## 6. Elle doğrulanacaklar (10 dakika)
 
 - [ ] [Zenodo'daki OpenITI kaydını](https://zenodo.org/records/17767721) aç ve lisansın CC BY-NC-SA 4.0 olduğunu gör. Atıf künyesi sonra `docs/KAYNAKLAR.md` dosyasına eklenecek.
-- [ ] İlk Colab oturumunda bir hücrede `!python --version` ve `!nvidia-smi` komutlarını çalıştır. Python sürümünü ve GPU durumunu not et. GPU için: Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU.
+- [ ] Push'tan sonra Colab'de `notebooks/00_ortam_kontrolu.ipynb`'yi aç (Dosya → Notebook aç → GitHub; repo özelse "özel depoları dahil et" seçeneğiyle GitHub hesabını yetkilendir) ve çalıştır. Kurulum hücresinin yazdırdığı Python sürümünü ve GPU durumunu buraya not et; birim testleri Colab'de de geçmeli. GPU için: Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU.
