@@ -1,6 +1,7 @@
 # 03 · Yazılım Mimarisi
 
-> Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
+> Durum: v0.2 · Tarih: 23 Ekim 2026 (iskelet kuruldu; klasör yapısı ve getirme çıktısı güncellendi)
+> Kod düzeni, katman kuralları, modül imzaları ve veri ürünleri: [12-kod-yapisi-ve-sozlesmeler.md](12-kod-yapisi-ve-sozlesmeler.md)
 > Teknoloji kararlarının gerekçeleri: [04-teknoloji-secimi.md](04-teknoloji-secimi.md)
 > Çalışma ortamı (Colab, Drive, GitHub): [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)
 
@@ -63,8 +64,8 @@ flowchart TB
 
 ### Adım 3 · Getirme (`pipeline/retrieve.py`)
 
-- **Girdi:** `list[Eslesme]` ve `Baglam`
-- **Çıktı:** `dict[symbol_id, list[Madde]]`
+- **Girdi:** `list[Eslesme]`, `Baglam` ve seçilen gelenekler
+- **Çıktı:** `dict[symbol_id, list[Aday]]`. `Aday` maddeyi, sıralama skorunu ve skorun gerekçelerini taşır; hata ayıklama sekmesi bunları gösterir (İG-42).
 - **Nasıl:** `symbol_id` ile doğrudan filtreleme yapılır (Chroma `where` ya da bellekteki indeks). Her kaynaktan en fazla N madde alınır (varsayılan N=2).
 - **Sıralama:**
   1. Nitelik eşleşmesi. Örneğin "siyah yılan" için içinde "siyah" geçen madde öne çıkar.
@@ -89,49 +90,59 @@ flowchart TB
 ### Orkestrasyon (`pipeline/run.py`)
 
 ```
-def yorumla(girdi: RuyaGirdisi) -> SorguKaydi:
-    cikarim  = extract(girdi)
-    eslesme  = map_symbols(cikarim.semboller)
-    maddeler = retrieve(eslesme, girdi.baglam)
-    yorum    = synthesize(cikarim, maddeler, girdi.baglam)
-    return SorguKaydi(cikarim, eslesme, maddeler, yorum, olcumler)
+def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
+    cikarim, kullanim = extract(girdi, bag.istemci)
+    eslesmeler        = map_symbols(cikarim.gecerli_semboller[:8], bag.varyantlar, bag.vektor)
+    getirilenler      = retrieve(eslesmeler, bag.depo, girdi.baglam, girdi.gelenekler, n)
+    yorum, kullanim   = synthesize(cikarim, eslesmeler, getirilenler, girdi.baglam, bag.istemci)
+    return SorguKaydi(...)   # her adımın çıktısı + AdimOlcumu (süre, token, maliyet, talimat)
 ```
 
-`SorguKaydi` her adımın çıktısını, süresini, token sayısını ve maliyetini taşır. Arayüz ve değerlendirme betiği aynı nesneyi kullanır.
+`SorguKaydi` her adımın çıktısını, süresini, token sayısını ve maliyetini taşır. Arayüz ve değerlendirme betiği aynı nesneyi kullanır. `Bagimliliklar` boru hattının dış dünyaya (API, depo, sözlük) açılan tek kapısıdır; testlerde sahteleri verilir (bkz. [12](12-kod-yapisi-ve-sozlesmeler.md), bölüm 4). Orkestrasyon `src/ruya/pipeline/run.py` içinde hazır ve testli.
 
 ## 4. Klasör yapısı
 
 ```
 C:\ruya-tabirnamesi\
 ├── README.md
-├── pyproject.toml            # bağımlılıklar, ruff, pytest ayarları
+├── CLAUDE.md                 # proje kuralları
+├── pyproject.toml            # bağımlılıklar (temel + [indeks] [arayuz] [colab] ekleri), ruff, pytest
+├── uv.lock                   # bilgisayardaki ortamın kilit dosyası
+├── .gitattributes            # nbstripout filtresi
 ├── .gitignore                # data/, .env, .cache/, logs/ (önlem)
-├── docs/                     # bu belgeler + arastirma/ + deneyler/ + olcumler.md
-├── notebooks/                # ince Colab notebook'ları (bkz. docs/11)
-│   ├── _kurulum.py           # her notebook'un ilk hücresi: Drive, Secrets, git pull, pip install
-│   ├── 01_kaynaklari_indir.ipynb … 06_degerlendirme.ipynb
+├── docs/                     # 00–12, KAYNAKLAR, terimler, kurallar, olcumler, arastirma/, deneyler/
+├── notebooks/                # ince Colab notebook'ları (bkz. docs/11, notebooks/README.md)
+│   ├── _kurulum.py           # ilk hücrenin çağırdığı kurulum: Drive, Secrets, git pull, pip install
+│   ├── 00_ortam_kontrolu.ipynb … 06_degerlendirme.ipynb
 │   └── deneyler/
-├── prompts/                  # sürümlü sistem talimatları (cikarim_v1.md, sentez_v1.md, ceviri_v1.md)
+├── prompts/                  # sürümlü sistem talimatları: <is>_v<n>.md (bkz. prompts/README.md)
 ├── sozluk/
 │   └── symbols.json          # elle onaylanan kanonik sembol indeksi (veri değil, sözlük → git'te)
 ├── scripts/
-│   └── download_sources.py   # ham kaynakları indirir, SHA256 kaydeder
+│   └── download_sources.py   # ham kaynakları Drive'a indirir, SHA256 kaydeder
 ├── src/ruya/
-│   ├── config.py             # ortamı algılar (Colab/bilgisayar), yollar, model adları
-│   ├── schemas.py            # Pydantic veri sınıfları: Madde, Sembol, Eslesme, Yorum…
+│   ├── config.py             # ortamı algılar (Colab/bilgisayar), yollar, model adları ve fiyatlar
+│   ├── hatalar.py            # VeriYoluYok, ModelReddetti, SozlukHatasi…
+│   ├── schemas.py            # Pydantic veri sınıfları: Madde, Sembol, Eslesme, Aday, Yorum, SorguKaydi…
+│   ├── etik.py               # uyarı metni, güvenlik notu, yasak ifadeler
+│   ├── dosya.py              # JSONL okuma/yazma
+│   ├── kayit.py              # sorgu logu (rüya metni olmadan), isteğe bağlı geçmiş
 │   ├── text/turkce.py        # Türkçe küçük harf, normalleştirme, zeyrek sarmalayıcı
-│   ├── llm/client.py         # Anthropic istemcisi, disk önbelleği, maliyet hesabı, yeniden deneme
-│   ├── ingest/               # nablusi.py, miller.py, ibn_sirin.py, freud.py
+│   ├── llm/                  # client.py (önbellek, maliyet, hata), talimatlar.py
+│   ├── ingest/               # kaynaklar.py (künye ve lisans), nablusi.py, miller.py, ibn_sirin.py, freud.py
 │   ├── enrich/               # assign_symbols.py, translate.py, conditions.py
-│   ├── index/                # build_symbols.py, build_vectors.py, store.py
-│   └── pipeline/             # extract.py, map.py, retrieve.py, synthesize.py, run.py
+│   ├── index/                # build_symbols.py, store.py, build_vectors.py, yedek.py
+│   ├── pipeline/             # extract.py, map.py, retrieve.py, synthesize.py, run.py
+│   └── degerlendirme/        # metrikler.py, calistir.py
 ├── app/
 │   └── gradio_app.py         # arayüz; notebooks/05_arayuz.ipynb içinden açılır
 ├── eval/
 │   ├── dataset/              # ruyalar_v1.jsonl (test seti; kendi rüyaların → repo özel kalmalı)
-│   └── run_eval.py           # raporu Drive'daki raporlar/ klasörüne yazar
-└── tests/                    # pytest birim testleri + fixtures/ (birkaç satırlık örnekler)
+│   └── run_eval.py           # ince CLI; mantık ruya.degerlendirme'de
+└── tests/                    # pytest: birim, mimari, kontrat (-m veri) testleri + fixtures/
 ```
+
+Her modülün sorumluluğu, imzası ve hangi haftada yazılacağı: [12](12-kod-yapisi-ve-sozlesmeler.md), bölüm 2.
 
 Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında durur (bkz. [11](11-calisma-ortami-colab-drive.md), bölüm 3). Ölçüm raporları da Drive'da tutulur. Her kilometre taşında özet tablo `docs/olcumler.md` dosyasına işlenip commit edilir.
 
@@ -180,7 +191,8 @@ Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında du
   - Türkçe normalleştirme: I/İ dönüşümü ve ekli biçimler.
   - Eşleme: varyanttan doğru `symbol_id`'ye ulaşılması.
   - Getirme: kaynak başına N sınırının uygulanması.
-- **Kontrat testleri:** `entries.jsonl` dosyasındaki her kayıt şemaya uyuyor ve `lisans` alanı dolu.
+- **Mimari testleri (`tests/test_mimari.py`):** katmanlar arası içe aktarma kuralı, model adlarının yalnızca `config.py`'de olması, ağır paketlerin tembel yüklenmesi; ayrıca notebook çıktılarının temizliği ve sözlüğün şemaya uyması.
+- **Kontrat testleri (`tests/test_kontrat_veri.py`, `-m veri`):** `entries.jsonl` dosyasındaki her kayıt şemaya uyuyor, `lisans` alanı dolu, `entry_id` benzersiz. Veri yalnızca Colab'de olduğu için bilgisayarda kendiliğinden atlanır.
 - **Boru hattı testleri:** `eval/run_eval.py` ile test seti üzerinde ölçüm yapılır (bkz. [06-degerlendirme.md](06-degerlendirme.md)). Bu testler LLM çağırdığı için ücretli. Colab'de `06_degerlendirme.ipynb` ile elle çalıştırılır, CI'da çalışmaz.
 - **Nerede çalışır:** Birim testleri veri gerektirmez. `tests/fixtures/` altındaki birkaç satırlık örnekleri kullanır. Bu yüzden hem bilgisayarda hem Colab'de çalışır.
 
