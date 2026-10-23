@@ -30,6 +30,8 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 
 ## Kısaca mimari
 
+![Mimari: çevrimdışı veri hattı ve çevrimiçi sorgu boru hattı](docs/gorseller/mimari.gif)
+
 ```
 Rüya metni
   → 1. Sembol çıkarımı   (Claude · JSON)
