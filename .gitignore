@@ -3,6 +3,9 @@
 .venv/
 __pycache__/
 *.pyc
+*.egg-info/
+build/
+dist/
 .pytest_cache/
 .ruff_cache/
 
@@ -14,6 +17,9 @@ data/
 
 # Loglar (rüya içeriği barındırabilir)
 logs/
+
+# Colab notebook kontrol noktaları
+.ipynb_checkpoints/
 
 # İşletim sistemi / editör
 Thumbs.db

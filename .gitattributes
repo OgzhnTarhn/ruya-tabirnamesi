@@ -1,1 +1,6 @@
 *.ics text eol=crlf
+
+# Notebook çıktıları commit'ten önce temizlenir (nbstripout).
+# Filtre her klonda bir kez kurulur: uv run nbstripout --install
+*.ipynb filter=nbstripout
+*.ipynb diff=ipynb
