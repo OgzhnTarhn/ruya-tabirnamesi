@@ -33,3 +33,8 @@ Mimari değişirse animasyon da yeniden üretilir:
 ```powershell
 uvx --with pillow python scripts/mimari_gif.py docs/gorseller/mimari.gif
 ```
+
+## Pano sayfası
+
+Sayfanın kaynağı `pano.html`'dedir (panoda `files/index.html` olarak durur). Sayfa yalnızca
+veriyi çizer; içinde sayı yoktur. Değişiklik önce bu dosyada yapılır, sonra panoya yazılır.

@@ -1,0 +1,562 @@
+<style>
+/* Düzen: tek sütunlu rapor; üstte özet, sonra mimari, takvim, benchmark, görevler, kod sağlığı */
+#dash-root .rt {
+  --rt-cevrimdisi: var(--color-warn);
+  --rt-cevrimici: var(--color-ok);
+  font-family: var(--font-anthropic-sans);
+  display: flex; flex-direction: column; gap: var(--cds-gap-xl);
+  max-width: 72rem; margin-inline: auto;
+  font-variant-numeric: tabular-nums;
+}
+.rt h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+.rt h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.rt h3 { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); margin: 0; }
+.rt p { margin: 0; }
+.rt-ozet { color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 65ch; }
+.rt-ozet b, .rt .rt-kart b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+.rt-bas { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+.rt-bolum { display: flex; flex-direction: column; gap: var(--cds-gap-md); scroll-margin-top: 4rem; }
+.rt-bolum > header { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.rt-not { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+.rt-kart {
+  background: var(--color-panel); border: 1px solid var(--color-border-line);
+  border-radius: var(--cds-radius); padding: var(--cds-pad-lg);
+  display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0;
+}
+.rt-izgara { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.rt-izgara-2 { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+.rt-etiket { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); letter-spacing: .02em; }
+.rt-buyuk { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; }
+.rt-buyuk .rt-pay { color: var(--color-fg-muted); font-size: var(--cds-font-size-heading); }
+.rt-cubuk { height: .375rem; border-radius: 999px; background: var(--cds-chart-grid); overflow: hidden; }
+.rt-cubuk > i { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--rt-c1); }
+.rt-kucuk { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+.rt-sema { overflow-x: auto; }
+.rt-sema svg { display: block; min-width: 46rem; width: 100%; height: auto; }
+.rt-sema .kutu rect { fill: var(--color-bg); stroke-width: 1.5; }
+.rt-sema .cd rect { stroke: var(--rt-cevrimdisi); }
+.rt-sema .cc rect { stroke: var(--rt-cevrimici); }
+.rt-sema .git rect { stroke: var(--rt-c3); stroke-dasharray: 4 3; }
+.rt-sema .b { fill: var(--color-fg); font-size: 15px; font-weight: 600; }
+.rt-sema .a { fill: var(--color-fg-muted); font-size: 12px; }
+.rt-sema .bolge { font-size: 11px; font-weight: 600; letter-spacing: .06em; }
+.rt-sema .ok { fill: none; stroke-width: 1.6; }
+.rt-sema .cd-ok { stroke: var(--rt-cevrimdisi); }
+.rt-sema .cc-ok { stroke: var(--rt-cevrimici); }
+.rt-sema .oku { stroke: var(--rt-cevrimici); stroke-dasharray: 6 5; opacity: .8; }
+.rt-sema .ayrac { stroke: var(--color-border-line); }
+@media (prefers-reduced-motion: no-preference) {
+  .rt-sema .akis { stroke-dasharray: 6 8; animation: rt-akis 1.4s linear infinite; }
+  .rt-sema .cc.adim rect { animation: rt-nabiz 7.2s var(--cds-ease-out) infinite; }
+  .rt-sema .cc.a2 rect { animation-delay: 1.2s; }
+  .rt-sema .cc.a3 rect { animation-delay: 2.4s; }
+  .rt-sema .cc.a4 rect { animation-delay: 3.6s; }
+  .rt-sema .cc.a5 rect { animation-delay: 4.8s; }
+  .rt-sema .cc.a6 rect { animation-delay: 6s; }
+}
+@keyframes rt-akis { to { stroke-dashoffset: -28; } }
+@keyframes rt-nabiz { 0%, 18%, 100% { stroke-width: 1.5; } 6% { stroke-width: 4; } }
+.rt-grafik { position: relative; min-height: 15rem; }
+.rt-grafik svg { display: block; width: 100%; }
+.rt-grafik text { fill: var(--color-fg-muted); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.rt-ipucu {
+  position: absolute; pointer-events: none; background: var(--cds-surface-popover);
+  border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover);
+  padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); max-width: 16rem; z-index: 2;
+}
+.rt-ipucu .ust { color: var(--cds-text-secondary); }
+.rt-tablo-kap { overflow: auto; max-height: 30rem; }
+.rt table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-body); }
+.rt th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); font-size: var(--cds-font-size-caption);
+  padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); position: sticky; top: 0; background: var(--color-panel); }
+.rt td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+.rt td.sayi, .rt th.sayi { text-align: right; white-space: nowrap; }
+.rt tr:last-child td { border-bottom: 0; }
+.rt-hap { display: inline-block; padding: .05rem .5rem; border-radius: 999px; font-size: var(--cds-font-size-caption); white-space: nowrap;
+  border: 1px solid currentColor; }
+.rt-hap.tamam, .rt-hap.hedefte { color: var(--color-ok); }
+.rt-hap.suruyor { color: var(--rt-c1); }
+.rt-hap.bekliyor, .rt-hap.olculmedi, .rt-hap.olculdu { color: var(--color-fg-muted); }
+.rt-hap.gecikti, .rt-hap.altinda { color: var(--color-bad); }
+.rt-filtre { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); align-items: center; }
+.rt-filtre button {
+  font: inherit; font-size: var(--cds-font-size-caption); padding: .25rem .7rem; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg);
+}
+.rt-filtre button[aria-pressed="true"] { border-color: var(--rt-c1); color: var(--rt-c1); }
+.rt-filtre button:focus-visible, .rt-filtre input:focus-visible { outline: 2px solid var(--rt-c1); outline-offset: 2px; }
+.rt-filtre input { font: inherit; font-size: var(--cds-font-size-caption); padding: .3rem .6rem; border-radius: var(--cds-radius);
+  border: 1px solid var(--color-border-line); background: var(--color-bg); color: var(--color-fg); min-width: 0; flex: 1 1 10rem; max-width: 18rem; }
+.rt-bos { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+[data-dash-source-state=empty] { color: transparent; }
+[data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+@media (max-width: 40rem) { .rt .gizle-dar { display: none; } }
+</style>
+
+<div class="rt">
+  <section class="rt-bas" id="ozet">
+    <h1>Rüya Tabirnamesi · İlerleme Raporu</h1>
+    <p class="rt-ozet" id="rt-cumle">
+      <b class="dash-skeleton" data-source="ozet" data-field="tamam_gorev" data-row="0">—</b> /
+      <b class="dash-skeleton" data-source="ozet" data-field="toplam_gorev" data-row="0">—</b> görev tamam.
+      Sıradaki kilometre taşı <b class="dash-skeleton" data-source="ozet" data-field="siradaki_tas" data-row="0">—</b>,
+      hedef tarih <b class="dash-skeleton" id="rt-sira-tarih" data-source="ozet" data-field="siradaki_tarih" data-row="0">—</b>.
+    </p>
+  </section>
+
+  <div class="rt-izgara" id="kartlar">
+    <div class="rt-kart">
+      <span class="rt-etiket">Takvim görevleri</span>
+      <div class="rt-buyuk"><span class="dash-skeleton" data-source="ozet" data-field="tamam_gorev" data-row="0">—</span><span class="rt-pay"> / <span data-source="ozet" data-field="toplam_gorev" data-row="0">—</span></span></div>
+      <div class="rt-cubuk"><i id="rt-gorev-cubuk"></i></div>
+      <span class="rt-kucuk">Geciken: <span data-source="ozet" data-field="geciken_gorev" data-row="0">—</span></span>
+    </div>
+    <div class="rt-kart">
+      <span class="rt-etiket">Yazılmış işlevler</span>
+      <div class="rt-buyuk"><span class="dash-skeleton" data-source="ozet" data-field="hazir_islev" data-row="0">—</span><span class="rt-pay"> / <span data-source="ozet" data-field="toplam_islev" data-row="0">—</span></span></div>
+      <div class="rt-cubuk"><i id="rt-islev-cubuk"></i></div>
+      <span class="rt-kucuk">Gerisi arayüzü hazır iskelet; takvimdeki haftasında yazılacak</span>
+    </div>
+    <div class="rt-kart">
+      <span class="rt-etiket">Testler (son çalıştırma)</span>
+      <div class="rt-buyuk dash-skeleton" data-source="ozet" data-field="gecen_test" data-row="0">—</div>
+      <span class="rt-kucuk">geçti · <span data-source="ozet" data-field="atlanan_test" data-row="0">—</span> atlandı · <span data-source="ozet" data-field="basarisiz_test" data-row="0">—</span> başarısız</span>
+    </div>
+    <div class="rt-kart">
+      <span class="rt-etiket">Benchmark</span>
+      <div class="rt-buyuk"><span class="dash-skeleton" data-source="ozet" data-field="olculen_olcut" data-row="0">—</span><span class="rt-pay"> / <span data-source="ozet" data-field="toplam_olcut" data-row="0">—</span></span></div>
+      <span class="rt-kucuk">ölçüt ölçüldü · ilk ölçüm Hafta 5'te (v0.1-mvp)</span>
+    </div>
+  </div>
+
+  <section class="rt-bolum" id="mimari">
+    <header>
+      <h2>Mimari</h2>
+      <p class="rt-not">Veri bir kez hazırlanır; her rüya hafif bir sorgu hattından geçer. Kesikli oklar: sorgu hattı yalnızca hazırlanmış veriyi okur. Ayrıntı: docs/03 ve docs/12 · animasyonun GIF hâli: docs/gorseller/mimari.gif</p>
+    </header>
+    <div class="rt-kart rt-sema">
+      <svg viewBox="0 0 1200 430" role="img" aria-label="Çevrimdışı veri hattı ve dört adımlı sorgu boru hattı">
+        <text class="bolge" x="20" y="22" style="fill: var(--rt-cevrimdisi)">ÇEVRİMDIŞI · VERİ HAZIRLAMA (BİR KEZ)</text>
+        <g class="kutu cd"><rect x="20" y="38" width="165" height="76" rx="10"/><text class="b" x="34" y="68">data/raw</text><text class="a" x="34" y="92">Nablusi · Miller · …</text></g>
+        <g class="kutu cd"><rect x="230" y="38" width="165" height="76" rx="10"/><text class="b" x="244" y="68">ingest/</text><text class="a" x="244" y="92">kurallarla ayrıştırma</text></g>
+        <g class="kutu cd"><rect x="440" y="38" width="185" height="76" rx="10"/><text class="b" x="454" y="68">enrich/</text><text class="a" x="454" y="92">sembol · çeviri · koşul</text></g>
+        <g class="kutu cd"><rect x="670" y="38" width="185" height="76" rx="10"/><text class="b" x="684" y="68">entries.jsonl</text><text class="a" x="684" y="92">zenginleştirilmiş madde</text></g>
+        <g class="kutu cd"><rect x="900" y="38" width="280" height="76" rx="10"/><text class="b" x="914" y="68">index/</text><text class="a" x="914" y="92">sözlük tabloları · Chroma (Aşama 2)</text></g>
+        <g class="kutu git"><rect x="900" y="150" width="280" height="58" rx="10"/><text class="b" x="914" y="175">sozluk/symbols.json</text><text class="a" x="914" y="196">elle onay · git'te</text></g>
+        <path class="ok cd-ok akis" d="M185 76 H230"/><path class="ok cd-ok akis" d="M395 76 H440"/>
+        <path class="ok cd-ok akis" d="M625 76 H670"/><path class="ok cd-ok akis" d="M855 76 H900"/>
+        <path class="ok cd-ok akis" d="M1040 150 V114"/>
+        <line class="ayrac" x1="20" y1="236" x2="1180" y2="236"/>
+        <text class="bolge" x="20" y="268" style="fill: var(--rt-cevrimici)">ÇEVRİMİÇİ · SORGU (HER RÜYA)</text>
+        <g class="kutu cc adim a1"><rect x="20" y="300" width="150" height="76" rx="10"/><text class="b" x="34" y="330">Rüya metni</text><text class="a" x="34" y="354">Gradio · Colab</text></g>
+        <g class="kutu cc adim a2"><rect x="205" y="300" width="175" height="76" rx="10"/><text class="b" x="219" y="330">1 · Çıkarım</text><text class="a" x="219" y="354">Claude · JSON şema</text></g>
+        <g class="kutu cc adim a3"><rect x="415" y="300" width="175" height="76" rx="10"/><text class="b" x="429" y="330">2 · Eşleme</text><text class="a" x="429" y="354">sözlük · zeyrek · vektör</text></g>
+        <g class="kutu cc adim a4"><rect x="625" y="300" width="175" height="76" rx="10"/><text class="b" x="639" y="330">3 · Getirme</text><text class="a" x="639" y="354">symbol_id · kaynak başı N</text></g>
+        <g class="kutu cc adim a5"><rect x="835" y="300" width="175" height="76" rx="10"/><text class="b" x="849" y="330">4 · Sentez</text><text class="a" x="849" y="354">Claude · atıflar</text></g>
+        <g class="kutu cc adim a6"><rect x="1045" y="300" width="135" height="76" rx="10"/><text class="b" x="1059" y="330">Yorum</text><text class="a" x="1059" y="354">+ uyarı metni</text></g>
+        <path class="ok cc-ok akis" d="M170 338 H205"/><path class="ok cc-ok akis" d="M380 338 H415"/>
+        <path class="ok cc-ok akis" d="M590 338 H625"/><path class="ok cc-ok akis" d="M800 338 H835"/>
+        <path class="ok cc-ok akis" d="M1010 338 H1045"/>
+        <path class="ok oku" d="M930 114 L502 300"/><path class="ok oku" d="M762 114 L712 300"/>
+        <text class="a" x="20" y="418">Kod: bilgisayar (VS Code + git) · Çalıştırma: Google Colab · Veri: Google Drive · Her adımın süresi, token'ı ve maliyeti SorguKaydi'nda</text>
+      </svg>
+    </div>
+  </section>
+
+  <section class="rt-bolum" id="takvim">
+    <header>
+      <h2>12 haftalık takvim</h2>
+      <p class="rt-not">Her sütun bir hafta: açık bölüm planlanan görevler, dolu bölüm biten görevler. Elmaslar kilometre taşları; çerçeveli sütun bu hafta. Kaynak: docs/08.</p>
+    </header>
+    <div class="rt-kart">
+      <div class="rt-grafik" id="rt-hafta-grafik" data-source="haftalik kilometre_taslari"></div>
+    </div>
+    <div class="rt-kart">
+      <h3>Kilometre taşları</h3>
+      <div class="rt-tablo-kap">
+        <table id="rt-tas-tablo" data-source="kilometre_taslari" data-row-key="kod">
+          <thead><tr>
+            <th data-field="kod">Kod</th><th data-field="ad">Taş</th><th data-field="tarih">Tarih</th>
+            <th data-field="olcut" class="gizle-dar">"Bitti" ölçütü</th><th data-field="durum_etiket">Durum</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="rt-bolum" id="benchmark">
+    <header>
+      <h2>Benchmark</h2>
+      <p class="rt-not">Aynı test setiyle her aşamada ölçülen 12 ölçüt (docs/06). Durum MVP hedefine göre. Yeni ölçüm docs/olcumler.md'ye bir satır olarak girer.</p>
+    </header>
+    <div class="rt-kart">
+      <div class="rt-tablo-kap">
+        <table id="rt-bench-tablo" data-source="benchmark_son" data-row-key="olcut">
+          <thead><tr>
+            <th data-field="katman" class="gizle-dar">Katman</th><th data-field="olcut">Ölçüt</th>
+            <th data-field="hedef_mvp_metin" class="sayi">MVP hedefi</th><th data-field="hedef_a3_metin" class="sayi gizle-dar">Aşama 3 hedefi</th>
+            <th data-field="son_deger" class="sayi">Son değer</th><th data-field="son_etiket" class="gizle-dar">Ölçüm</th><th data-field="durum">Durum</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="rt-kart">
+      <h3>Ölçümlerin seyri</h3>
+      <p class="rt-not" id="rt-seyir-not">Her ölçüt için bir küçük grafik; kesikli çizgi MVP hedefi.</p>
+      <div class="rt-izgara" id="rt-seyir" data-source="olcumler hedefler"></div>
+    </div>
+  </section>
+
+  <section class="rt-bolum" id="gorevler">
+    <header>
+      <h2>Yapılanlar ve yapılacaklar</h2>
+      <p class="rt-not">Takvimdeki bütün görevler. Biten görev docs/08'de [x] ile işaretlenir.</p>
+    </header>
+    <div class="rt-kart">
+      <div class="rt-filtre" role="group" aria-label="Duruma göre süz">
+        <button type="button" id="rt-f-hepsi" data-durum="" aria-pressed="true">Hepsi</button>
+        <button type="button" id="rt-f-tamam" data-durum="tamam" aria-pressed="false">Tamam</button>
+        <button type="button" id="rt-f-suruyor" data-durum="suruyor" aria-pressed="false">Sürüyor</button>
+        <button type="button" id="rt-f-bekliyor" data-durum="bekliyor" aria-pressed="false">Bekliyor</button>
+        <button type="button" id="rt-f-gecikti" data-durum="gecikti" aria-pressed="false">Gecikti</button>
+        <input type="search" id="rt-ara" placeholder="Görevlerde ara" aria-label="Görevlerde ara">
+      </div>
+      <div class="rt-tablo-kap">
+        <table id="rt-gorev-tablo" data-source="gorevler" data-row-key="id">
+          <thead><tr>
+            <th data-field="hafta" class="sayi">Hafta</th><th data-field="asama" class="gizle-dar">Aşama</th>
+            <th data-field="gorev">Görev</th><th data-field="durum_etiket">Durum</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="rt-bolum" id="kod">
+    <header>
+      <h2>Kod sağlığı</h2>
+      <p class="rt-not">Her güncellemede bir satır birikir: testler, yazılmış ve iskelet işlevler. Kaynak: pytest ve src/ruya.</p>
+    </header>
+    <div class="rt-izgara-2">
+      <div class="rt-kart">
+        <h3>Testler</h3>
+        <p class="rt-not">Geçen testlerin sayısı, güncelleme tarihine göre</p>
+        <div class="rt-grafik" id="rt-test-grafik" data-source="kod_sagligi"></div>
+      </div>
+      <div class="rt-kart">
+        <h3>Yazılacak işlevler</h3>
+        <p class="rt-not">İskelet işlevlerin yazılacağı hafta</p>
+        <div class="rt-grafik" id="rt-islev-grafik" data-source="islev_haftalik"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const kok = document.querySelector('#dash-root .rt');
+  dash.colors.forEach((c, i) => kok.style.setProperty(`--rt-c${i + 1}`, c));
+
+  dash.calc('ozet', {
+    title: 'Genel durum',
+    description: 'Tamamlanan görevler, yazılmış işlevler, son test sonucu, ölçülen ölçütler ve sıradaki kilometre taşı.',
+    inputs: ['gorevler', 'islevler', 'kod_sagligi', 'kilometre_taslari', 'hedefler', 'olcumler'],
+    fn: (gorevler, islevler, kod_sagligi, kilometre_taslari, hedefler, olcumler) => {
+      const son = kod_sagligi[kod_sagligi.length - 1] || {};
+      const sirada = kilometre_taslari.find((k) => k.durum !== 'tamam') || {};
+      return [{
+        tamam_gorev: gorevler.filter((g) => g.durum === 'tamam').length,
+        toplam_gorev: gorevler.length,
+        geciken_gorev: gorevler.filter((g) => g.durum === 'gecikti').length,
+        hazir_islev: islevler.filter((i) => i.durum === 'hazir').length,
+        toplam_islev: islevler.length,
+        gecen_test: son.gecen_test ?? null,
+        atlanan_test: son.atlanan_test ?? null,
+        basarisiz_test: son.basarisiz_test ?? null,
+        olculen_olcut: new Set(olcumler.map((o) => o.olcut)).size,
+        toplam_olcut: hedefler.length,
+        siradaki_tas: sirada.ad ?? null,
+        siradaki_tarih: sirada.tarih ?? null,
+      }];
+    },
+  });
+
+  dash.calc('haftalik', {
+    title: 'Haftalık görevler',
+    description: 'Her hafta için planlanan ve biten görev sayısı.',
+    inputs: ['gorevler'],
+    fn: (gorevler) => {
+      const haftalar = new Map();
+      for (const g of gorevler) {
+        const h = haftalar.get(g.hafta) || { hafta: g.hafta, asama: g.asama, baslik: g.baslik, baslangic: g.baslangic, bitis: g.bitis, tamam: 0, toplam: 0 };
+        h.toplam += 1;
+        if (g.durum === 'tamam') h.tamam += 1;
+        haftalar.set(g.hafta, h);
+      }
+      return [...haftalar.values()].sort((a, b) => a.hafta - b.hafta);
+    },
+  });
+
+  dash.calc('benchmark_son', {
+    title: 'Ölçütlerin son değeri',
+    description: 'Her ölçütün en son ölçümü ve MVP hedefine göre durumu.',
+    inputs: ['hedefler', 'olcumler'],
+    fn: (hedefler, olcumler) => hedefler.map((h) => {
+      const liste = olcumler.filter((o) => o.olcut === h.olcut).sort((a, b) => (a.tarih < b.tarih ? -1 : 1));
+      const son = liste[liste.length - 1];
+      let durum = 'Ölçülmedi';
+      if (son && h.hedef_mvp == null) durum = 'Ölçüldü';
+      else if (son) durum = (h.yon === 'yuksek' ? son.deger >= h.hedef_mvp : son.deger <= h.hedef_mvp) ? 'Hedefte' : 'Hedefin altında';
+      return {
+        olcut: h.olcut, katman: h.katman, sira: h.sira, oran: h.oran,
+        hedef_mvp_metin: h.hedef_mvp_metin, hedef_a3_metin: h.hedef_a3_metin,
+        son_deger: son ? son.deger : null, son_etiket: son ? son.etiket : null, durum,
+      };
+    }),
+  });
+
+  dash.calc('islev_haftalik', {
+    title: 'Haftalara göre iskelet işlevler',
+    description: 'Gövdesi henüz yazılmamış işlevlerin, yazılacakları haftaya göre sayısı.',
+    inputs: ['islevler'],
+    fn: (islevler) => {
+      const sayac = new Map();
+      for (const i of islevler) if (i.durum === 'iskelet' && i.hafta != null) sayac.set(i.hafta, (sayac.get(i.hafta) || 0) + 1);
+      return [...sayac].map(([hafta, iskelet]) => ({ hafta, iskelet })).sort((a, b) => a.hafta - b.hafta);
+    },
+  });
+
+  const tarihBicim = new Intl.DateTimeFormat('tr', { day: 'numeric', month: 'short', year: 'numeric' });
+  const kisaTarih = new Intl.DateTimeFormat('tr', { day: 'numeric', month: 'short' });
+  const tarihYaz = (s) => (s ? tarihBicim.format(new Date(s + 'T00:00:00')) : '—');
+  const durumSinifi = { 'Tamam': 'tamam', 'Sürüyor': 'suruyor', 'Bekliyor': 'bekliyor', 'Gecikti': 'gecikti',
+    'Hedefte': 'hedefte', 'Hedefin altında': 'altinda', 'Ölçülmedi': 'olculmedi', 'Ölçüldü': 'olculdu' };
+  const hap = (td, metin) => { const s = document.createElement('span'); s.className = 'rt-hap ' + (durumSinifi[metin] || ''); s.textContent = metin; td.appendChild(s); };
+  const bugun = new Date();
+  const bugunISO = bugun.toISOString().slice(0, 10);
+
+  function ipucuKur(kap) {
+    let ip = kap.querySelector('.rt-ipucu');
+    if (!ip) { ip = document.createElement('div'); ip.className = 'rt-ipucu'; ip.hidden = true; kap.appendChild(ip); }
+    return {
+      goster(olay, ust, satirlar) {
+        ip.replaceChildren();
+        const u = document.createElement('div'); u.className = 'ust'; u.textContent = ust; ip.appendChild(u);
+        for (const s of satirlar) { const d = document.createElement('div'); d.textContent = s; ip.appendChild(d); }
+        ip.hidden = false;
+        const kutu = kap.getBoundingClientRect();
+        let x = olay.clientX - kutu.left + 12, y = olay.clientY - kutu.top + 12;
+        x = Math.min(x, kutu.width - ip.offsetWidth - 4); y = Math.min(y, kutu.height - ip.offsetHeight - 4);
+        ip.style.left = Math.max(0, x) + 'px'; ip.style.top = Math.max(0, y) + 'px';
+      },
+      gizle() { ip.hidden = true; },
+    };
+  }
+
+  function bosYaz(kap, metin) {
+    kap.querySelectorAll('svg').forEach((s) => s.remove());
+    let p = kap.querySelector('.rt-bos');
+    if (!p) { p = document.createElement('p'); p.className = 'rt-bos'; kap.appendChild(p); }
+    p.textContent = metin;
+  }
+
+  function cizHaftalar() {
+    const kap = document.getElementById('rt-hafta-grafik');
+    const h = dash.data('haftalik'), k = dash.data('kilometre_taslari');
+    if (h.status !== 'ok' || k.status !== 'ok') { kap.querySelectorAll('svg').forEach((s) => s.remove()); kap.classList.toggle('dash-skeleton', h.status === 'loading' || k.status === 'loading'); if (h.status === 'error' || k.status === 'error') bosYaz(kap, 'Yüklenemedi'); return; }
+    kap.classList.remove('dash-skeleton');
+    kap.querySelector('.rt-bos')?.remove();
+    const veri = h.data, taslar = k.data;
+    const gen = Math.max(kap.clientWidth, 280), yuk = 240, m = { u: 34, s: 8, a: 40, l: 28 };
+    const x = d3.scaleBand(veri.map((d) => d.hafta), [m.l, gen - m.s]).padding(0.28);
+    const enCok = d3.max(veri, (d) => d.toplam) || 1;
+    const y = d3.scaleLinear([0, enCok], [yuk - m.a, m.u]);
+    d3.select(kap).selectAll('svg').remove();
+    const svg = d3.select(kap).append('svg').attr('viewBox', `0 0 ${gen} ${yuk}`).attr('width', '100%');
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line')
+      .attr('x1', m.l).attr('x2', gen - m.s).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(y.ticks(4)).join('text')
+      .attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => t);
+    const ip = ipucuKur(kap);
+    const g = svg.append('g').selectAll('g').data(veri).join('g');
+    g.append('rect').attr('x', (d) => x(d.hafta)).attr('width', x.bandwidth()).attr('y', (d) => y(d.toplam))
+      .attr('height', (d) => y(0) - y(d.toplam)).attr('rx', 4).attr('fill', 'var(--cds-chart-muted)').attr('opacity', 0.35)
+      .attr('stroke', (d) => (d.baslangic <= bugunISO && bugunISO <= d.bitis ? 'var(--color-fg)' : 'none')).attr('stroke-width', 1.5);
+    g.append('rect').attr('x', (d) => x(d.hafta)).attr('width', x.bandwidth()).attr('y', (d) => y(d.tamam))
+      .attr('height', (d) => y(0) - y(d.tamam)).attr('rx', 4).attr('fill', dash.colors[0]);
+    g.append('text').attr('x', (d) => x(d.hafta) + x.bandwidth() / 2).attr('y', yuk - m.a + 16).attr('text-anchor', 'middle').text((d) => 'H' + d.hafta);
+    g.append('rect').attr('x', (d) => x(d.hafta)).attr('width', x.bandwidth()).attr('y', m.u).attr('height', yuk - m.a - m.u)
+      .attr('fill', 'transparent')
+      .on('mousemove', (olay, d) => ip.goster(olay, `Hafta ${d.hafta} · ${kisaTarih.format(new Date(d.baslangic + 'T00:00:00'))} – ${kisaTarih.format(new Date(d.bitis + 'T00:00:00'))}`, [`${d.asama}: ${d.baslik}`, `${d.tamam} / ${d.toplam} görev tamam`]))
+      .on('mouseleave', () => ip.gizle());
+    const haftaBul = (tarih) => veri.find((d) => d.baslangic <= tarih && tarih <= d.bitis);
+    const tg = svg.append('g').selectAll('g').data(taslar.filter((t) => haftaBul(t.tarih))).join('g')
+      .attr('transform', (t) => `translate(${x(haftaBul(t.tarih).hafta) + x.bandwidth() / 2},${m.u - 18})`);
+    tg.append('path').attr('d', d3.symbol(d3.symbolDiamond, 52)()).attr('fill', (t) => (t.durum === 'tamam' ? 'var(--color-ok)' : dash.colors[1]));
+    tg.append('text').attr('y', -9).attr('text-anchor', 'middle').text((t) => t.kod);
+    svg.append('text').attr('x', m.l).attr('y', yuk - 6).text('Hafta · çubuk yüksekliği görev sayısı');
+  }
+
+  function doldurTaslar() {
+    const v = dash.data('kilometre_taslari');
+    const govde = document.querySelector('#rt-tas-tablo tbody');
+    govde.replaceChildren();
+    if (v.status !== 'ok') return;
+    for (const t of v.data) {
+      const tr = document.createElement('tr');
+      tr.dataset.key = t.kod;
+      for (const [alan, sinif] of [['kod', ''], ['ad', ''], ['tarih', ''], ['olcut', 'gizle-dar']]) {
+        const td = document.createElement('td'); if (sinif) td.className = sinif;
+        td.textContent = alan === 'tarih' ? tarihYaz(t.tarih) : t[alan]; tr.appendChild(td);
+      }
+      const td = document.createElement('td'); hap(td, t.durum_etiket); tr.appendChild(td);
+      govde.appendChild(tr);
+    }
+  }
+
+  function doldurBenchmark() {
+    const v = dash.data('benchmark_son');
+    const govde = document.querySelector('#rt-bench-tablo tbody');
+    govde.replaceChildren();
+    if (v.status !== 'ok') return;
+    for (const b of [...v.data].sort((a, c) => a.sira - c.sira)) {
+      const tr = document.createElement('tr');
+      tr.dataset.key = b.olcut;
+      const hucre = (metin, sinif) => { const td = document.createElement('td'); if (sinif) td.className = sinif; td.textContent = metin; tr.appendChild(td); return td; };
+      hucre(b.katman, 'gizle-dar'); hucre(b.olcut); hucre(b.hedef_mvp_metin, 'sayi'); hucre(b.hedef_a3_metin, 'sayi gizle-dar');
+      hucre(b.son_deger == null ? '—' : (b.oran ? d3.format('.0%')(b.son_deger) : d3.format(',.2~f')(b.son_deger)), 'sayi');
+      hucre(b.son_etiket ?? '—', 'gizle-dar');
+      hap(hucre('', ''), b.durum);
+      govde.appendChild(tr);
+    }
+  }
+
+  function cizSeyir() {
+    const kap = document.getElementById('rt-seyir');
+    const o = dash.data('olcumler'), h = dash.data('hedefler');
+    kap.replaceChildren();
+    const not = document.getElementById('rt-seyir-not');
+    if (o.status !== 'ok' || h.status !== 'ok') return;
+    if (!o.data.length) { not.textContent = 'Henüz ölçüm yok. İlk ölçüm Hafta 5 sonunda, v0.1-mvp etiketiyle yapılacak; o zaman her ölçüt için burada bir grafik belirir.'; return; }
+    not.textContent = 'Her ölçüt için bir küçük grafik; kesikli çizgi MVP hedefi.';
+    for (const hd of h.data) {
+      const satirlar = o.data.filter((r) => r.olcut === hd.olcut).sort((a, b) => (a.tarih < b.tarih ? -1 : 1));
+      if (!satirlar.length) continue;
+      const kutu = document.createElement('div'); kutu.className = 'rt-grafik'; kutu.style.minHeight = '8rem'; kap.appendChild(kutu);
+      const baslik = document.createElement('div'); baslik.className = 'rt-etiket'; baslik.textContent = hd.olcut; kutu.appendChild(baslik);
+      const gen = Math.max(kutu.clientWidth, 200), yuk = 110, m = { u: 10, s: 10, a: 18, l: 36 };
+      const bicim = hd.oran ? d3.format('.0%') : d3.format(',.2~f');
+      const degerler = satirlar.map((r) => r.deger).concat(hd.hedef_mvp == null ? [] : [hd.hedef_mvp]);
+      const y = d3.scaleLinear(d3.extent(degerler).map((d, i) => (i ? d * 1.05 : Math.min(0, d))), [yuk - m.a, m.u]).nice();
+      const x = d3.scalePoint(satirlar.map((r) => r.etiket), [m.l, gen - m.s]).padding(0.4);
+      const svg = d3.select(kutu).append('svg').attr('viewBox', `0 0 ${gen} ${yuk}`).attr('width', '100%');
+      svg.append('g').selectAll('text').data(y.ticks(3)).join('text').attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text(bicim);
+      if (hd.hedef_mvp != null) svg.append('line').attr('x1', m.l).attr('x2', gen - m.s).attr('y1', y(hd.hedef_mvp)).attr('y2', y(hd.hedef_mvp)).attr('stroke', 'var(--cds-chart-reference)').attr('stroke-dasharray', '4 3');
+      svg.append('path').datum(satirlar).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+        .attr('d', d3.line((r) => x(r.etiket), (r) => y(r.deger)));
+      svg.append('g').selectAll('circle').data(satirlar).join('circle').attr('cx', (r) => x(r.etiket)).attr('cy', (r) => y(r.deger)).attr('r', 3).attr('fill', dash.colors[0]);
+    }
+  }
+
+  let secilenDurum = '';
+  function doldurGorevler() {
+    const v = dash.data('gorevler');
+    const govde = document.querySelector('#rt-gorev-tablo tbody');
+    govde.replaceChildren();
+    if (v.status !== 'ok') return;
+    const aranan = document.getElementById('rt-ara').value.trim().toLocaleLowerCase('tr');
+    for (const g of v.data) {
+      if (secilenDurum && g.durum !== secilenDurum) continue;
+      if (aranan && !g.gorev.toLocaleLowerCase('tr').includes(aranan)) continue;
+      const tr = document.createElement('tr');
+      tr.dataset.key = g.id;
+      const td1 = document.createElement('td'); td1.className = 'sayi'; td1.textContent = g.hafta; tr.appendChild(td1);
+      const td2 = document.createElement('td'); td2.className = 'gizle-dar'; td2.textContent = g.asama; tr.appendChild(td2);
+      const td3 = document.createElement('td'); td3.textContent = g.gorev; tr.appendChild(td3);
+      const td4 = document.createElement('td'); hap(td4, g.durum_etiket); tr.appendChild(td4);
+      govde.appendChild(tr);
+    }
+  }
+  document.querySelectorAll('.rt-filtre button').forEach((b) => b.addEventListener('click', () => {
+    secilenDurum = b.dataset.durum;
+    document.querySelectorAll('.rt-filtre button').forEach((d) => d.setAttribute('aria-pressed', String(d === b)));
+    doldurGorevler();
+  }));
+  document.getElementById('rt-ara').addEventListener('input', doldurGorevler);
+
+  function cizTestler() {
+    const kap = document.getElementById('rt-test-grafik');
+    const v = dash.data('kod_sagligi');
+    if (v.status !== 'ok') { kap.querySelectorAll('svg').forEach((s) => s.remove()); kap.classList.toggle('dash-skeleton', v.status === 'loading'); if (v.status === 'error') bosYaz(kap, 'Yüklenemedi'); return; }
+    kap.classList.remove('dash-skeleton');
+    const veri = v.data.map((d) => ({ ...d, t: new Date(d.tarih + 'T00:00:00') }));
+    const gen = Math.max(kap.clientWidth, 240), yuk = 200, m = { u: 16, s: 40, a: 26, l: 40 };
+    const ilk = veri[0].t, son = veri[veri.length - 1].t;
+    const x = d3.scaleUtc(ilk.getTime() === son.getTime() ? [d3.utcDay.offset(ilk, -3), d3.utcDay.offset(son, 3)] : [ilk, son], [m.l, gen - m.s]);
+    const y = d3.scaleLinear([0, (d3.max(veri, (d) => d.gecen_test) || 1) * 1.15], [yuk - m.a, m.u]).nice();
+    d3.select(kap).selectAll('svg').remove();
+    const svg = d3.select(kap).append('svg').attr('viewBox', `0 0 ${gen} ${yuk}`).attr('width', '100%');
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', gen - m.s).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(y.ticks(4)).join('text').attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text(d3.format(','));
+    svg.append('g').selectAll('text').data(x.ticks(Math.min(4, veri.length + 1))).join('text').attr('x', (t) => x(t)).attr('y', yuk - 6).attr('text-anchor', 'middle').text((t) => kisaTarih.format(t));
+    svg.append('path').datum(veri).attr('fill', 'none').attr('stroke', dash.colors[0]).attr('stroke-width', 2).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+      .attr('d', d3.line((d) => x(d.t), (d) => y(d.gecen_test)));
+    svg.append('g').selectAll('circle').data(veri).join('circle').attr('cx', (d) => x(d.t)).attr('cy', (d) => y(d.gecen_test)).attr('r', 3.5).attr('fill', dash.colors[0]);
+    const s = veri[veri.length - 1];
+    svg.append('text').attr('x', x(s.t) + 6).attr('y', y(s.gecen_test)).attr('dy', '0.32em').style('fill', 'var(--color-fg)').text(d3.format(',')(s.gecen_test));
+    const ip = ipucuKur(kap);
+    svg.append('g').selectAll('circle').data(veri).join('circle').attr('cx', (d) => x(d.t)).attr('cy', (d) => y(d.gecen_test)).attr('r', 12).attr('fill', 'transparent')
+      .on('mousemove', (olay, d) => ip.goster(olay, tarihYaz(d.tarih), [`${d.gecen_test} geçti · ${d.atlanan_test} atlandı · ${d.basarisiz_test} başarısız`, `${d.hazir_islev} yazılmış · ${d.iskelet_islev} iskelet işlev`, `${d.commit_sayisi} commit`]))
+      .on('mouseleave', () => ip.gizle());
+  }
+
+  function cizIslevler() {
+    const kap = document.getElementById('rt-islev-grafik');
+    const v = dash.data('islev_haftalik');
+    if (v.status !== 'ok') { kap.querySelectorAll('svg').forEach((s) => s.remove()); kap.classList.toggle('dash-skeleton', v.status === 'loading'); return; }
+    kap.classList.remove('dash-skeleton');
+    if (!v.data.length) { bosYaz(kap, 'Bütün işlevler yazıldı.'); return; }
+    kap.querySelector('.rt-bos')?.remove();
+    const gen = Math.max(kap.clientWidth, 240), yuk = 200, m = { u: 18, s: 8, a: 26, l: 28 };
+    const x = d3.scaleBand(v.data.map((d) => d.hafta), [m.l, gen - m.s]).padding(0.3);
+    const y = d3.scaleLinear([0, d3.max(v.data, (d) => d.iskelet)], [yuk - m.a, m.u]).nice();
+    d3.select(kap).selectAll('svg').remove();
+    const svg = d3.select(kap).append('svg').attr('viewBox', `0 0 ${gen} ${yuk}`).attr('width', '100%');
+    svg.append('g').selectAll('line').data(y.ticks(4)).join('line').attr('x1', m.l).attr('x2', gen - m.s).attr('y1', (t) => y(t)).attr('y2', (t) => y(t)).attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').selectAll('text').data(y.ticks(4)).join('text').attr('x', m.l - 6).attr('y', (t) => y(t)).attr('dy', '0.32em').attr('text-anchor', 'end').text((t) => t);
+    svg.append('g').selectAll('rect').data(v.data).join('rect').attr('x', (d) => x(d.hafta)).attr('width', Math.min(x.bandwidth(), 32))
+      .attr('y', (d) => y(d.iskelet)).attr('height', (d) => y(0) - y(d.iskelet)).attr('rx', 4).attr('fill', dash.colors[2]);
+    svg.append('g').selectAll('text').data(v.data).join('text').attr('x', (d) => x(d.hafta) + Math.min(x.bandwidth(), 32) / 2).attr('y', (d) => y(d.iskelet) - 4).attr('text-anchor', 'middle').style('fill', 'var(--color-fg)').text((d) => d.iskelet);
+    svg.append('g').selectAll('text').data(v.data).join('text').attr('x', (d) => x(d.hafta) + Math.min(x.bandwidth(), 32) / 2).attr('y', yuk - 8).attr('text-anchor', 'middle').text((d) => 'H' + d.hafta);
+  }
+
+  dash.onData(() => {
+    const oz = dash.data('ozet');
+    document.querySelectorAll('[data-source="ozet"]').forEach((el) => {
+      if (oz.status === 'ok') {
+        const deger = oz.data[0][el.dataset.field];
+        el.textContent = deger == null ? '—' : (el.dataset.field === 'siradaki_tarih' ? tarihYaz(deger) : String(deger));
+        el.classList.remove('dash-skeleton');
+      } else {
+        el.textContent = '—';
+        if (oz.status !== 'loading') el.classList.remove('dash-skeleton');
+      }
+    });
+    if (oz.status === 'ok') {
+      const r = oz.data[0];
+      document.getElementById('rt-gorev-cubuk').style.width = (r.toplam_gorev ? (100 * r.tamam_gorev) / r.toplam_gorev : 0) + '%';
+      document.getElementById('rt-islev-cubuk').style.width = (r.toplam_islev ? (100 * r.hazir_islev) / r.toplam_islev : 0) + '%';
+    }
+    cizHaftalar();
+    doldurTaslar();
+    doldurBenchmark();
+    cizSeyir();
+    doldurGorevler();
+    cizTestler();
+    cizIslevler();
+  });
+})();
+</script>

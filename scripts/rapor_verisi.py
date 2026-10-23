@@ -30,6 +30,7 @@ OLCUMLER = KOK / "docs" / "olcumler.md"
 PAKET = KOK / "src" / "ruya"
 
 HAFTA_0 = (dt.date(2026, 10, 21), dt.date(2026, 10, 25))
+ETIKETLER = {"tamam": "Tamam", "suruyor": "Sürüyor", "bekliyor": "Bekliyor", "gecikti": "Gecikti"}
 HAFTA_1_BASI = dt.date(2026, 10, 26)
 AYLAR = {
     "Ocak": 1, "Şubat": 2, "Mart": 3, "Nisan": 4, "Mayıs": 5, "Haziran": 6,
@@ -103,6 +104,7 @@ def gorevler(bugun: dt.date) -> list[dict]:
                 "baslik": baslik,
                 "gorev": sade(m.group(2)),
                 "durum": durum,
+                "durum_etiket": ETIKETLER[durum],
             }
         )
     return satirlar
@@ -122,6 +124,7 @@ def kilometre_taslari() -> list[dict]:
                 "tarih": dt.date(int(yil), AYLAR[ay], int(gun)).isoformat(),
                 "olcut": sade(olcut),
                 "durum": "tamam" if "✅" in tas else "bekliyor",
+                "durum_etiket": "Tamam" if "✅" in tas else "Bekliyor",
             }
         )
     return satirlar
