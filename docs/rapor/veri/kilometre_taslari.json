@@ -1,0 +1,44 @@
+[
+ {
+  "kod": "K0",
+  "ad": "K0 · Deneme tamam",
+  "tarih": "2026-11-01",
+  "olcut": "docs/deneyler/01-veri-ve-ceviri.md yazılmış. Nablusi'nin ayrıştırılabilirliği ve çeviri kalitesi hakkında net bir karar alınmış.",
+  "durum": "bekliyor"
+ },
+ {
+  "kod": "K1",
+  "ad": "K1 · Veri hazır",
+  "tarih": "2026-11-15",
+  "olcut": "entries.jsonl dosyasında Nablusi ve Miller var. 50 sembollük symbols.json gözden geçirilmiş. 20 rüyalık test seti yazılmış.",
+  "durum": "bekliyor"
+ },
+ {
+  "kod": "K2",
+  "ad": "K2 · v0.1-mvp",
+  "tarih": "2026-11-29",
+  "olcut": "Uçtan uca çalışıyor. İlk ölçüm raporu var. 01-gereksinimler.md'deki MVP kabul ölçütleri sağlanmış.",
+  "durum": "bekliyor"
+ },
+ {
+  "kod": "K3",
+  "ad": "K3 · v0.2",
+  "tarih": "2026-12-13",
+  "olcut": "Vektör yedeği ve reranker çalışıyor. D1–D3 deneyleri raporlanmış.",
+  "durum": "bekliyor"
+ },
+ {
+  "kod": "K4",
+  "ad": "K4 · v0.3",
+  "tarih": "2027-01-10",
+  "olcut": "Koşullu yorum, rüya türü ve uzlaşı/ayrışma çıktısı tamam. 40–50 rüyalık test setinde ölçülmüş.",
+  "durum": "bekliyor"
+ },
+ {
+  "kod": "K5",
+  "ad": "K5 · v1.0",
+  "tarih": "2027-01-17",
+  "olcut": "Model karşılaştırması bitti, README ve demo hazır. Proje tamam.",
+  "durum": "bekliyor"
+ }
+]

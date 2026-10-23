@@ -1,0 +1,612 @@
+[
+ {
+  "id": "h00-01",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Proje fikri ve araştırma",
+  "durum": "tamam"
+ },
+ {
+  "id": "h00-02",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Proje belgeleri (00–11)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h00-03",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Mimari iskelet (23 Ekim): src/ruya/ paketi, veri sözleşmeleri, modül arayüzleri, mimari testleri; eksik belgeler (12, KAYNAKLAR, terimler, şablonlar)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h00-04",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Belgeleri oku, açık soruları cevapla (09)",
+  "durum": "suruyor"
+ },
+ {
+  "id": "h00-05",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Hesaplar: Claude Developer Platform, API anahtarı, harcama limiti; GitHub özel repo (10-kurulum-rehberi.md)",
+  "durum": "suruyor"
+ },
+ {
+  "id": "h00-06",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "Google Drive'da ruya-tabirnamesi klasörü; Colab Secrets'a ANTHROPIC_API_KEY (ve repo özelse GITHUB_TOKEN)",
+  "durum": "suruyor"
+ },
+ {
+  "id": "h00-07",
+  "hafta": 0,
+  "baslangic": "2026-10-21",
+  "bitis": "2026-10-25",
+  "asama": "Hazırlık",
+  "baslik": "Belgeler ve kurulum",
+  "gorev": "İlk push: Colab'in repoyu çekebilmesi için",
+  "durum": "suruyor"
+ },
+ {
+  "id": "h01-01",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "notebooks/_kurulum.py: Drive bağlama, Secrets, git pull, pip install (ilk hücrenin metni: notebooks/README.md)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h01-02",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "00_ortam_kontrolu.ipynb ile Colab'in Python sürümünü, GPU erişimini, Drive ve Secrets'ı kontrol et",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-03",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "scripts/download_sources.py (hazır) ile Nablusi ve Miller'ı Drive'a indir; SHA256 değerleri data/raw/KAYNAK_OZETLERI.json'a yazılır.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-04",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "Deneme betiği: Nablusi'nin \"ح\" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-05",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "10 Nablusi ve 10 Miller maddesini Claude ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-06",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "10 alt paragrafı \"hangi sembole ait?\" sorusuyla LLM'e sınıflandırt ve doğruluğu say.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-07",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "Gerçek token sayılarını count_tokens ile ölç ve tüm korpusun çeviri maliyetini yeniden hesapla.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h01-08",
+  "hafta": 1,
+  "baslangic": "2026-10-26",
+  "bitis": "2026-11-01",
+  "asama": "Hazırlık",
+  "baslik": "Deneme (atılabilir kod)",
+  "gorev": "Çıktı: docs/deneyler/01-veri-ve-ceviri.md. Hipotez, sonuç ve karar.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h02-01",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "Repo iskeleti: pyproject.toml, src/ruya/, tests/, ruff ve pytest ayarları, nbstripout git filtresi (23 Ekim)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h02-02",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "config.py: Colab ya da bilgisayar algılama, Drive yolları (23 Ekim)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h02-03",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "notebooks/01_kaynaklari_indir.ipynb ve 02_ayristir.ipynb",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h02-04",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "schemas.py: Madde, SymbolKaydi ve boru hattı veri sınıfları (23 Ekim)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h02-05",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "ingest/miller.py ve birim testleri (~2.256 madde)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h02-06",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "ingest/nablusi.py: başlıklı maddeler, alt paragraflar, sayfa bilgisi, ~~, ms ve PageV temizliği, birim testleri",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h02-07",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "text/turkce.py: Türkçe küçük harf ve normalleştirme, testleri",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h02-08",
+  "hafta": 2,
+  "baslangic": "2026-11-02",
+  "bitis": "2026-11-08",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Ayrıştırıcılar",
+  "gorev": "Kontrat testi: bütün kayıtlarda lisans dolu ve entry_id benzersiz (tests/test_kontrat_veri.py, veri gelince Colab'de -m veri)",
+  "durum": "tamam"
+ },
+ {
+  "id": "h03-01",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. sozluk/symbols.json dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h03-02",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "enrich/assign_symbols.py: alt paragraflara sembol atama (yalnızca 50 sembolün babları)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h03-03",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "enrich/translate.py ve prompts/ceviri_v1.md ile 50 sembolün maddelerini Batch API'den çevir. Bu işler 03_zenginlestir.ipynb üzerinden yapılır; Batch iş kimlikleri Drive'a yazılır.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h03-04",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "docs/terimler.md: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h03-05",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "docs/kurallar.md (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h03-06",
+  "hafta": 3,
+  "baslangic": "2026-11-09",
+  "bitis": "2026-11-15",
+  "asama": "Aşama 0",
+  "baslik": "Aşama 0: Zenginleştirme ve indeks",
+  "gorev": "eval/dataset/ruyalar_v1.jsonl: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h04-01",
+  "hafta": 4,
+  "baslangic": "2026-11-16",
+  "bitis": "2026-11-22",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Boru hattı (adım 1–3)",
+  "gorev": "llm/client.py: disk önbelleği, maliyet hesabı, hata yönetimi, stop_reason kontrolü",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h04-02",
+  "hafta": 4,
+  "baslangic": "2026-11-16",
+  "bitis": "2026-11-22",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Boru hattı (adım 1–3)",
+  "gorev": "pipeline/extract.py ve prompts/cikarim_v1.md: JSON şemalı sembol çıkarımı",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h04-03",
+  "hafta": 4,
+  "baslangic": "2026-11-16",
+  "bitis": "2026-11-22",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Boru hattı (adım 1–3)",
+  "gorev": "pipeline/map.py: birebir eşleme, zeyrek ile kök eşleme ve testleri",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h04-04",
+  "hafta": 4,
+  "baslangic": "2026-11-16",
+  "bitis": "2026-11-22",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Boru hattı (adım 1–3)",
+  "gorev": "pipeline/retrieve.py: symbol_id ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h04-05",
+  "hafta": 4,
+  "baslangic": "2026-11-16",
+  "bitis": "2026-11-22",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Boru hattı (adım 1–3)",
+  "gorev": "Test setindeki beklenen_maddeler alanlarını doldur",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h05-01",
+  "hafta": 5,
+  "baslangic": "2026-11-23",
+  "bitis": "2026-11-29",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
+  "gorev": "pipeline/synthesize.py ve prompts/sentez_v1.md: search_result ve atıflar",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h05-02",
+  "hafta": 5,
+  "baslangic": "2026-11-23",
+  "bitis": "2026-11-29",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
+  "gorev": "pipeline/run.py ve SorguKaydi",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h05-03",
+  "hafta": 5,
+  "baslangic": "2026-11-23",
+  "bitis": "2026-11-29",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
+  "gorev": "app/gradio_app.py ve 05_arayuz.ipynb: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (share kapalı)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h05-04",
+  "hafta": 5,
+  "baslangic": "2026-11-23",
+  "bitis": "2026-11-29",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
+  "gorev": "eval/run_eval.py, 06_degerlendirme.ipynb, ilk ölçüm raporu (Drive) ve docs/olcumler.md",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h05-05",
+  "hafta": 5,
+  "baslangic": "2026-11-23",
+  "bitis": "2026-11-29",
+  "asama": "Aşama 1",
+  "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
+  "gorev": "MVP kabul ölçütlerinin kontrolü, ardından v0.1-mvp etiketi",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h06-01",
+  "hafta": 6,
+  "baslangic": "2026-11-30",
+  "bitis": "2026-12-06",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Tüm korpus ve vektör yedeği",
+  "gorev": "Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (Batch API, bütçe kontrolüyle)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h06-02",
+  "hafta": 6,
+  "baslangic": "2026-11-30",
+  "bitis": "2026-12-06",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Tüm korpus ve vektör yedeği",
+  "gorev": "symbols.json dosyasını ~150 sembole genişlet",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h06-03",
+  "hafta": 6,
+  "baslangic": "2026-11-30",
+  "bitis": "2026-12-06",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Tüm korpus ve vektör yedeği",
+  "gorev": "index/build_vectors.py ve 04_indeks.ipynb: Chroma ve multilingual-e5-large, Colab GPU'sunda; indeks Drive'a zip olarak yedeklenir",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h06-04",
+  "hafta": 6,
+  "baslangic": "2026-11-30",
+  "bitis": "2026-12-06",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Tüm korpus ve vektör yedeği",
+  "gorev": "Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h07-01",
+  "hafta": 7,
+  "baslangic": "2026-12-07",
+  "bitis": "2026-12-13",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Reranker, Freud, deneyler",
+  "gorev": "ingest/freud.py: paragraf bazlı, \"yöntem\" katmanı",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h07-02",
+  "hafta": 7,
+  "baslangic": "2026-12-07",
+  "bitis": "2026-12-13",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Reranker, Freud, deneyler",
+  "gorev": "bge-reranker-v2-m3 entegrasyonu",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h07-03",
+  "hafta": 7,
+  "baslangic": "2026-12-07",
+  "bitis": "2026-12-13",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Reranker, Freud, deneyler",
+  "gorev": "Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve docs/deneyler/ notları",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h07-04",
+  "hafta": 7,
+  "baslangic": "2026-12-07",
+  "bitis": "2026-12-13",
+  "asama": "Aşama 2",
+  "baslik": "Aşama 2: Reranker, Freud, deneyler",
+  "gorev": "Gelenek seçimi arayüzü (İG-03), ardından v0.2 etiketi",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h08-01",
+  "hafta": 8,
+  "baslangic": "2026-12-14",
+  "bitis": "2026-12-20",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: İbn Sirin ve koşullar",
+  "gorev": "ingest/ibn_sirin.py ve \"nispeti sahih değil\" atıf notu",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h08-02",
+  "hafta": 8,
+  "baslangic": "2026-12-14",
+  "bitis": "2026-12-20",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: İbn Sirin ve koşullar",
+  "gorev": "enrich/conditions.py: koşul ayrıştırma (kosullar, yontem, kapsam). 20 maddeyi elle kontrol et.",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h08-03",
+  "hafta": 8,
+  "baslangic": "2026-12-14",
+  "bitis": "2026-12-20",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: İbn Sirin ve koşullar",
+  "gorev": "Bab ve HVDC kategorilerini symbols.json dosyasına ekle",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h09-01",
+  "hafta": 9,
+  "baslangic": "2026-12-21",
+  "bitis": "2026-12-27",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: Bağlam ve rüya türü",
+  "gorev": "Arayüze bağlam formu (İG-02)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h09-02",
+  "hafta": 9,
+  "baslangic": "2026-12-21",
+  "bitis": "2026-12-27",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: Bağlam ve rüya türü",
+  "gorev": "Getirmede bağlam koşulu eşleşmesi (İG-23)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h09-03",
+  "hafta": 9,
+  "baslangic": "2026-12-21",
+  "bitis": "2026-12-27",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: Bağlam ve rüya türü",
+  "gorev": "Çıkarımda rüya türü ipucu ve hassas içerik bayrağı (İG-14, güvenlik ağı)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h10-01",
+  "hafta": 10,
+  "baslangic": "2026-12-28",
+  "bitis": "2027-01-03",
+  "asama": "Tampon",
+  "baslik": "Tampon (yılbaşı)",
+  "gorev": "Geride kalan işler",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h10-02",
+  "hafta": 10,
+  "baslangic": "2026-12-28",
+  "bitis": "2027-01-03",
+  "asama": "Tampon",
+  "baslik": "Tampon (yılbaşı)",
+  "gorev": "Test setini 40–50 rüyaya genişlet, özel testleri ekle",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h11-01",
+  "hafta": 11,
+  "baslangic": "2027-01-04",
+  "bitis": "2027-01-10",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: Uzlaşı/ayrışma çıktısı",
+  "gorev": "prompts/sentez_v2.md: koşullu yorum, \"Uzlaşılan / Ayrışan / Diğer vecihler\" çıktısı ve yöntem açıklamaları",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h11-02",
+  "hafta": 11,
+  "baslangic": "2027-01-04",
+  "bitis": "2027-01-10",
+  "asama": "Aşama 3",
+  "baslik": "Aşama 3: Uzlaşı/ayrışma çıktısı",
+  "gorev": "Tam ölçüm ve v1 ile karşılaştırma, ardından v0.3 etiketi",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h12-01",
+  "hafta": 12,
+  "baslangic": "2027-01-11",
+  "bitis": "2027-01-17",
+  "asama": "Aşama 4",
+  "baslik": "Aşama 4: Deney ve kapanış",
+  "gorev": "D4: Opus 5.5, Sonnet 5.5 ve Haiku 5.5 karşılaştırması (sentez ve çıkarım)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h12-02",
+  "hafta": 12,
+  "baslangic": "2027-01-11",
+  "bitis": "2027-01-17",
+  "asama": "Aşama 4",
+  "baslik": "Aşama 4: Deney ve kapanış",
+  "gorev": "D5 (isteğe bağlı): Colab GPU'sunda açık model (Gemma, Qwen)",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h12-03",
+  "hafta": 12,
+  "baslangic": "2027-01-11",
+  "bitis": "2027-01-17",
+  "asama": "Aşama 4",
+  "baslik": "Aşama 4: Deney ve kapanış",
+  "gorev": "Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim",
+  "durum": "bekliyor"
+ },
+ {
+  "id": "h12-04",
+  "hafta": 12,
+  "baslangic": "2027-01-11",
+  "bitis": "2027-01-17",
+  "asama": "Aşama 4",
+  "baslik": "Aşama 4: Deney ve kapanış",
+  "gorev": "v1.0 etiketi",
+  "durum": "bekliyor"
+ }
+]

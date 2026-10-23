@@ -1,0 +1,134 @@
+[
+ {
+  "sira": 1,
+  "olcut": "Sembol recall",
+  "katman": "Çıkarım",
+  "hedef_mvp": 0.8,
+  "hedef_a3": 0.9,
+  "hedef_mvp_metin": "≥ %80",
+  "hedef_a3_metin": "≥ %90",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 2,
+  "olcut": "Sembol precision",
+  "katman": "Çıkarım",
+  "hedef_mvp": 0.8,
+  "hedef_a3": 0.9,
+  "hedef_mvp_metin": "≥ %80",
+  "hedef_a3_metin": "≥ %90",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 3,
+  "olcut": "Olumsuzlama hatası",
+  "katman": "Çıkarım",
+  "hedef_mvp": 0.0,
+  "hedef_a3": 0.0,
+  "hedef_mvp_metin": "0",
+  "hedef_a3_metin": "0",
+  "yon": "dusuk",
+  "oran": false
+ },
+ {
+  "sira": 4,
+  "olcut": "Eşleme doğruluğu",
+  "katman": "Eşleme",
+  "hedef_mvp": 0.85,
+  "hedef_a3": 0.95,
+  "hedef_mvp_metin": "≥ %85",
+  "hedef_a3_metin": "≥ %95",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 5,
+  "olcut": "Recall@5",
+  "katman": "Getirme",
+  "hedef_mvp": null,
+  "hedef_a3": 0.8,
+  "hedef_mvp_metin": "ölçülür",
+  "hedef_a3_metin": "≥ %80",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 6,
+  "olcut": "Kaynak çeşitliliği",
+  "katman": "Getirme",
+  "hedef_mvp": 1.5,
+  "hedef_a3": 2.0,
+  "hedef_mvp_metin": "≥ 1,5",
+  "hedef_a3_metin": "≥ 2",
+  "yon": "yuksek",
+  "oran": false
+ },
+ {
+  "sira": 7,
+  "olcut": "Atıf kapsamı",
+  "katman": "Sentez",
+  "hedef_mvp": 1.0,
+  "hedef_a3": 1.0,
+  "hedef_mvp_metin": "%100",
+  "hedef_a3_metin": "%100",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 8,
+  "olcut": "Sadakat ihlali (elle)",
+  "katman": "Sentez",
+  "hedef_mvp": 0.0,
+  "hedef_a3": 0.0,
+  "hedef_mvp_metin": "0",
+  "hedef_a3_metin": "0",
+  "yon": "dusuk",
+  "oran": false
+ },
+ {
+  "sira": 9,
+  "olcut": "\"Bulunamadı\"",
+  "katman": "Sentez",
+  "hedef_mvp": 1.0,
+  "hedef_a3": 1.0,
+  "hedef_mvp_metin": "%100",
+  "hedef_a3_metin": "%100",
+  "yon": "yuksek",
+  "oran": true
+ },
+ {
+  "sira": 10,
+  "olcut": "Etik ihlal",
+  "katman": "Sentez",
+  "hedef_mvp": 0.0,
+  "hedef_a3": 0.0,
+  "hedef_mvp_metin": "0",
+  "hedef_a3_metin": "0",
+  "yon": "dusuk",
+  "oran": false
+ },
+ {
+  "sira": 11,
+  "olcut": "Medyan süre (sn)",
+  "katman": "İşletim",
+  "hedef_mvp": 30.0,
+  "hedef_a3": 20.0,
+  "hedef_mvp_metin": "≤ 30",
+  "hedef_a3_metin": "≤ 20",
+  "yon": "dusuk",
+  "oran": false
+ },
+ {
+  "sira": 12,
+  "olcut": "Ort. maliyet ($)",
+  "katman": "İşletim",
+  "hedef_mvp": 0.15,
+  "hedef_a3": 0.1,
+  "hedef_mvp_metin": "≤ 0,15",
+  "hedef_a3_metin": "≤ 0,10",
+  "yon": "dusuk",
+  "oran": false
+ }
+]
