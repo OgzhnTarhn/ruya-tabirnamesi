@@ -2,8 +2,8 @@
 
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
-> **Durum:** Planlama tamamlandı, kodlama başlamadı (21 Ekim 2026).
-> **Sonraki adım:** Hafta 1'deki veri ve çeviri denemesi (bkz. [takvim](docs/08-yol-haritasi-takvim.md)).
+> **Durum:** Planlama ve mimari iskelet tamam (23 Ekim 2026). Veri sözleşmeleri, modül arayüzleri, Colab kurulumu ve mimari testleri hazır; adımların gövdeleri takvimdeki haftalarda yazılacak.
+> **Sonraki adım:** Hesaplar ve ilk push ([10](docs/10-kurulum-rehberi.md)), ardından Hafta 1'deki veri ve çeviri denemesi ([takvim](docs/08-yol-haritasi-takvim.md), [deney notu](docs/deneyler/01-veri-ve-ceviri.md)).
 
 ## Belgeler
 
@@ -21,6 +21,11 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 | 09 | [Riskler ve açık sorular](docs/09-riskler-ve-acik-sorular.md) | Senin cevaplaman gereken sorular, risk kaydı |
 | 10 | [Kurulum rehberi](docs/10-kurulum-rehberi.md) | Hesaplar, Drive klasörü, Colab Secrets |
 | 11 | [Çalışma ortamı](docs/11-calisma-ortami-colab-drive.md) | Kod bilgisayarda, çalıştırma Colab'de, veri Drive'da |
+| 12 | [Kod yapısı ve sözleşmeler](docs/12-kod-yapisi-ve-sozlesmeler.md) | Katmanlar, modül imzaları, veri ürünleri, adlandırma, geliştirme döngüsü |
+| — | [Kaynaklar](docs/KAYNAKLAR.md) | Künyeler, lisanslar, atıf metinleri |
+| — | [Terimler](docs/terimler.md) | Çeviride kullanılan tabir terimleri |
+| — | [Kurallar](docs/kurallar.md) | Okuma notların (şablon, Hafta 3) |
+| — | [Ölçümler](docs/olcumler.md) · [Deneyler](docs/deneyler/) | Ölçüm özet tablosu, deney notları |
 | — | [Araştırma](docs/arastirma/) | Kaynak araştırması: rapor ve 5 ayrıntılı not |
 
 ## Kısaca mimari
@@ -38,6 +43,28 @@ Rüya metni
 
 **Teknolojiler:** Python ≥3.11 · Anthropic SDK · Chroma · multilingual-e5-large · zeyrek · Gradio · pytest · ruff · nbstripout
 
+## Repo düzeni
+
+```
+src/ruya/     paket: config, schemas, llm, ingest, enrich, index, pipeline, degerlendirme
+notebooks/    ince Colab notebook'ları (ilk hücre: notebooks/README.md)
+prompts/      sürümlü sistem talimatları
+sozluk/       elle onaylanan sembol sözlüğü (symbols.json)
+app/ eval/ scripts/   giriş noktaları: Gradio arayüzü, değerlendirme, kaynak indirme
+tests/        verisiz birim testleri, mimari testleri, kontrat testleri
+```
+
+## Bilgisayarda (verisiz) çalıştırma
+
+```powershell
+uv sync
+uv run nbstripout --install
+uv run pytest
+uv run ruff check . ; uv run ruff format .
+```
+
+Veriyle çalışan her şey Colab'de: [11](docs/11-calisma-ortami-colab-drive.md), [notebooks/README.md](notebooks/README.md).
+
 ## Lisans notu
 
-Kod sana aittir. Veri Google Drive'da durur ve git'e eklenmez. OpenITI metinleri CC BY-NC-SA 4.0 lisanslıdır; Gutenberg metinleri kamu malıdır. Ayrıntılar: [07-etik-ve-hukuk.md](docs/07-etik-ve-hukuk.md).
+Kod sana aittir. Veri Google Drive'da durur ve git'e eklenmez. OpenITI metinleri CC BY-NC-SA 4.0 lisanslıdır; Gutenberg metinleri kamu malıdır. Ayrıntılar: [07-etik-ve-hukuk.md](docs/07-etik-ve-hukuk.md), künyeler: [KAYNAKLAR.md](docs/KAYNAKLAR.md).
