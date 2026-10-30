@@ -73,7 +73,7 @@ Drive, Colab'e bir dosya sistemi gibi bağlanır (`/content/drive`). Ancak bu ba
 1. **Chroma Drive'da çalıştırılmaz.**
    - Oturum başında `data/index/chroma.zip` dosyası `/content/calisma/chroma/` klasörüne açılır.
    - İndeks yeniden kurulduysa oturum sonunda tekrar zip'lenip Drive'a kopyalanır.
-2. **LLM önbelleği Drive'da durur.** Her istek için ayrı bir JSON dosyası tutulur, anahtar isteğin özetidir (hash). Tek dosyalı bir veritabanı kullanılmaz. Böylece önbellek oturumlar arasında korunur ve aynı istek için iki kez ödeme yapılmaz.
+2. **LLM önbelleği Drive'da durur.** Her istek için ayrı bir JSON dosyası tutulur, anahtar isteğin özetidir (hash). Tek dosyalı bir veritabanı kullanılmaz. Böylece önbellek oturumlar arasında korunur ve aynı istek için iki kez ödeme yapılmaz. Rüya içeren sorgu istekleri varsayılan olarak bu önbelleğe girmez ([03](03-mimari.md), bölüm 5.2).
 3. **Hugging Face modelleri Colab'in yerel diskine iner** (`HF_HOME=/content/calisma/hf`). Colab'in indirme hızı yüksek. Drive'da 2 GB'lık model saklamaya gerek yok.
 4. **Batch API işleri oturumdan bağımsızdır.** İş gönderilince kimliği `cache/batch/` klasörüne yazılır. Sonuçlar ertesi gün başka bir oturumda alınabilir. Colab'in zaman aşımları bu yüzden sorun olmaz.
 5. **Büyük dosyalar Drive'a parça parça yazılmaz.** Önce `/content` altına yazılır, iş bitince tek seferde kopyalanır.

@@ -163,7 +163,11 @@ Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında du
 ### 5.2 LLM istemcisi (`llm/client.py`)
 
 - **Tek sarmalayıcı:** Bütün Claude çağrıları buradan geçer.
-- **Disk önbelleği (Drive'da `cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). SQLite kullanılmaz, çünkü Drive bağlantısında güvenli değil. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile kapatılabilir.
+- **Disk önbelleği (Drive'da `cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). SQLite kullanılmaz, çünkü Drive bağlantısında güvenli değil. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile tamamen kapatılabilir.
+- **Rüya içeren istekler varsayılan olarak önbelleğe yazılmaz.** Çıkarım ve sentez isteklerinde rüya metni, yanıtlarında da rüyanın parçaları (`ham_ifade`) ve yorumu bulunur. Bunlar önbelleğe yazılsaydı rüya geçmişi kapalıyken bile rüyalar Drive'da birikirdi (İOG-03). Bu yüzden:
+  - `LLMIstemcisi.mesaj(istek, ruya_icerir=True)` ile çağrılan istekler diske yalnızca `RUYA_SORGU_ONBELLEGI=on` iken yazılır ve oradan okunur. Varsayılan değer kapalıdır.
+  - Değerlendirme bu ayarı açar. Test setindeki rüyalar zaten repoda olduğu için yeni bir şey açığa çıkmaz ve aynı ölçüm ikinci kez ücret ödetmez.
+  - Çevrimdışı işler (çeviri, sembol atama, koşul ayrıştırma) rüya içermez ve yalnızca `RUYA_LLM_CACHE` ayarına uyar.
 - **Ölçüm:** Her yanıttaki `usage` bilgisi okunur ve tutar hesaplanıp `SorguKaydi`'ya yazılır.
 - **Hata yönetimi:** Hata sınıfları ayrı ayrı yakalanır. 429 ve 5xx hataları SDK'nın yeniden deneme mekanizmasıyla tekrarlanır. 400 hatası tekrarlanmaz, loglanır ve kullanıcıya anlaşılır bir mesaj gösterilir. Yanıtta `stop_reason` her zaman kontrol edilir; değer `refusal` ise kullanıcıya bilgi verilir.
 - **Prompt önbelleği:** Sabit sistem talimatı önbelleklenir. Bir oturumda arka arkaya yapılan sorgularda maliyeti düşürür. Önbelleğin çalıştığı `usage.cache_read_input_tokens` ile doğrulanır.
@@ -171,7 +175,7 @@ Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında du
 ### 5.3 Loglama ve gizlilik
 
 - **Log içeriği:** Drive'daki `logs/sorgular.jsonl` dosyasına zaman, adım süreleri, token sayıları, maliyet, sembol kimlikleri ve eşleme yöntemleri yazılır. **Rüya metni yazılmaz.**
-- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar Drive'da `gecmis/` altında tutulur.
+- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar Drive'da `gecmis/` altında tutulur. Rüyaların Drive'a yazıldığı başka tek yer, varsayılanı kapalı olan sorgu önbelleğidir (bölüm 5.2).
 - Loglar ve veri Drive'da durur, git'e girmez. Notebook çıktıları `nbstripout` ile temizlenir.
 
 ### 5.4 Hata durumları

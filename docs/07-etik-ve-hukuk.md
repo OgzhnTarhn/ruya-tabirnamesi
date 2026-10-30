@@ -48,6 +48,7 @@ Bu kurallar sentez talimatına yazılır ve değerlendirmede otomatik olarak tar
 - **Drive notu:** Rüya geçmişi ve loglar senin Google Drive'ında, yani Google'ın sunucularında durur. Kendi verin olduğu için bu da senin tercihin. Drive klasörünü kimseyle paylaşma.
 - **Kurallar:**
   - Varsayılan olarak rüya metni loglanmaz.
+  - Rüya içeren LLM istekleri ve yanıtları varsayılan olarak disk önbelleğine yazılmaz (`RUYA_SORGU_ONBELLEGI`, bkz. [03](03-mimari.md), bölüm 5.2). Değerlendirme yalnızca repodaki test seti için bu önbelleği açar.
   - Notebook çıktıları commit'ten önce `nbstripout` ile temizlenir. Böylece rüya metni GitHub'a gitmez.
   - Rüya geçmişi isteğe bağlıdır.
   - Test setine başkalarının rüyaları **izinsiz** konmaz.

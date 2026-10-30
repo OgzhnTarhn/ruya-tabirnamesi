@@ -83,7 +83,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | Modül | Ana öğeler | Durum |
 |---|---|---|
 | `text/turkce.py` | `kucuk_harf`, `normallestir`, `kokler` | 🧩 Hafta 2, 4 |
-| `llm/client.py` | `LLMIstemcisi.mesaj`, `.batch_gonder`, `.batch_sonuclari` · `onbellek_anahtari` ✅ · `maliyet_hesapla` ✅ | 🧩 Hafta 3–4 |
+| `llm/client.py` | `LLMIstemcisi.mesaj(istek, ruya_icerir=False)`, `.batch_gonder`, `.batch_sonuclari` · `onbellek_anahtari` ✅ · `maliyet_hesapla` ✅ | 🧩 Hafta 3–4 |
 | `llm/talimatlar.py` | `talimat_oku("sentez_v1")` | ✅ |
 
 ### Veri hattı (çevrimdışı)
@@ -185,7 +185,7 @@ Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(.
 | `sozluk/symbols.json` | **sen** (elle onay) | `index/build_symbols.py` | **git** | `SozlukDosyasi` |
 | `data/index/chroma.zip` | `index/yedek.py` | `index/yedek.py` | Drive (yedek) | Chroma |
 | `/content/calisma/chroma/` | `index/build_vectors.py` | `index/*` | Colab yerel diski (geçici) | Chroma |
-| `cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | Drive | SDK yanıtı + kullanım |
+| `cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | Drive | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
 | `cache/batch/<etiket>.json` | `LLMIstemcisi.batch_gonder` | `batch_sonuclari` | Drive | batch kimliği, durum |
 | `logs/sorgular.jsonl` | `kayit.sorgu_logla` | sen | Drive | `SorguKaydi.log_kaydi()` |
 | `gecmis/<yıl-ay>.jsonl` | `kayit.gecmise_yaz` | sen | Drive (isteğe bağlı) | `SorguKaydi` |
