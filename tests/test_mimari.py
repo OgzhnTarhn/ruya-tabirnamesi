@@ -41,8 +41,16 @@ IZINLER: dict[str, set[str]] = {
     },
 }
 
-# Bilgisayarda kurulu olmayan ağır paketler: modül düzeyinde içe aktarılamaz.
-AGIR_PAKETLER = {"chromadb", "sentence_transformers", "torch", "transformers", "gradio", "google"}
+# Ağır paketler: modül düzeyinde içe aktarılamaz (bilgisayarda kurulu değil ya da yüklenmesi yavaş).
+AGIR_PAKETLER = {
+    "chromadb",
+    "sentence_transformers",
+    "torch",
+    "transformers",
+    "gradio",
+    "google",
+    "zeyrek",
+}
 
 MODEL_ADI = re.compile(r"claude-(opus|sonnet|haiku|fable|mythos)-[0-9]")
 
@@ -78,6 +86,18 @@ def test_katman_kurali(yol):
     assert birim in IZINLER or birim == "__init__", f"{birim} için izin tanımlanmamış"
     yasakli = _ruya_iceaktarmalari(yol) - IZINLER.get(birim, set()) - {birim}
     assert not yasakli, f"{birim} şunları içe aktaramaz: {sorted(yasakli)}"
+
+
+@pytest.mark.parametrize("yol", _moduller(), ids=lambda p: str(p.relative_to(PAKET)))
+def test_goreli_iceaktarma_yok(yol):
+    agac = ast.parse(yol.read_text(encoding="utf-8"))
+    goreli = [
+        dugum for dugum in ast.walk(agac) if isinstance(dugum, ast.ImportFrom) and dugum.level > 0
+    ]
+    assert not goreli, (
+        f"{yol.relative_to(PAKET)} göreli içe aktarma kullanıyor; katman kuralı yalnızca "
+        "mutlak 'ruya.' içe aktarmalarını denetleyebildiği için göreli içe aktarma yasaktır"
+    )
 
 
 @pytest.mark.parametrize("yol", _moduller(), ids=lambda p: str(p.relative_to(PAKET)))
