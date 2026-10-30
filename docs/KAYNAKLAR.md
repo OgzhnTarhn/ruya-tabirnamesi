@@ -4,6 +4,7 @@
 > Atıf yükümlülüğü (CC BY) gereği her kaynağın künyesi ve lisansı burada tutulur (docs/07, V9).
 > Koddaki karşılığı: `src/ruya/ingest/kaynaklar.py`. İkisi her zaman birlikte güncellenir.
 > **[DOĞRULANACAK]** etiketli bilgiler araştırmada birincil kaynaktan teyit edilemedi; elle kontrol edilince etiket silinir.
+> OpenITI adresleri belirli bir commit'e sabitlenmiştir; Gutenberg dosyaları SHA256 özetiyle denetlenir (docs/02, bölüm 4.1).
 
 ## 1. Korpus kaynakları
 
@@ -17,7 +18,7 @@ Bu metinler ayrıştırılıp `entries.jsonl`'e girer. Veri yalnızca Google Dri
 | Eser | *Ta'tîrü'l-enâm fî ta'bîri'l-menâm*; 1684'te alfabetik düzenle yazılmış |
 | Dijital metin | OpenITI, `1143CabdGhaniNabulusi.TactirAnam.Shamela0001217-ara1` (2.371.805 bayt) |
 | Baskı (metadataya göre) | Dâru'l-Fikr, Beyrut |
-| Adres | [OpenITI ham dosya](https://raw.githubusercontent.com/OpenITI/1150AH/master/data/1143CabdGhaniNabulusi/1143CabdGhaniNabulusi.TactirAnam/1143CabdGhaniNabulusi.TactirAnam.Shamela0001217-ara1) |
+| Adres | [OpenITI ham dosya](https://raw.githubusercontent.com/OpenITI/1150AH/0412012ee6a24497a10c0ad9711ae450929f5f35/data/1143CabdGhaniNabulusi/1143CabdGhaniNabulusi.TactirAnam/1143CabdGhaniNabulusi.TactirAnam.Shamela0001217-ara1) · commit `0412012` (27 Kasım 2025) |
 | Lisans | Eser kamu malı; OpenITI derlemesi **CC BY-NC-SA 4.0** · kod: `CC-BY-NC-SA-4.0` |
 | Koşullar | Ticari olmayan kullanım, atıf, türetilen çeviriler paylaşılırsa aynı lisansla (V6) |
 
@@ -49,7 +50,7 @@ Bu metinler ayrıştırılıp `entries.jsonl`'e girer. Veri yalnızca Google Dri
 |---|---|
 | Yazar | İbn Sîrîn'e (ö. 110/728) **atfedilen**; nispeti sahih değil |
 | Dijital metin | OpenITI, `0110IbnSirin.MuntakhabKalamFiTafsirAhlam.Shamela0021615-ara1` (~794 bin karakter) |
-| Adres | [OpenITI ham dosya](https://raw.githubusercontent.com/OpenITI/0125AH/master/data/0110IbnSirin/0110IbnSirin.MuntakhabKalamFiTafsirAhlam/0110IbnSirin.MuntakhabKalamFiTafsirAhlam.Shamela0021615-ara1) |
+| Adres | [OpenITI ham dosya](https://raw.githubusercontent.com/OpenITI/0125AH/f53daf7815e24aa7870e11f30c0ab64f17bae6c0/data/0110IbnSirin/0110IbnSirin.MuntakhabKalamFiTafsirAhlam/0110IbnSirin.MuntakhabKalamFiTafsirAhlam.Shamela0021615-ara1) · commit `f53daf7` (27 Kasım 2025) |
 | Lisans | **CC BY-NC-SA 4.0** · kod: `CC-BY-NC-SA-4.0` |
 | Atıf notu | Her kayıtta `atif_notu = "Nispeti sahih değil (OpenITI metadatası)"`; yanıtta "İbn Sirin'e atfedilen *Muntahab*'a göre (nispeti tartışmalı)" (İG-34, D6) |
 

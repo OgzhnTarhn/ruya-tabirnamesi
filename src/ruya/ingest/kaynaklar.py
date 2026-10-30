@@ -44,7 +44,8 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
             dil="ar",
             lisans="CC-BY-NC-SA-4.0",
             url=(
-                "https://raw.githubusercontent.com/OpenITI/1150AH/master/data/"
+                "https://raw.githubusercontent.com/OpenITI/1150AH/"
+                "0412012ee6a24497a10c0ad9711ae450929f5f35/data/"
                 "1143CabdGhaniNabulusi/1143CabdGhaniNabulusi.TactirAnam/"
                 "1143CabdGhaniNabulusi.TactirAnam.Shamela0001217-ara1"
             ),
@@ -78,7 +79,8 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
             dil="ar",
             lisans="CC-BY-NC-SA-4.0",
             url=(
-                "https://raw.githubusercontent.com/OpenITI/0125AH/master/data/"
+                "https://raw.githubusercontent.com/OpenITI/0125AH/"
+                "f53daf7815e24aa7870e11f30c0ab64f17bae6c0/data/"
                 "0110IbnSirin/0110IbnSirin.MuntakhabKalamFiTafsirAhlam/"
                 "0110IbnSirin.MuntakhabKalamFiTafsirAhlam.Shamela0021615-ara1"
             ),

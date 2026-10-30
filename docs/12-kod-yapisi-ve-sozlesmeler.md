@@ -261,7 +261,7 @@ Küçük bir değişikliği Colab'de görmek 5 dakikadan uzun sürüyorsa (R12) 
 
 1. Lisansı doğrula; [07](07-etik-ve-hukuk.md)'deki V1–V4'e uyuyor mu?
 2. [KAYNAKLAR.md](KAYNAKLAR.md)'ye künye, lisans ve atıf metnini ekle.
-3. `ingest/kaynaklar.py` → `KAYNAKLAR` sözlüğüne `KaynakBilgisi` ekle.
+3. `ingest/kaynaklar.py` → `KAYNAKLAR` sözlüğüne `KaynakBilgisi` ekle. Adres sabit bir sürümü göstermeli (git deposuysa commit; değilse ilk indirmeden sonra `sha256` alanı doldurulur). Neden: `entry_id` satır numarasına bağlı ([02](02-veri-kaynaklari-ve-semasi.md), bölüm 4.1).
 4. `tests/fixtures/` altına ham dosyadan birkaç satır koy (kaynağı ve lisansı dosyanın başında yaz).
 5. `ingest/<kaynak>.py` içinde `ayristir` işlevini yaz, testini yaz.
 6. Colab'de: indir → ayrıştır → zenginleştir → `entries.jsonl`; `pytest -m veri`.

@@ -105,6 +105,10 @@ Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore
 Alan kuralları:
 
 - `entry_id` sabittir ve yeniden ayrıştırmada değişmez. Kimlik paragrafın sırasından değil, kaynak satır numarasından türetilir: `<kaynak>:<6 haneli satır no>`, örneğin `nablusi:004310`.
+- **Bu yüzden ham kaynak sabitlenir.** Ham dosyada tek bir satır değişirse bütün kimlikler kayar. Bu durumda test setindeki `beklenen_maddeler` ve Batch ile yapılmış sembol atamaları yanlış maddeleri gösterir.
+  - OpenITI adresleri `master` dalını değil, belirli bir commit'i gösterir (`ingest/kaynaklar.py`, [KAYNAKLAR.md](KAYNAKLAR.md)).
+  - Gutenberg adresleri sabitlenemez. Her kaynağın beklenen SHA256 özeti `KaynakBilgisi.sha256` alanına ilk indirmeden sonra yazılır. Özet uyuşmazsa `download_sources.py` dosyayı yazmaz ve hata verir.
+  - Kaynağın yeni sürümüne geçmek bilinçli bir iştir: adres ve özet değişir, `entries.jsonl` yeniden üretilir, test setindeki `beklenen_maddeler` gözden geçirilir.
 - Bilinmeyen alan kabul edilmez. Kodda şema `ruya.schemas.Madde`; alan eklenecekse önce bu belge, sonra şema güncellenir.
 - `atif_notu` alanı İbn Sirin kayıtlarında `"Nispeti sahih değil (OpenITI metadatası)"` değerini alır.
 - `ust_madde_id` alt paragrafları başlıklı maddelerine bağlar.
