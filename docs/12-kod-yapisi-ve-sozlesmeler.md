@@ -144,7 +144,7 @@ flowchart LR
 | `Sembol`, `CikarimSonucu` | Adım 1 | `olumsuz=True` semboller `gecerli_semboller`'e girmez · `ham_ifade` rüya metninin parçasıdır, loglanmaz |
 | `Eslesme` | Adım 2 | `yontem="yok"` ⇔ `symbol_id=None` |
 | `Aday` | Adım 3 | Madde + `skor` + `gerekceler` (hata ayıklama sekmesi için) |
-| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm kendi atıflarını taşır · `uyari` zorunlu |
+| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm, Citations API'nin döndürdüğü bir metin bloğudur ve kendi atıflarını taşır · İG-32'deki yapı (sembol başlıkları, uzlaşı/ayrışma) metnin içinde Markdown başlıklarıyla taşınır · atıf kapsamında başlık bölümleri sayılmaz (06, bölüm 2) · `uyari` zorunlu |
 | `Kullanim`, `AdimOlcumu` | Her adım | LLM adımlarında token ve maliyet; `talimat` alanı sürümü kaydeder (ör. `cikarim_v1`) |
 | `SorguKaydi` | Arayüz, değerlendirme, log | `log_kaydi()` rüya metnini ve sembol ifadelerini **içermez** (testli) |
 | `TestOrnegi` | `eval/dataset/*.jsonl` | `id` biçimi `r007` |

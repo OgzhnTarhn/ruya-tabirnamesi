@@ -53,12 +53,18 @@
 | Eşleme | Eşleme doğruluğu | Doğru `symbol_id` / eşlenen semboller | ≥ %85 | ≥ %95 |
 | Getirme | Recall@5 | Kaynak başına ilk 5 sonuçta bulunan beklenen maddeler | ölçülür | ≥ %80 |
 | Getirme | Kaynak çeşitliliği | Maddesi olan semboller için ortalama farklı kaynak sayısı | ≥ 1,5 | ≥ 2 |
-| Sentez | Atıf kapsamı | Atıf taşıyan yorum cümleleri / tüm yorum cümleleri | %100 | %100 |
+| Sentez | Atıf kapsamı | Atıf taşıyan iddia bölümleri / tüm iddia bölümleri (aşağıdaki nota bak) | %100 | %100 |
 | Sentez | Sadakat (elle) | Kaynağın söylemediğini söyleyen cümle sayısı (10 yanıt) | 0 | 0 |
 | Sentez | "Bulunamadı" doğruluğu | Bulunamaz testinde doğru davranış | %100 | %100 |
 | Sentez | Etik kurallar | Yasak ifadeler ("kesinlikle", "Diyanet'e göre"…) için otomatik tarama | 0 ihlal | 0 ihlal |
 | İşletim | Süre | Rüya başına medyan saniye | ≤ 30 | ≤ 20 |
 | İşletim | Maliyet | Rüya başına ortalama $ | ≤ 0,15 | ≤ 0,10 |
+
+**Atıf kapsamının birimi.** Citations API yanıtı cümlelere değil, atıf sınırlarından bölünmüş metin bloklarına ayırır. Her blok bir `YorumBolumu` olur. Bir bloğa birden çok cümle düşebilir ve "## Yılan" gibi başlıklar atıfsız bloklar olarak gelir. Bu yüzden:
+
+- Ölçüm birimi **iddia bölümüdür**. Başlık bölümleri (`#` ile başlayan satırlardan oluşan) ve harf içermeyen bölümler (boşluk, noktalama, liste işareti) sayılmaz.
+- "Kaynaklarda bulunmayanlar" bölümü ve uyarı metni iddia değildir, sayılmaz.
+- Cümle düzeyindeki sadakat, otomatik ölçütle değil elle yapılan sadakat kontrolüyle ölçülür.
 
 ## 3. Nasıl çalıştırılacak?
 

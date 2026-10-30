@@ -37,7 +37,8 @@ def kaynak_cesitliligi(kayit: SorguKaydi) -> float | None:
 
 
 def atif_kapsami(kayit: SorguKaydi) -> float | None:
-    """Atıf taşıyan yorum bölümleri / bütün yorum bölümleri."""
+    """Atıf taşıyan iddia bölümleri / bütün iddia bölümleri. Başlık bölümleri ve harf
+    içermeyen bölümler sayılmaz (docs/06, bölüm 2). İddia bölümü yoksa None."""
     raise NotImplementedError("Hafta 5: degerlendirme/metrikler.py (docs/08)")
 
 
