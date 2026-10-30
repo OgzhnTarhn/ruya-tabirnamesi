@@ -59,7 +59,8 @@ flowchart BT
 
 **Testlerle korunan diğer kurallar:**
 
-- **Ağır paketler tembel yüklenir.** `chromadb`, `sentence_transformers`, `torch`, `transformers`, `gradio` ve `google.colab` modül düzeyinde içe aktarılmaz; yalnızca onları kullanan işlevin içinde. Böylece bütün paket bilgisayarda, bu paketler kurulmadan içe aktarılabilir ve birim testleri çalışır.
+- **Ağır paketler tembel yüklenir.** `chromadb`, `sentence_transformers`, `torch`, `transformers`, `gradio`, `google.colab` ve `zeyrek` modül düzeyinde içe aktarılmaz; yalnızca onları kullanan işlevin içinde. Böylece bütün paket bilgisayarda, bu paketler kurulmadan içe aktarılabilir ve birim testleri çalışır (zeyrek kurulu ama analizörü yavaş yüklenir).
+- **Göreli içe aktarma yok.** `from ..index import store` gibi satırlar katman testinden kaçabileceği için yasaktır; her zaman `from ruya.index import store` yazılır.
 - **Model adları yalnızca `src/ruya/config.py` içinde.** `src/`, `app/`, `eval/`, `scripts/`, `notebooks/` altında başka bir dosyada `claude-…` geçemez.
 - **Notebook'lar çıktısız commit edilir** ve ortak kurulum hücresiyle başlar.
 - **`sozluk/symbols.json` her zaman şemaya uyar.**
