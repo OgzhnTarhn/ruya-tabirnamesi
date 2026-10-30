@@ -68,7 +68,7 @@ flowchart TB
 - **Çıktı:** `dict[symbol_id, list[Aday]]`. `Aday` maddeyi, sıralama skorunu ve skorun gerekçelerini taşır; hata ayıklama sekmesi bunları gösterir (İG-42).
 - **Nasıl:** `symbol_id` ile doğrudan filtreleme yapılır (Chroma `where` ya da bellekteki indeks). Her kaynaktan en fazla N madde alınır (varsayılan N=2).
 - **Sıralama:**
-  1. Nitelik eşleşmesi. Örneğin "siyah yılan" için içinde "siyah" geçen madde öne çıkar.
+  1. Nitelik eşleşmesi. Örneğin "siyah yılan" için içinde "siyah" geçen madde öne çıkar. Karşılaştırma `metin_tr` üzerinde, normalleştirilmiş ve köke indirilmiş kelimelerle yapılır. Bu yüzden çevirinin kelime seçimine bağlıdır: çeviri "kara yılan" demişse eşleşme kaçar. [terimler.md](terimler.md) sık nitelikler için tek karşılık belirleyerek bunu azaltır. Asıl çözüm Aşama 3'te yapılandırılmış `kosullar` alanıdır (`{"renk": "siyah"}`).
   2. Bağlam koşulu eşleşmesi (Aşama 3).
   3. Başlıklı madde, alt paragraftan önce gelir.
 - **Aşama 2 eki:** Bir sembolün maddesi N'den fazlaysa, rüya cümlesine göre bge-reranker ile yeniden sıralama yapılır.
