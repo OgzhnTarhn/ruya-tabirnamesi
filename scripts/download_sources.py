@@ -7,7 +7,10 @@ Colab'de çalışır (notebooks/01_kaynaklari_indir.ipynb ya da Hafta 1 denemesi
 
 - Dosyalar tek tek ve aralıklı indirilir; Gutenberg'den toplu indirme yapılmaz (docs/07).
 - Var olan dosya yeniden indirilmez (``--yeniden`` ile zorlanır).
-- Özetler ``data/raw/KAYNAK_OZETLERI.json`` dosyasına yazılır; ham dosya değişirse fark edilir.
+- Özetler ``data/raw/KAYNAK_OZETLERI.json`` dosyasına her başarılı indirmeden sonra yazılır;
+  ham dosya değişirse fark edilir.
+- ``KaynakBilgisi.sha256`` doluysa indirilen içeriğin özeti doğrulanır; uyuşmazsa hata verilir
+  ve dosya yazılmaz (docs/02, 4.1).
 - Bilgisayarda çalışmaz: veri bilgisayara inmez (CLAUDE.md).
 """
 
@@ -33,15 +36,40 @@ def indir(bilgi: KaynakBilgisi, klasor: Path) -> dict[str, object]:
     istek = urllib.request.Request(bilgi.url, headers={"User-Agent": KULLANICI_AJANI})
     with urllib.request.urlopen(istek, timeout=120) as yanit:
         icerik = yanit.read()
+    ozet = hashlib.sha256(icerik).hexdigest()
+    if bilgi.sha256 is not None and bilgi.sha256 != ozet:
+        raise ValueError(
+            f"{bilgi.kaynak}: SHA256 uyuşmuyor — beklenen {bilgi.sha256}, indirilen {ozet}. "
+            "Kaynağın sürümü değişmiş olabilir (docs/02, 4.1); dosya yazılmadı."
+        )
     (klasor / bilgi.ham_dosya_adi).write_bytes(icerik)
     return {
         "dosya": bilgi.ham_dosya_adi,
         "url": bilgi.url,
         "lisans": bilgi.lisans,
         "bayt": len(icerik),
-        "sha256": hashlib.sha256(icerik).hexdigest(),
+        "sha256": ozet,
         "indirme_zamani": dt.datetime.now(dt.UTC).isoformat(timespec="seconds"),
     }
+
+
+def kaynaklari_indir(secilenler: list[KaynakBilgisi], klasor: Path, yeniden: bool = False) -> Path:
+    ozet_yolu = klasor / OZET_DOSYASI
+    ozetler = json.loads(ozet_yolu.read_text(encoding="utf-8")) if ozet_yolu.exists() else {}
+
+    indirilen = 0
+    for bilgi in secilenler:
+        if (klasor / bilgi.ham_dosya_adi).exists() and not yeniden:
+            print(f"{bilgi.kaynak}: zaten var, atlandı")
+            continue
+        if indirilen:
+            time.sleep(BEKLEME_SN)
+        ozetler[bilgi.kaynak] = indir(bilgi, klasor)
+        indirilen += 1
+        ozet_yolu.write_text(json.dumps(ozetler, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"{bilgi.kaynak}: {ozetler[bilgi.kaynak]['bayt']:,} bayt indirildi")
+
+    return ozet_yolu
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -58,19 +86,7 @@ def main(argv: list[str] | None = None) -> None:
     ]
     klasor = ayarlar().ham_klasoru
     klasor.mkdir(parents=True, exist_ok=True)
-    ozet_yolu = klasor / OZET_DOSYASI
-    ozetler = json.loads(ozet_yolu.read_text(encoding="utf-8")) if ozet_yolu.exists() else {}
-
-    for sira, bilgi in enumerate(secilenler):
-        if (klasor / bilgi.ham_dosya_adi).exists() and not args.yeniden:
-            print(f"{bilgi.kaynak}: zaten var, atlandı")
-            continue
-        if sira:
-            time.sleep(BEKLEME_SN)
-        ozetler[bilgi.kaynak] = indir(bilgi, klasor)
-        print(f"{bilgi.kaynak}: {ozetler[bilgi.kaynak]['bayt']:,} bayt indirildi")
-
-    ozet_yolu.write_text(json.dumps(ozetler, ensure_ascii=False, indent=2), encoding="utf-8")
+    ozet_yolu = kaynaklari_indir(secilenler, klasor, yeniden=args.yeniden)
     print(f"Özetler: {ozet_yolu}")
 
 
