@@ -8,6 +8,8 @@ Uygulanırken uyulacaklar:
   output_config…). Önbellek anahtarı bu gövdeden üretilir.
 - Önbellek: Drive'da ``cache/llm/<anahtar>.json``; istek başına bir dosya, SQLite yok.
   ``Ayarlar.llm_cache`` False ise atlanır.
+- Rüya içeren istekler (``ruya_icerir=True``) yalnızca ``Ayarlar.sorgu_onbellegi``
+  açıkken önbelleğe girer.
 - Opus 5.5: düşünme kapatılamaz, ``output_config.effort`` açıkça verilir;
   ``temperature``/``top_p``/``top_k`` gönderilmez (400 verir).
 - Reddetmeye karşı sunucu tarafı yedek model: ``fallbacks="default"`` ve
@@ -73,8 +75,14 @@ class LLMIstemcisi:
         self.ayar = ayar or ayarlar()
         self._sdk: Any = None  # anthropic.Anthropic; ilk çağrıda kurulur
 
-    def mesaj(self, istek: dict[str, Any]) -> LLMYaniti:
-        """Messages API çağrısı (önbellekli). Hafta 4."""
+    def mesaj(self, istek: dict[str, Any], ruya_icerir: bool = False) -> LLMYaniti:
+        """Messages API çağrısı (önbellekli). Hafta 4.
+
+        ``ruya_icerir`` True ise disk önbelleği yalnızca ``self.ayar.sorgu_onbellegi``
+        True olduğunda okunur/yazılır; böylece rüya geçmişi kapalıyken rüyalar
+        Drive'da birikmez (docs/03 bölüm 5.2). False ise yalnızca
+        ``self.ayar.llm_cache`` geçerlidir.
+        """
         raise NotImplementedError("Hafta 4: llm/client.py (docs/08)")
 
     def batch_gonder(self, istekler: dict[str, dict[str, Any]], etiket: str) -> str:

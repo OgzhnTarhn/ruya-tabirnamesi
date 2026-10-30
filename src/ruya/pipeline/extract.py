@@ -6,6 +6,8 @@
 - Olumsuzlanan semboller ``olumsuz=True`` (İG-12); çok kelimeli semboller tek sembol (İG-13).
 - Atıf (citations) ile yapılandırılmış çıktı aynı istekte kullanılamaz; bu yüzden
   çıkarım ve sentez ayrı çağrılardır.
+- İstek ``istemci.mesaj(istek, ruya_icerir=True)`` ile gönderilir (rüya metni
+  içerir; docs/03 bölüm 5.2).
 """
 
 from __future__ import annotations

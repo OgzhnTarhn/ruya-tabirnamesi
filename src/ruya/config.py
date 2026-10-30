@@ -78,6 +78,7 @@ class Ayarlar(BaseSettings):
     data_dir: Path | None = None
     work_dir: Path | None = None
     llm_cache: bool = True  # RUYA_LLM_CACHE=off ile kapatılır
+    sorgu_onbellegi: bool = False  # RUYA_SORGU_ONBELLEGI=on: rüyalar da önbelleğe (docs/03, 5.2)
     gecmis: bool = False  # RUYA_GECMIS=on ise rüyalar Drive'da gecmis/ altında saklanır
     kaynak_basina_n: int = 2  # İG-22
     en_fazla_sembol: int = 8  # docs/03, bölüm 5.4

@@ -11,7 +11,13 @@ from ruya.hatalar import VeriYoluYok
 
 @pytest.fixture
 def temiz_ortam(monkeypatch):
-    for ad in ("RUYA_DATA_DIR", "RUYA_WORK_DIR", "RUYA_LLM_CACHE", "RUYA_GECMIS"):
+    for ad in (
+        "RUYA_DATA_DIR",
+        "RUYA_WORK_DIR",
+        "RUYA_LLM_CACHE",
+        "RUYA_GECMIS",
+        "RUYA_SORGU_ONBELLEGI",
+    ):
         monkeypatch.delenv(ad, raising=False)
     monkeypatch.delitem(sys.modules, "google.colab", raising=False)
 
@@ -37,15 +43,18 @@ def test_ortam_degiskenleri_okunur(temiz_ortam, monkeypatch, tmp_path):
     monkeypatch.setenv("RUYA_DATA_DIR", str(tmp_path))
     monkeypatch.setenv("RUYA_LLM_CACHE", "off")
     monkeypatch.setenv("RUYA_GECMIS", "on")
+    monkeypatch.setenv("RUYA_SORGU_ONBELLEGI", "on")
     ayar = Ayarlar()
     assert ayar.llm_onbellek_klasoru == tmp_path / "cache" / "llm"
     assert ayar.llm_cache is False
     assert ayar.gecmis is True
+    assert ayar.sorgu_onbellegi is True
 
 
 def test_varsayilanlar_gizlilikten_yana(temiz_ortam):
     ayar = Ayarlar()
     assert ayar.gecmis is False
+    assert ayar.sorgu_onbellegi is False
     assert ayar.kaynak_basina_n == 2
 
 

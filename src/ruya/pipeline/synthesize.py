@@ -7,6 +7,8 @@
 - Eşleşmeyen ya da maddesi olmayan semboller ``Yorum.bulunamayanlar``'a (İG-31).
 - ``cikarim.hassas_icerik`` ise ``Yorum.guvenlik_notu = etik.GUVENLIK_NOTU``.
 - ``Yorum.uyari`` her zaman ``etik.UYARI_METNI`` (İG-36).
+- İstek ``istemci.mesaj(istek, ruya_icerir=True)`` ile gönderilir (rüya metni
+  içerir; docs/03 bölüm 5.2).
 """
 
 from __future__ import annotations
