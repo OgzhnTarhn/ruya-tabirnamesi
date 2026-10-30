@@ -15,6 +15,9 @@ from ruya.schemas import Dil, Gelenek
 
 OPENITI_ATIF_NOTU = "Nispeti sahih değil (OpenITI metadatası)"
 
+# Geçerli lisans kodları; yeni kod önce docs/KAYNAKLAR.md bölüm 5'e eklenir.
+LISANS_KODLARI: tuple[str, ...] = ("PD", "CC-BY-NC-SA-4.0", "CC-BY-NC-4.0", "CC-BY-SA-4.0")
+
 
 @dataclass(frozen=True)
 class KaynakBilgisi:
@@ -27,6 +30,9 @@ class KaynakBilgisi:
     url: str
     asama: int  # docs/02: hangi aşamada korpusa giriyor
     atif_notu: str | None = None
+    # Beklenen ham dosya özeti; ilk indirmeden sonra KAYNAK_OZETLERI.json'dan buraya yazılır;
+    # uyuşmazsa indirme hata verir (docs/02, 4.1).
+    sha256: str | None = None
 
     @property
     def ham_dosya_adi(self) -> str:

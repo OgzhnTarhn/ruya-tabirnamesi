@@ -9,6 +9,7 @@ import pytest
 from ruya.config import Ayarlar
 from ruya.dosya import jsonl_oku
 from ruya.hatalar import VeriYoluYok
+from ruya.ingest.kaynaklar import LISANS_KODLARI
 from ruya.schemas import Madde
 
 pytestmark = pytest.mark.veri
@@ -38,4 +39,4 @@ def test_ust_maddeler_var(maddeler):
 
 def test_nc_kayitlar_tek_filtreyle_ayrilir(maddeler):
     # İOG-06, V8: lisans alanına göre tek filtre yeterli olmalı
-    assert all(m.lisans for m in maddeler)
+    assert all(m.lisans in LISANS_KODLARI for m in maddeler)
