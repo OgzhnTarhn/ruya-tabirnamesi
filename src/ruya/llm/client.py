@@ -6,7 +6,7 @@ sözleşmenin parçası (önbellek dosyalarının adı ve SorguKaydi'ndaki maliy
 Uygulanırken uyulacaklar:
 - İstek gövdesi bir ``dict`` olarak kurulur (model, system, messages, max_tokens,
   output_config…). Önbellek anahtarı bu gövdeden üretilir.
-- Önbellek: Drive'da ``cache/llm/<anahtar>.json``; istek başına bir dosya, SQLite yok.
+- Önbellek: data/ altında ``cache/llm/<anahtar>.json``; istek başına bir dosya, SQLite yok.
   ``Ayarlar.llm_cache`` False ise atlanır.
 - Rüya içeren istekler (``ruya_icerir=True``) yalnızca ``Ayarlar.sorgu_onbellegi``
   açıkken önbelleğe girer.
@@ -80,14 +80,14 @@ class LLMIstemcisi:
 
         ``ruya_icerir`` True ise disk önbelleği yalnızca ``self.ayar.sorgu_onbellegi``
         True olduğunda okunur/yazılır; böylece rüya geçmişi kapalıyken rüyalar
-        Drive'da birikmez (docs/03 bölüm 5.2). False ise yalnızca
+        data/ altında birikmez (docs/03 bölüm 5.2). False ise yalnızca
         ``self.ayar.llm_cache`` geçerlidir.
         """
         raise NotImplementedError("Hafta 4: llm/client.py (docs/08)")
 
     def batch_gonder(self, istekler: dict[str, dict[str, Any]], etiket: str) -> str:
         """{custom_id: istek} sözlüğünü Message Batches API'ye gönderir, batch kimliğini
-        Drive'da ``cache/batch/<etiket>.json`` dosyasına yazar ve döndürür. Hafta 3."""
+        data/ altında ``cache/batch/<etiket>.json`` dosyasına yazar ve döndürür. Hafta 3."""
         raise NotImplementedError("Hafta 3: enrich/translate.py ile birlikte (docs/08)")
 
     def batch_sonuclari(self, batch_id: str) -> dict[str, LLMYaniti]:

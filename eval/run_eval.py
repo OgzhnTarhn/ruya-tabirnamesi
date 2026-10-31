@@ -1,8 +1,8 @@
-"""Test setini çalıştırır ve raporu Drive'a yazar (docs/06, bölüm 3).
+"""Test setini çalıştırır ve raporu data/raporlar/ altına yazar (docs/06, bölüm 3).
 
-Colab'de notebooks/06_degerlendirme.ipynb çağırır::
+Bilgisayarda::
 
-    python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket asama1-opus
+    uv run python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket asama1-opus
 
 Her çalıştırma ücretlidir. Geliştirme sırasında LLM disk önbelleği açık kalır;
 burada ayrıca rüya içeren istekler için sorgu önbelleği açılır (docs/03, 5.2).

@@ -1,9 +1,9 @@
-"""Ham kaynakları Drive'daki data/raw/ klasörüne indirir ve SHA256 özetlerini kaydeder.
+"""Ham kaynakları data/raw/ klasörüne indirir ve SHA256 özetlerini kaydeder.
 
-Colab'de çalışır (notebooks/01_kaynaklari_indir.ipynb ya da Hafta 1 denemesi)::
+Hedef klasör ``ayarlar().ham_klasoru``dır. Bilgisayarda çalıştırılır::
 
-    python scripts/download_sources.py            # Aşama 0 kaynakları: nablusi, miller
-    python scripts/download_sources.py --asama 3  # Aşama 3'e kadar bütün kaynaklar
+    uv run python scripts/download_sources.py            # Aşama 0 kaynakları: nablusi, miller
+    uv run python scripts/download_sources.py --asama 3  # Aşama 3'e kadar bütün kaynaklar
 
 - Dosyalar tek tek ve aralıklı indirilir; Gutenberg'den toplu indirme yapılmaz (docs/07).
 - Var olan dosya yeniden indirilmez (``--yeniden`` ile zorlanır).
@@ -11,7 +11,6 @@ Colab'de çalışır (notebooks/01_kaynaklari_indir.ipynb ya da Hafta 1 denemesi
   ham dosya değişirse fark edilir.
 - ``KaynakBilgisi.sha256`` doluysa indirilen içeriğin özeti doğrulanır; uyuşmazsa hata verilir
   ve dosya yazılmaz (docs/02, 4.1).
-- Bilgisayarda çalışmaz: veri bilgisayara inmez (CLAUDE.md).
 """
 
 from __future__ import annotations
@@ -73,7 +72,7 @@ def kaynaklari_indir(secilenler: list[KaynakBilgisi], klasor: Path, yeniden: boo
 
 
 def main(argv: list[str] | None = None) -> None:
-    ayristirici = argparse.ArgumentParser(description="Ham kaynakları Drive'a indirir.")
+    ayristirici = argparse.ArgumentParser(description="Ham kaynakları data/raw/ klasörüne indirir.")
     ayristirici.add_argument("--asama", type=int, default=0, help="bu aşamaya kadarki kaynaklar")
     ayristirici.add_argument("--kaynak", nargs="*", choices=sorted(KAYNAKLAR))
     ayristirici.add_argument("--yeniden", action="store_true", help="var olanı da indir")

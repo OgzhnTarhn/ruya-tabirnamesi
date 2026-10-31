@@ -1,7 +1,7 @@
 """Sorgu logu ve isteğe bağlı rüya geçmişi (docs/03, bölüm 5.3).
 
 - ``logs/sorgular.jsonl``: her sorguda bir satır, **rüya metni olmadan** (SorguKaydi.log_kaydi).
-- ``gecmis/``: yalnızca ``RUYA_GECMIS=on`` ise; rüyanın tamamı Drive'da saklanır.
+- ``gecmis/``: yalnızca ``RUYA_GECMIS=on`` ise; rüyanın tamamı data/ altında saklanır.
 """
 
 from __future__ import annotations

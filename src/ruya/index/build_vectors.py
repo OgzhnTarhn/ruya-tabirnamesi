@@ -1,9 +1,8 @@
 """Chroma vektör indeksi (Aşama 2, TK-05, TK-06). Takvim: Hafta 6.
 
-- Chroma Drive üzerinde çalıştırılmaz: ``Ayarlar.chroma_klasoru`` (/content/calisma/chroma)
-  altında kurulur, ``yedek.py`` ile Drive'a zip olarak yedeklenir.
+- Chroma, ``Ayarlar.chroma_klasoru`` (data/index/chroma) altında kurulur.
 - e5 modelleri ``query: `` ve ``passage: `` önekleri ister; unutulursa kalite sessizce düşer.
-- chromadb ve sentence-transformers ağır paketlerdir ve bilgisayarda kurulu değildir:
+- chromadb ve sentence-transformers ağır, isteğe bağlı paketlerdir (``uv sync --extra indeks``):
   içe aktarma yalnızca işlevlerin içinde yapılır.
 """
 

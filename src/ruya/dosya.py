@@ -1,7 +1,7 @@
 """JSONL okuma ve yazma.
 
-Drive bağlantısı yavaş olduğu için büyük dosyalar önce yerelde geçici bir dosyaya yazılır,
-sonra tek seferde hedefe taşınır (docs/11, bölüm 4).
+Büyük dosyalar önce hedefin yanındaki geçici bir dosyaya yazılır, sonra tek seferde
+hedefe taşınır; böylece bir çökme yarım dosya bırakmaz.
 """
 
 from __future__ import annotations

@@ -38,7 +38,7 @@ class Bagimliliklar:
 
 
 def varsayilan_bagimliliklar(ayar: Ayarlar | None = None) -> Bagimliliklar:
-    """Colab'deki gerçek bağımlılıkları kurar: sözlük (git), maddeler (Drive), Claude istemcisi.
+    """Gerçek bağımlılıkları kurar: sözlük (git), maddeler (data/), LLM istemcisi.
 
     Arayüz notebook'u ve değerlendirme betiği bunu çağırır; testler kendi sahtelerini kurar.
     """
