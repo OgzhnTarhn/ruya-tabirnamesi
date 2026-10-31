@@ -54,13 +54,15 @@
 | Getirme | Recall@5 | Kaynak başına ilk 5 sonuçta bulunan beklenen maddeler | ölçülür | ≥ %80 |
 | Getirme | Kaynak çeşitliliği | Maddesi olan semboller için ortalama farklı kaynak sayısı | ≥ 1,5 | ≥ 2 |
 | Sentez | Atıf kapsamı | Atıf taşıyan iddia bölümleri / tüm iddia bölümleri (aşağıdaki nota bak) | %100 | %100 |
+| Sentez | Uydurma atıf | Doğrulamada atılan atıflar (modele verilmemiş `entry_id`) | 0 | 0 |
+| Sentez | Alıntı doğruluğu | Maddenin metninde geçen alıntılar / bütün alıntılar | ≥ %90 | ≥ %95 |
 | Sentez | Sadakat (elle) | Kaynağın söylemediğini söyleyen cümle sayısı (10 yanıt) | 0 | 0 |
 | Sentez | "Bulunamadı" doğruluğu | Bulunamaz testinde doğru davranış | %100 | %100 |
 | Sentez | Etik kurallar | Yasak ifadeler ("kesinlikle", "Diyanet'e göre"…) için otomatik tarama | 0 ihlal | 0 ihlal |
 | İşletim | Süre | Rüya başına medyan saniye | ≤ 30 | ≤ 20 |
 | İşletim | Maliyet | Rüya başına ortalama $ | ≤ 0,15 | ≤ 0,10 |
 
-**Atıf kapsamının birimi.** Citations API yanıtı cümlelere değil, atıf sınırlarından bölünmüş metin bloklarına ayırır. Her blok bir `YorumBolumu` olur. Bir bloğa birden çok cümle düşebilir ve "## Yılan" gibi başlıklar atıfsız bloklar olarak gelir. Bu yüzden:
+**Atıf kapsamının birimi.** Model yorumu JSON çıktısında bölümler hâlinde verir ([03](03-mimari.md), adım 4). Her bölüm bir `YorumBolumu` olur. Bir bölüme birden çok cümle düşebilir ve "## Yılan" gibi başlıklar atıfsız bölümler olarak gelir. Bu yüzden:
 
 - Ölçüm birimi **iddia bölümüdür**. Başlık bölümleri (`#` ile başlayan satırlardan oluşan) ve harf içermeyen bölümler (boşluk, noktalama, liste işareti) sayılmaz.
 - "Kaynaklarda bulunmayanlar" bölümü ve uyarı metni iddia değildir, sayılmaz.
@@ -68,13 +70,13 @@
 
 ## 3. Nasıl çalıştırılacak?
 
-Terminalde bir etiketle (ör. `asama1-opus`) şu komut çalıştırılır:
+Terminalde bir etiketle (ör. `asama1-deepseek`) şu komut çalıştırılır:
 
 ```
-python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket "asama1-opus"
+python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket "asama1-deepseek"
 ```
 
-- **Çıktı:** `data/raporlar/2026-11-28_asama1-opus.md`. Rapor ölçüt tablosunu, başarısız örnekleri ve toplam maliyeti içerir. Özet satırı repodaki `docs/olcumler.md` dosyasına eklenip commit edilir. Böylece ilerleme git geçmişinde de görünür.
+- **Çıktı:** `data/raporlar/2026-11-28_asama1-deepseek.md`. Rapor ölçüt tablosunu, başarısız örnekleri ve toplam maliyeti içerir. Özet satırı repodaki `docs/olcumler.md` dosyasına eklenip commit edilir. Böylece ilerleme git geçmişinde de görünür.
 - Sentez sadakati gibi elle yapılan kontroller için betik bir kontrol listesi üretir. Sen işaretlersin.
 - **Maliyet uyarısı:** Her çalıştırma ücretlidir. 20 rüya × ~0,10 $ = ~2 $. Geliştirme sırasında disk önbelleği açık kalır.
 
@@ -85,7 +87,7 @@ python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket "asama1
 | D1 | e5-large ile Qwen3-Embedding-0.6B | Vektör yedeğinde eşleme doğruluğu |
 | D2 | Reranker var ile yok | Recall@5 |
 | D3 | Kaynak başı N=1, 2, 3 | Kaynak çeşitliliği ve sadakat |
-| D4 | Opus 5.5, Sonnet 5.5 ve Haiku 5.5 (sentez) | Sadakat, maliyet ve süre |
-| D5 | Claude ile yerel Gemma/Qwen | Bütün ölçütler |
+| D4 | EVREN'deki başka bir sohbet modeli (ör. `mimo-v2.6-pro`) ile `deepseek-v4.1-flash` (sentez) | Sadakat, uydurma atıf ve süre |
+| D5 | API modeli ile yerel Gemma/Qwen | Bütün ölçütler |
 
 Her deneyin sonucu `docs/deneyler/` altına kısa bir not olarak yazılır: hipotez, sonuç ve karar.

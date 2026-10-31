@@ -57,7 +57,7 @@ data/raw/            Ham dosyalar (indirildiği gibi, değiştirilmez)
    ▼
 data/interim/<kaynak>.jsonl  Paragraf başına bir kayıt (asıl dil)
    │  enrich/assign_symbols.py   ← alt paragraflara sembol atama (LLM)
-   │  enrich/translate.py        ← Türkçe çeviri (LLM, Batch API)
+   │  enrich/translate.py        ← Türkçe çeviri (LLM, eşzamanlı istekler)
    │  enrich/conditions.py       ← koşul ayrıştırma (LLM, Aşama 3)
    ▼
 data/processed/entries.jsonl  Zenginleştirilmiş, son kayıtlar
@@ -93,7 +93,7 @@ Veri git'e **eklenmez**: `data/` `.gitignore`'da. Bunun üç nedeni var: lisans 
   "symbol_ids": ["yilan"],
   "metin_asli": "…",
   "metin_tr": "…",
-  "ceviri": {"yontem": "llm", "model": "claude-opus-5-5", "tarih": "2026-11-05", "gozden_gecirildi": false},
+  "ceviri": {"yontem": "llm", "model": "deepseek-v4.1-flash", "tarih": "2026-11-05", "gozden_gecirildi": false},
   "kosullar": [
     {"kosul": {"renk": "siyah"}, "yorum_tr": "…", "otorite": "Nablusi"}
   ],
@@ -105,7 +105,7 @@ Veri git'e **eklenmez**: `data/` `.gitignore`'da. Bunun üç nedeni var: lisans 
 Alan kuralları:
 
 - `entry_id` sabittir ve yeniden ayrıştırmada değişmez. Kimlik paragrafın sırasından değil, kaynak satır numarasından türetilir: `<kaynak>:<6 haneli satır no>`, örneğin `nablusi:004310`.
-- **Bu yüzden ham kaynak sabitlenir.** Ham dosyada tek bir satır değişirse bütün kimlikler kayar. Bu durumda test setindeki `beklenen_maddeler` ve Batch ile yapılmış sembol atamaları yanlış maddeleri gösterir.
+- **Bu yüzden ham kaynak sabitlenir.** Ham dosyada tek bir satır değişirse bütün kimlikler kayar. Bu durumda test setindeki `beklenen_maddeler` ve LLM ile yapılmış sembol atamaları yanlış maddeleri gösterir.
   - OpenITI adresleri `master` dalını değil, belirli bir commit'i gösterir (`ingest/kaynaklar.py`, [KAYNAKLAR.md](KAYNAKLAR.md)).
   - Gutenberg adresleri sabitlenemez. Her kaynağın beklenen SHA256 özeti `KaynakBilgisi.sha256` alanına ilk indirmeden sonra yazılır. Özet uyuşmazsa `download_sources.py` dosyayı yazmaz ve hata verir.
   - Kaynağın yeni sürümüne geçmek bilinçli bir iştir: adres ve özet değişir, `entries.jsonl` yeniden üretilir, test setindeki `beklenen_maddeler` gözden geçirilir.
@@ -146,13 +146,13 @@ Ayrıntılar için bkz. [06-degerlendirme.md](06-degerlendirme.md).
 ## 5. Çeviri stratejisi
 
 - **Ne çevrilecek:** Önce yalnızca 50 sembole ait maddeler çevrilecek, bunlar yaklaşık birkaç yüz paragraf. Tüm korpus Aşama 2'de çevrilecek.
-- **Nasıl:** Claude ile, Message Batches API üzerinden. Batch API toplu işlerde %50 indirimli ve sonuçlar 24 saat içinde geliyor.
+- **Nasıl:** `deepseek-v4.1-flash` ile, `LLMIstemcisi.toplu` üzerinden eşzamanlı isteklerle ([03](03-mimari.md), bölüm 5.2). Her yanıt disk önbelleğine yazıldığı için iş yarıda kesilirse kaldığı yerden devam eder.
 - **Çeviri yönergeleri:**
   - Anlamı koru, süsleme ekleme.
   - Ayet ve hadis alıntılarını işaretle.
   - Osmanlı tabir terminolojisini tutarlı kullan. Bunun için bir terim sözlüğü dosyası tutulacak (`docs/terimler.md`): رؤيا = rüya, تعبير = tabir, أضغاث أحلام = adgâs-ı ahlâm…
 - **Kalite kontrolü:** Her partiden rastgele 10 madde elle okunacak. Sorunlu maddeler `gozden_gecirildi: false` olarak kalacak.
-- **Maliyet (kaba tahmin, ölçülecek):**
-  - Bütün Nablusi korpusunu Batch API ile çevirmek yaklaşık 0,5 milyon girdi ve 0,7 milyon çıktı tokenı tutar. Bu, Opus 5.5 ile yaklaşık 8–15 $, Haiku 5.5 ile 1 $'ın altında demek.
-  - 50 sembollük ilk parti birkaç sent tutar.
-  - Gerçek sayılar `count_tokens` ile ölçülüp bu belgeye işlenecek.
+- **Süre ve kota (kaba tahmin, ölçülecek):**
+  - Bütün Nablusi korpusu yaklaşık 0,5 milyon girdi ve 0,7 milyon çıktı tokenı tutar; modelin düşünme tokenlarıyla birlikte birkaç milyon token. Günlük 15 milyon tokenlık kotaya sığar.
+  - EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bütün korpusun çevirisi bu tarihten önce bitirilmeli.
+  - Asıl sınır süre: istek başına onlarca saniye sürebiliyor. Gerçek token ve süre değerleri Hafta 1 denemesinde (H4) ölçülüp bu belgeye işlenecek.

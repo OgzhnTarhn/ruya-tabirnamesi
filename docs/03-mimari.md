@@ -21,17 +21,17 @@ flowchart TB
     subgraph CEVRIMDISI["Çevrimdışı: Veri hazırlama (bir kez)"]
         RAW[data/raw<br/>Nablusi, Miller, ...] --> ING[ingest/<br/>kaynak ayrıştırıcıları]
         ING --> INT[data/interim/*.jsonl]
-        INT --> ENR[enrich/<br/>sembol atama · çeviri · koşullar<br/>Claude Batch API]
+        INT --> ENR[enrich/<br/>sembol atama · çeviri · koşullar<br/>DeepSeek · eşzamanlı istekler]
         ENR --> ENT[data/processed/entries.jsonl]
         ENT --> SYM[index/build_symbols<br/>sozluk/symbols.json · git]
         ENT --> VEC[index/build_vectors<br/>Chroma + embedding]
     end
 
     subgraph CEVRIMICI["Çevrimiçi: Sorgu (her rüya)"]
-        UI[Gradio arayüzü · localhost] --> P1[1. Sembol çıkarımı<br/>Claude · JSON çıktı]
+        UI[Gradio arayüzü · localhost] --> P1[1. Sembol çıkarımı<br/>DeepSeek · JSON şeması]
         P1 --> P2[2. Eşleme<br/>symbols.json + zeyrek<br/>yoksa vektör yedeği]
         P2 --> P3[3. Getirme<br/>symbol_id ile · kaynak başı top-N<br/>bağlam filtresi]
-        P3 --> P4[4. Sentez<br/>Claude · search_result atıfları]
+        P3 --> P4[4. Sentez<br/>DeepSeek · numaralı kaynaklar<br/>+ kodda atıf doğrulama]
         P4 --> UI
     end
 
@@ -47,9 +47,9 @@ flowchart TB
 - **Girdi:** `RuyaGirdisi(metin: str, baglam: Baglam | None)`
 - **Çıktı:** `CikarimSonucu(semboller: list[Sembol], ruya_turu_ipucu: str | None)`
   - `Sembol(yalin, nitelikler, eylem, duygu, olumsuz: bool, ham_ifade)`
-- **Nasıl:** Claude çağrısı, yapılandırılmış çıktıyla (`output_config.format` ve JSON şeması). Düşük `effort` kullanılır, çünkü bu basit bir çıkarım işi.
+- **Nasıl:** LLM çağrısı, yapılandırılmış çıktıyla (`response_format` ile `json_schema`, `strict: true`). Yanıt `CikarimSonucu` şemasıyla doğrulanır.
 - **Kurallar:** Semboller yalın hâlde ve küçük harfle döner. Olumsuz semboller `olumsuz=true` olarak işaretlenir ve sonraki adımlara geçmez.
-- **Neden ayrı çağrı:** Claude API'de atıf (citations) özelliği ile yapılandırılmış çıktı aynı istekte kullanılamıyor (400 hatası). Bu yüzden çıkarım ve sentez iki ayrı çağrı.
+- **Neden ayrı çağrı:** Getirme (adım 2–3) çıkarımın sonucuna bağlı; sentez ancak maddeler getirildikten sonra yapılabilir.
 
 ### Adım 2 · Eşleme (`pipeline/map.py`)
 
@@ -77,13 +77,19 @@ flowchart TB
 
 - **Girdi:** `CikarimSonucu`, getirilen maddeler, `Baglam`
 - **Çıktı:** `Yorum(bolumler, atiflar, uyari)`
-- **Nasıl:** Her madde bir `search_result` içerik bloğu olarak verilir:
-  - `source` = `entry_id`
-  - `title` = "Nablusi · حية (yılan)"
-  - `content` = Türkçe çeviri ve asıl metin
-  - `citations: {enabled: true}` ayarı açık
+- **Nasıl:** Getirilen maddeler kullanıcı mesajında numaralı kaynaklar olarak verilir:
 
-  Model her iddia için yapılandırılmış atıf döndürür. Var olmayan bir kaynağa atıf yapması API düzeyinde engellenir.
+  ```
+  [K1] nablusi:004310 · Nablusi · حية (yılan)
+  <metin_tr>
+  <metin_asli>
+  ```
+
+  Model JSON şemasıyla yanıt verir: `{"bolumler": [{"metin": "...", "kaynaklar": [{"entry_id": "nablusi:004310", "alinti": "..."}]}], "bulunamayanlar": ["..."]}`. Başlık bölümlerinin `kaynaklar` listesi boştur.
+- **Atıf doğrulama (kodda, `atiflari_dogrula`):** API düzeyinde atıf denetimi olmadığı için ([04](04-teknoloji-secimi.md), TK-03) model çıktısı kodda denetlenir:
+  - `entry_id` modele verilen maddelerden biri değilse atıf **atılır** ve sayılır (uydurma atıf; [06](06-degerlendirme.md)'daki sadakat ölçütüne girer).
+  - `alinti`, normalleştirildikten sonra maddenin `metin_tr` ya da `metin_asli` metninde geçmiyorsa atıf korunur ama alıntı boşaltılır ve sayılır.
+  - Doğrulanan atıflar `Atif(entry_id, baslik, alinti)` nesnelerine çevrilir; `baslik` maddeden gelir, modelden alınmaz.
 - **Sistem talimatı:** Kurallar [05-yorum-yontemi.md](05-yorum-yontemi.md) ve [07-etik-ve-hukuk.md](07-etik-ve-hukuk.md) belgelerinden gelir. Talimat metni `prompts/sentez_v1.md` dosyasında sürümlü tutulur. Talimat değiştiğinde değerlendirme yeniden çalıştırılır.
 - **Çıktı yapısı:** Her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". En sonda uyarı metni.
 
@@ -153,20 +159,26 @@ Veri repodaki `data/` klasöründe durur ve git'e girmez (bkz. [11](11-calisma-o
 - `config.py` ayarları ortam değişkenlerinden okur (pydantic-settings).
 - **Veri yolu:** Bütün veri yolları `<repo>/data` altındadır; `RUYA_DATA_DIR` ile değiştirilebilir. Kod bu klasörün dışına veri yazmaz (`tests/test_config.py`).
 - **Gizli bilgiler:** API anahtarı kullanıcı ortam değişkeninde durur ([10](10-kurulum-rehberi.md), adım 1). Hiçbir dosyaya (`.env` dahil) yazılmaz.
-- **Model adları tek bir yerde:** `MODEL_CIKARIM`, `MODEL_SENTEZ`, `MODEL_CEVIRI`. Model değiştirmek tek satırlık bir iş.
+- **Model adları ve API adresi tek bir yerde:** `MODEL_CIKARIM`, `MODEL_SENTEZ`, `MODEL_CEVIRI`, `MODEL_SEMBOL_ATAMA`, `MODEL_KOSUL`, `LLM_ADRESI`. Model değiştirmek tek satırlık bir iş.
 - Hugging Face modelleri gerekirse `<repo>/.cache/hf` altına iner (git'e girmez).
 
 ### 5.2 LLM istemcisi (`llm/client.py`)
 
-- **Tek sarmalayıcı:** Bütün Claude çağrıları buradan geçer.
+- **Tek sarmalayıcı:** Bütün LLM çağrıları buradan geçer.
+- **Sağlayıcı:** EVREN LLM geçidi (`LLM_ADRESI`), OpenAI uyumlu `POST /v1/chat/completions`. İstekler `httpx` ile gönderilir; sağlayıcıya özgü SDK kullanılmaz. Anahtar `EVREN_LLM_API_KEY` ortam değişkeninden okunur, yoksa `ApiAnahtariYok`. İstek gövdesi OpenAI biçimindedir: `model`, `messages`, `max_tokens`, gerekiyorsa `response_format`.
 - **Disk önbelleği (`data/cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). Tek dosyalı bir veritabanı kullanılmaz; dosyalar tek tek okunup silinebilir. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile tamamen kapatılabilir.
 - **Rüya içeren istekler varsayılan olarak önbelleğe yazılmaz.** Çıkarım ve sentez isteklerinde rüya metni, yanıtlarında da rüyanın parçaları (`ham_ifade`) ve yorumu bulunur. Bunlar önbelleğe yazılsaydı rüya geçmişi kapalıyken bile rüyalar diskte birikirdi (İOG-03). Bu yüzden:
   - `LLMIstemcisi.mesaj(istek, ruya_icerir=True)` ile çağrılan istekler diske yalnızca `RUYA_SORGU_ONBELLEGI=on` iken yazılır ve oradan okunur. Varsayılan değer kapalıdır.
   - Değerlendirme bu ayarı açar. Test setindeki rüyalar zaten repoda olduğu için yeni bir şey açığa çıkmaz ve aynı ölçüm ikinci kez ücret ödetmez.
   - Çevrimdışı işler (çeviri, sembol atama, koşul ayrıştırma) rüya içermez ve yalnızca `RUYA_LLM_CACHE` ayarına uyar.
-- **Ölçüm:** Her yanıttaki `usage` bilgisi okunur ve tutar hesaplanıp `SorguKaydi`'ya yazılır.
-- **Hata yönetimi:** Hata sınıfları ayrı ayrı yakalanır. 429 ve 5xx hataları SDK'nın yeniden deneme mekanizmasıyla tekrarlanır. 400 hatası tekrarlanmaz, loglanır ve kullanıcıya anlaşılır bir mesaj gösterilir. Yanıtta `stop_reason` her zaman kontrol edilir; değer `refusal` ise kullanıcıya bilgi verilir.
-- **Prompt önbelleği:** Sabit sistem talimatı önbelleklenir. Bir oturumda arka arkaya yapılan sorgularda maliyeti düşürür. Önbelleğin çalıştığı `usage.cache_read_input_tokens` ile doğrulanır.
+- **Ölçüm:** Her yanıttaki `usage` okunur: `prompt_tokens`, `completion_tokens` (düşünme tokenları dahil), `prompt_tokens_details.cached_tokens`. Tutar `FIYATLAR` tablosundan hesaplanıp `SorguKaydi`'ya yazılır. EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz olduğu için fiyatlar şimdilik 0; asıl sınır günlük token kotasıdır (15 milyon).
+- **Hata yönetimi:**
+  - 429, 5xx ve geçidin "model şu anda dolu" yanıtı yeniden denenir: üstel bekleme, en fazla 4 deneme, `Retry-After` başlığı varsa ona uyulur. Diğer 4xx hataları tekrarlanmaz.
+  - Zaman aşımı uzun tutulur (180 sn); model yük altında dakikalarca yanıt üretebiliyor.
+  - `finish_reason == "length"` → `YanitKesildi`; `message.refusal` doluysa → `ModelReddetti`; tekrar denemeler tükenirse ya da tekrarlanmayan bir hata gelirse → `LLMHatasi`.
+  - JSON şeması istenen yanıt ayrıştırılamazsa → `YanitBozuk`.
+- **Toplu istekler:** Çevrimdışı işler (çeviri, sembol atama, koşullar) `LLMIstemcisi.toplu(istekler, eszamanli=4)` ile gönderilir. Her istek `mesaj` üzerinden geçtiği için disk önbelleğine yazılır; iş yarıda kesilirse yeniden başlatıldığında biten istekler tekrar gönderilmez. Tek bir isteğin hatası bütün işi durdurmaz, o anahtarın sonucu olarak döner.
+- **Prompt önbelleği:** Geçit, aynı önekle başlayan istekleri kendisi önbellekler. Bunun için sabit sistem talimatı her zaman mesajların başında durur; değişen kısım (madde, rüya) sonra gelir. Önbelleğin çalıştığı `usage.prompt_tokens_details.cached_tokens` ile görülür.
 
 ### 5.3 Loglama ve gizlilik
 
@@ -200,7 +212,7 @@ Veri repodaki `data/` klasöründe durur ve git'e girmez (bkz. [11](11-calisma-o
 
 | Yapılmayan | Neden | Ne zaman yeniden düşünülür |
 |---|---|---|
-| LangChain / LlamaIndex | Öğrenmeyi gizler, `search_result` atıflarını sarmalar | Gerek yok |
+| LangChain / LlamaIndex | Öğrenmeyi gizler; atıf doğrulamasını kendimiz yazmak istiyoruz | Gerek yok |
 | Ayrı bir vektör veritabanı sunucusu (Qdrant vb.) | ~10 bin kayıt için gereksiz | Korpus 100 bini geçerse |
 | Ajan (agent) yapısı | Adımlar baştan belli. Ajan maliyet ve belirsizlik ekler. | Gerek yok |
 | Kullanıcı hesabı ve sunucu | Proje kişisel | Proje paylaşılırsa (o zaman KVKK ve lisanslar yeniden ele alınır) |

@@ -61,7 +61,7 @@ flowchart BT
 
 - **Ağır paketler tembel yüklenir.** `chromadb`, `sentence_transformers`, `torch`, `transformers`, `gradio` ve `zeyrek` modül düzeyinde içe aktarılmaz; yalnızca onları kullanan işlevin içinde. Böylece bütün paket bilgisayarda, bu paketler kurulmadan içe aktarılabilir ve birim testleri çalışır (zeyrek kurulu ama analizörü yavaş yüklenir).
 - **Göreli içe aktarma yok.** `from ..index import store` gibi satırlar katman testinden kaçabileceği için yasaktır; her zaman `from ruya.index import store` yazılır.
-- **Model adları yalnızca `src/ruya/config.py` içinde.** `src/`, `app/`, `eval/`, `scripts/`, `notebooks/` altında başka bir dosyada `claude-…` geçemez.
+- **Model adları yalnızca `src/ruya/config.py` içinde.** `src/`, `app/`, `eval/`, `scripts/`, `notebooks/` altında başka bir dosyada `claude-…` ya da `deepseek-…` biçimli bir model adı geçemez.
 - **Notebook'lar çıktısız commit edilir** ve ortak kurulum hücresiyle başlar.
 - **`sozluk/symbols.json` her zaman şemaya uyar.**
 
@@ -73,7 +73,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 
 | Modül | Sorumluluk | Ana öğeler | Durum |
 |---|---|---|---|
-| `config.py` | Veri yolları (`data/`), model adları, fiyatlar | `Ayarlar`, `ayarlar()`, `VERI_KLASORU`, `MODEL_*`, `EFFORT_*`, `FIYATLAR`, `SOZLUK_DOSYASI`, `TALIMAT_KLASORU` | ✅ |
+| `config.py` | Veri yolları (`data/`), model adları, fiyatlar | `Ayarlar`, `ayarlar()`, `VERI_KLASORU`, `MODEL_*`, `LLM_ADRESI`, `LLM_ANAHTAR_DEGISKENI`, `FIYATLAR`, `SOZLUK_DOSYASI`, `TALIMAT_KLASORU` | ✅ |
 | `hatalar.py` | Projeye özgü hatalar | `ApiAnahtariYok`, `ModelReddetti`, `YanitKesildi`, `SozlukHatasi` | ✅ |
 | `schemas.py` | Bütün veri sözleşmeleri (bölüm 3) | `Madde`, `SymbolKaydi`, `RuyaGirdisi` … `SorguKaydi`, `TestOrnegi` | ✅ |
 | `etik.py` | Sabit metinler | `UYARI_METNI`, `GUVENLIK_NOTU`, `SEMBOL_YOK_MESAJI`, `YASAK_IFADELER` | ✅ |
@@ -84,7 +84,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | Modül | Ana öğeler | Durum |
 |---|---|---|
 | `text/turkce.py` | `kucuk_harf`, `normallestir`, `kokler` | 🧩 Hafta 2, 4 |
-| `llm/client.py` | `LLMIstemcisi.mesaj(istek, ruya_icerir=False)`, `.batch_gonder`, `.batch_sonuclari` · `onbellek_anahtari` ✅ · `maliyet_hesapla` ✅ | 🧩 Hafta 3–4 |
+| `llm/client.py` | `LLMIstemcisi.mesaj(istek, ruya_icerir=False) -> LLMYaniti`, `.toplu(istekler, eszamanli=4) -> dict[str, LLMYaniti \| RuyaHatasi]` · `LLMYaniti.icerik`, `.json()` · `onbellek_anahtari` ✅ · `maliyet_hesapla` ✅ | 🔁 EVREN'e geçiş |
 | `llm/talimatlar.py` | `talimat_oku("sentez_v1")` | ✅ |
 
 ### Veri hattı (çevrimdışı)
@@ -94,7 +94,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `ingest/kaynaklar.py` | `KAYNAKLAR`: künye, lisans, URL, aşama. Tek doğru kaynak. | ✅ |
 | `ingest/nablusi.py`, `miller.py` | `ayristir(ham_dosya) -> Iterator[Madde]` | 🧩 Hafta 2 |
 | `ingest/freud.py`, `ibn_sirin.py` | aynı arayüz | 🧩 Hafta 7, 8 |
-| `enrich/assign_symbols.py`, `translate.py` | `batch_istekleri(...)`, `sonuclari_uygula(maddeler, yanitlar)` | 🧩 Hafta 3 |
+| `enrich/assign_symbols.py`, `translate.py` | `istekler(...) -> dict[custom_id, istek]` (`LLMIstemcisi.toplu` ile gönderilir), `sonuclari_uygula(maddeler, yanitlar)` | 🧩 Hafta 3 |
 | `enrich/conditions.py` | aynı arayüz | 🧩 Hafta 8 |
 | `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | 🧩 Hafta 3–4 |
 | `index/store.py` | `MaddeDeposu`, `VektorArayici` (Protocol) ✅, `BellekDeposu` | 🧩 Hafta 4 |
@@ -145,7 +145,7 @@ flowchart LR
 | `Sembol`, `CikarimSonucu` | Adım 1 | `olumsuz=True` semboller `gecerli_semboller`'e girmez · `ham_ifade` rüya metninin parçasıdır, loglanmaz |
 | `Eslesme` | Adım 2 | `yontem="yok"` ⇔ `symbol_id=None` |
 | `Aday` | Adım 3 | Madde + `skor` + `gerekceler` (hata ayıklama sekmesi için) |
-| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm, Citations API'nin döndürdüğü bir metin bloğudur ve kendi atıflarını taşır · İG-32'deki yapı (sembol başlıkları, uzlaşı/ayrışma) metnin içinde Markdown başlıklarıyla taşınır · atıf kapsamında başlık bölümleri sayılmaz (06, bölüm 2) · `uyari` zorunlu |
+| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm, modelin JSON çıktısındaki bir `bolumler` öğesidir ve kodda doğrulanmış atıflarını taşır (03, adım 4) · İG-32'deki yapı (sembol başlıkları, uzlaşı/ayrışma) metnin içinde Markdown başlıklarıyla taşınır · atıf kapsamında başlık bölümleri sayılmaz (06, bölüm 2) · `uyari` zorunlu |
 | `Kullanim`, `AdimOlcumu` | Her adım | LLM adımlarında token ve maliyet; `talimat` alanı sürümü kaydeder (ör. `cikarim_v1`) |
 | `SorguKaydi` | Arayüz, değerlendirme, log | `log_kaydi()` rüya metnini ve sembol ifadelerini **içermez** (testli) |
 | `TestOrnegi` | `eval/dataset/*.jsonl` | `id` biçimi `r007` |
@@ -156,7 +156,7 @@ flowchart LR
 
 ## 4. Bağımlılık enjeksiyonu
 
-Boru hattı dış dünyaya (Claude API, madde deposu, sözlük, vektör indeksi) yalnızca tek bir nesne üzerinden erişir:
+Boru hattı dış dünyaya (LLM API, madde deposu, sözlük, vektör indeksi) yalnızca tek bir nesne üzerinden erişir:
 
 ```python
 @dataclass
@@ -186,7 +186,6 @@ Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(.
 | `sozluk/symbols.json` | **sen** (elle onay) | `index/build_symbols.py` | **git** | `SozlukDosyasi` |
 | `data/index/chroma/` | `index/build_vectors.py` | `index/*` | `data/` | Chroma |
 | `data/cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | `data/` | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
-| `data/cache/batch/<etiket>.json` | `LLMIstemcisi.batch_gonder` | `batch_sonuclari` | `data/` | batch kimliği, durum |
 | `data/logs/sorgular.jsonl` | `kayit.sorgu_logla` | sen | `data/` | `SorguKaydi.log_kaydi()` |
 | `data/gecmis/<yıl-ay>.jsonl` | `kayit.gecmise_yaz` | sen | `data/` (isteğe bağlı) | `SorguKaydi` |
 | `data/raporlar/<tarih>_<etiket>.md` | `degerlendirme/calistir.py` | sen | `data/` | Markdown |
@@ -223,10 +222,11 @@ flowchart LR
 | Hata | Kim fırlatır | Arayüzün davranışı (03, bölüm 5.4) |
 |---|---|---|
 | `ApiAnahtariYok` | `LLMIstemcisi` | Açılışta net mesaj |
-| `ModelReddetti` | `LLMIstemcisi` (`stop_reason == "refusal"`) | `etik.REDDEDILDI_MESAJI`, olay loglanır |
-| `YanitKesildi` | `LLMIstemcisi` (`stop_reason == "max_tokens"`) | Loglanır; `max_tokens` artırılır |
+| `ModelReddetti` | `LLMIstemcisi` (`message.refusal` dolu) | `etik.REDDEDILDI_MESAJI`, olay loglanır |
+| `YanitKesildi` | `LLMIstemcisi` (`finish_reason == "length"`) | Loglanır; `max_tokens` artırılır |
 | `SozlukHatasi` | `index/build_symbols.py` | Açılışta net mesaj |
-| `anthropic.*Error` | SDK | 429 ve 5xx'i SDK yeniden dener; 400 tekrarlanmaz, mesajı gösterilir |
+| `YanitBozuk` | `LLMYaniti.json()` | JSON şeması istenen yanıt ayrıştırılamadı; loglanır, istek bir kez yeniden denenebilir |
+| `LLMHatasi` | `LLMIstemcisi` | 429, 5xx ve "model dolu" yanıtları en fazla 4 kez denendikten sonra ya da tekrarlanmayan bir 4xx'te; HTTP durumu ve geçidin mesajı gösterilir |
 
 "Sembol bulunamadı" ve "maddesi yok" hata değildir: `SorguKaydi.mesaj` ve `Yorum.bulunamayanlar` ile normal akışta taşınır.
 
