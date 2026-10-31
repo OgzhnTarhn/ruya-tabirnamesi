@@ -4,7 +4,7 @@ version = "0.0.1"
 description = "Çok kaynaklı Türkçe rüya tabiri RAG'ı (kişisel öğrenme projesi)"
 readme = "README.md"
 requires-python = ">=3.11"
-# Sürümler alt sınırla yazılır: Colab'in hazır kurulu paketleriyle çakışmasın (TK-02).
+# Sürümler alt sınırla yazılır (TK-02).
 dependencies = [
     "anthropic>=2.0",
     "pydantic>=2.10",
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# Ağır paketler yalnızca Colab'de kurulur: pip install -e ".[colab]"
+# Ağır paketler isteğe bağlıdır: uv sync --extra hepsi
 indeks = [
     "chromadb>=1.0",
     "sentence-transformers>=5.0",
@@ -21,7 +21,7 @@ indeks = [
 arayuz = [
     "gradio>=5.0",
 ]
-colab = [
+hepsi = [
     "ruya[indeks,arayuz]",
 ]
 
@@ -43,7 +43,7 @@ packages = ["src/ruya"]
 testpaths = ["tests"]
 addopts = "-ra"
 markers = [
-    "veri: Drive'daki veriyi gerektirir; yalnızca Colab'de çalışır",
+    "veri: data/ altındaki gerçek veriyi gerektirir; veri yoksa atlanır",
 ]
 
 [tool.ruff]
