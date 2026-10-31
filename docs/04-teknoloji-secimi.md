@@ -13,14 +13,14 @@
 | Çalışma ortamı | Her şey **bilgisayarda**; veri `data/` altında, git'e girmez | ✅ Kararlaştırıldı (31 Ekim revizyonu) |
 | Dil ve sürüm | Python ≥3.11 (uv ile) | ✅ |
 | Paket yönetimi | `pyproject.toml` + uv | ✅ |
-| LLM sağlayıcı | Claude API (Anthropic Python SDK) | ✅ |
-| LLM modeli | `claude-opus-5-5` (varsayılan); Sonnet 5.5 ve Haiku 5.5 Aşama 4'te karşılaştırılacak | ⚠️ **Senin onayın gerekli** |
-| Embedding | `intfloat/multilingual-e5-large`; aday: `Qwen/Qwen3-Embedding-0.6B` | ✅ (Aşama 2'de ölçülecek) |
+| LLM sağlayıcı | EVREN LLM geçidi (OpenAI uyumlu API, `httpx`) | ✅ 31 Ekim revizyonu |
+| LLM modeli | `deepseek-v4.1-flash` (bütün işler) | ✅ 31 Ekim kararı |
+| Embedding | `intfloat/multilingual-e5-large` ya da EVREN'deki `qwen3-embedding-8b` | 🕓 Aşama 2'de ölçülecek |
 | Vektör deposu | Chroma (yerel, gömülü) | ✅ |
 | Reranker | `BAAI/bge-reranker-v2-m3` | 🕓 Aşama 2 |
 | Türkçe morfoloji | zeyrek | ✅ |
 | Veri doğrulama | Pydantic v2 | ✅ |
-| Arayüz | Gradio (notebook içinde, `share` kapalı) | ✅ |
+| Arayüz | Gradio (yerelde, `share` kapalı) | ✅ |
 | Test ve kalite | pytest, ruff, nbstripout | ✅ |
 | Sürüm kontrolü | Git ve GitHub (özel repo) | ⚠️ **Senin onayın gerekli** |
 | Açık model LLM | Colab GPU'sunda Gemma 4 / Qwen | 🕓 Aşama 4 deneyi |
@@ -45,36 +45,32 @@
   - Windows'ta venv betiklerinin Türkçe karakterli yollarda yaşattığı sorunları da azaltıyor.
 - **Not:** Sürümler `pyproject.toml`'da alt sınırla yazılır; tam sürümleri `uv.lock` sabitler.
 
-## TK-03 · LLM sağlayıcı: Claude API
+## TK-03 · LLM sağlayıcı: EVREN LLM geçidi (31 Ekim 2026 revizyonu)
 
-- **Seçenekler:** Claude API, yerel model (Ollama), diğer bulut sağlayıcılar
-- **Karar:** Claude API (resmî `anthropic` Python SDK)
+- **Seçenekler:** Claude API, EVREN LLM geçidi, yerel model (Ollama)
+- **İlk karar (21 Ekim):** Claude API. En önemli gerekçesi yerleşik kaynak göstermeydi (`search_result` blokları ve Citations API: verilmemiş bir kaynağa atıf API düzeyinde engelleniyor). Ek olarak Batch API (%50 indirim) ve prompt önbelleği vardı.
+- **Revizyon (31 Ekim):** Claude API kullanılamıyor. Yerel model, bilgisayarda GPU olmadığı ve küçük modeller klasik Arapçada zayıf kaldığı için elendi. Karar: **EVREN LLM geçidi** (`https://evren-llmapi.ssyz.org.tr`).
 - **Gerekçe:**
-  - **Yerleşik kaynak gösterme.** `search_result` içerik blokları ve `citations` ile her iddia yapılandırılmış biçimde kaynağına bağlanıyor. Verilen belgelerde olmayan bir kaynağa atıf yapılması API düzeyinde engelleniyor. Projenin "uydurmama" hedefi (H3) için en kritik özellik bu.
-  - **Yapılandırılmış çıktı.** Sembol çıkarımı için JSON şeması kullanılabiliyor (`output_config.format`).
-  - **Batch API.** Çeviri gibi toplu işler %50 indirimli.
-  - **Prompt önbelleği.** Sabit sistem talimatının maliyetini düşürüyor.
-- **Bilinen kısıt:** Atıf ve yapılandırılmış çıktı aynı istekte kullanılamıyor (400 hatası). Bu yüzden boru hattında iki ayrı çağrı var.
-- **Yeniden düşün:** Aşama 4'teki yerel model deneyi kaliteyi yakalarsa ya da maliyet bütçeyi aşarsa.
+  - OpenAI uyumlu API; JSON şemasıyla yapılandırılmış çıktıyı destekliyor (31 Ekim'de örnek bir Nablusi maddesiyle denendi).
+  - Modeller 1 Aralık 2026'ya kadar ücretsiz; günde 15 milyon token kota. Bütün korpusun çevirisine yeter.
+  - Aynı geçitte embedding (`qwen3-embedding-8b`) ve reranker (`qwen3-reranker-8b`) modelleri de var; Aşama 2'de yerel model kurmadan kullanılabilir.
+- **Bedeli:**
+  - **Atıf API'si yok.** Atıflar numaralı kaynaklar ve JSON çıktısıyla alınır, kodda doğrulanır ([03](03-mimari.md), adım 4). Uydurma atıf engellenmez ama her seferinde yakalanır ve sayılır.
+  - **Batch API yok.** Toplu işler eşzamanlı isteklerle yapılır; disk önbelleği sayesinde kesilen iş kaldığı yerden devam eder.
+  - **Servis kesintileri.** 31 Ekim denemesinde bazı modeller "dolu" yanıtı verdi ya da zaman aşımına uğradı. İstemci yeniden dener ([03](03-mimari.md), bölüm 5.2).
+  - **Ücretsizlik süreli.** 1 Aralık'tan sonraki fiyat belli değil; ağır işler (bütün korpusun çevirisi) bu tarihten önce bitirilmeli.
+  - **Gizlilik.** Rüya metni EVREN sunucularına gider ([07](07-etik-ve-hukuk.md)).
+- **Yeniden düşün:** Hafta 1 denemesinde çeviri ya da sembol atama kalitesi yetersiz çıkarsa, servis sürekli kesilirse ya da 1 Aralık sonrası fiyat bütçeyi aşarsa. İstemci tek modülde olduğu için sağlayıcı değişikliği `llm/client.py` ve `config.py` ile sınırlı kalır.
 
-## TK-04 · Model seçimi ⚠️ senin kararın
+## TK-04 · Model seçimi: `deepseek-v4.1-flash` (31 Ekim 2026)
 
-21 Ekim 2026 itibarıyla güncel fiyatlar (milyon token başına, girdi / çıktı):
-
-| Model | Kimlik | Girdi | Çıktı | Not |
-|---|---|---|---|---|
-| Claude Opus 5.5 | `claude-opus-5-5` | 4 $ | 20 $ | Varsayılan ve en yetenekli genel model |
-| Claude Sonnet 5.5 | `claude-sonnet-5-5` | 2 $ | 10 $ | Hızlı ve dengeli |
-| Claude Haiku 5.5 | `claude-haiku-5-5` | 0,10 $ | 0,50 $ | 100 bin token altındaki istemler için. Çok ucuz. |
-
-- **Önerim:** Üç işin hepsinde (çıkarım, sentez, çeviri) **Opus 5.5** ile başla. Çıkarımda `effort: low`, sentezde `effort: medium` kullan. Sonra Aşama 4'te aynı test setiyle Sonnet 5.5 ve Haiku 5.5'i dene ve kaliteyi ölçerek ucuzla.
-- **Neden önce en güçlü model:** "Çalışmıyor" dediğinde sorunun modelden mi, senin boru hattından mı kaynaklandığını ayırmak kolaylaşır. Önce kalite tavanını görürsün, sonra maliyeti düşürürsün.
-- **Rüya başına tahmini maliyet:** Yaklaşık 10 bin girdi ve 1.500 çıktı tokenı varsayımıyla Opus 5.5'te yaklaşık 7–10 sent, Sonnet 5.5'te yaklaşık 3,5 sent, Haiku 5.5'te 1 sentin altında. Düşünme (thinking) tokenları bu tahmine dahil değil, ölçülecek.
+- **İlk öneri (21 Ekim):** Claude Opus 5.5, Aşama 4'te Sonnet 5.5 ve Haiku 5.5 ile karşılaştırma. TK-03 revizyonuyla geçersiz oldu.
+- **Karar:** Bütün işlerde (çıkarım, sentez, çeviri, sembol atama, koşullar) **`deepseek-v4.1-flash`**. Yedek model kullanılmaz; "dolu" yanıtında aynı model yeniden denenir.
+- **Gerekçe:** 31 Ekim denemesinde geçitteki üç sohbet modelinden yalnızca bu yanıt verdi; şemaya uygun JSON döndürdü, sembolü doğru buldu, çevirisi iyiydi. Tek modelle başlamak sistemi sade tutar.
+- **Gözlenen sorun:** Örnek çevirinin sonuna anlamsız bir kelime ("ürün") eklemişti. Hafta 1'deki H3 puanlaması bunun ne sıklıkta olduğunu gösterecek.
 - **Uygulama notları:**
-  - Opus 5.5'te düşünme kapatılamaz. Maliyet ve derinlik `output_config.effort` ile ayarlanır.
-  - Opus 5.5'in güvenlik sınıflandırıcıları bir isteği reddedebilir (`stop_reason: "refusal"`). Bu durum için sunucu tarafı yedek model (`fallbacks: "default"`) etkinleştirilecek.
-  - Model adları `config.py` içinde tek bir yerde duracak.
-- **Senden beklenen:** Aylık bütçe tavanı (önerim 10 $) ve bu önerinin onayı.
+  - Model düşünme (reasoning) tokenları üretir; bunlar `completion_tokens`'a dahildir. Kısa bir istekte bile yüzlerce token tutabilir; `max_tokens` buna göre geniş verilir.
+  - Model adları `config.py` içinde tek bir yerde durur. Her iş için ayrı sabit (`MODEL_CIKARIM`, `MODEL_SENTEZ`…) korunur; ileride işlere farklı modeller atanabilir.
 
 ## TK-05 · Embedding modeli
 
@@ -145,7 +141,7 @@
 
 - **Seçenekler:** Colab GPU'sunda Gemma 4 ya da güncel Qwen modelleri. Ollama ile çalıştırılabilir ya da `transformers` ile 4-bit sıkıştırmayla yüklenebilir.
 - **Karar:** Ertelendi. Aşama 4'te deney olarak yapılacak. Senin bilgisayarının ekran kartı kullanılmaz.
-- **Kısıt:** Açık modellerde Claude'un atıf API'si yok. Atıflar `[S1]` biçimli kimliklerle ve kod tarafında doğrulamayla yapılacak.
+- **Kısıt:** Atıflar zaten numaralı kaynaklar ve kodda doğrulamayla yapıldığı için (TK-03) açık modele geçmek boru hattını değiştirmez.
 - **Bilinmeyen:** Ücretsiz Colab GPU'sunun (T4, 16 GB) hangi model boyutunu kaldıracağı. Aşama 4'te denenecek, sığmazsa daha küçük bir model seçilecek.
 
 ## TK-13 · Çalışma ortamı: Colab ve Drive (22 Ekim 2026)
