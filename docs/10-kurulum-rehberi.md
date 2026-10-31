@@ -1,63 +1,58 @@
 # 10 · Kurulum Rehberi (Hafta 0)
 
-> Durum: Taslak v0.2 · Tarih: 22 Ekim 2026 (Colab ve Drive'a göre güncellendi)
-> Bu adımların çoğunu **senin** yapman gerekiyor: hesap açma, ödeme bilgisi, API anahtarı, token. Kodlu kısımları birlikte yapacağız.
-> Ortamın genel resmi: [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)
+> Durum: v0.3 · Tarih: 31 Ekim 2026 (Colab ve Drive yerine bilgisayarda çalışma)
+> Ortamın genel resmi: [11-calisma-ortami.md](11-calisma-ortami.md)
 
-## 1. Claude API hesabı [ZORUNLU]
+## 1. LLM API anahtarı [ZORUNLU]
 
-1. **platform.claude.com** adresinde bir hesap aç. Eski adresi console.anthropic.com idi; yönlendirme ya da arayüz değişmiş olabilir.
-2. Faturalandırma (Billing) bölümünden bir ödeme yöntemi ekle ve küçük bir kredi yükle. 5–10 $ başlangıç için yeterli.
-3. **Harcama limiti koy:** Limitler (Limits) bölümünden aylık bir tavan belirle. Önerim 10 $. Menünün yeri değişmiş olabilir; bulamazsan bana yaz.
-4. API Keys bölümünden `ruya-tabirnamesi` adında yeni bir anahtar oluştur.
-5. **Anahtarı hiçbir yere yapıştırma:** sohbete, koda, GitHub'a, notebook hücresine. Yalnızca Colab Secrets'a gireceksin (4. adım).
+Model olarak EVREN LLM geçidi üzerinden `deepseek-v4.1-flash` kullanılır (31 Ekim 2026 kararı; kodun bu sağlayıcıya geçişi ayrı bir adımda yapılır).
+
+1. Anahtar `EVREN_LLM_API_KEY` adlı **kullanıcı ortam değişkeninde** durur. Orkestra da aynı anahtarı kullandığı için bu bilgisayarda tanımlı. Yeni bir bilgisayarda bir kez:
+
+```powershell
+[Environment]::SetEnvironmentVariable("EVREN_LLM_API_KEY", "<anahtar>", "User")
+```
+
+   Sonra VS Code'u ve terminali yeniden aç.
+2. **Anahtarı hiçbir yere yapıştırma:** sohbete, koda, `.env` dosyasına, GitHub'a, notebook hücresine.
+3. Kalan kota: günde 15 milyon token. Modeller 1 Aralık 2026'ya kadar ücretsiz.
 
 ## 2. GitHub repo [ÖNERİLEN]
 
-1. github.com'da `ruya-tabirnamesi` adında yeni bir repo oluştur. Görünürlüğü **Private** seç. README, .gitignore ve lisans ekleme; onlar hazır.
-2. Bilgisayardaki repoyu ona bağlayıp push et. İstersen bağlantı komutlarını ben hazırlarım, push'u sen yaparsın.
-3. **Repo özelse Colab için okuma tokenı:** GitHub → Settings → Developer settings → Fine-grained tokens yolunu izle. Yalnızca bu repoya erişimi olan, **Contents: Read-only** yetkili bir token oluştur. Token'ı da yalnızca Colab Secrets'a gireceksin.
+1. Repo GitHub'da **Private** olarak duruyor. Push'u sen yaparsın.
+2. GitHub yalnızca kod ve belgelerin yedeğidir. Veri (`data/`) oraya gitmez.
 
-## 3. Google Drive klasörü [ZORUNLU]
-
-1. Drive'da, **Drive'ım** (My Drive) altında `ruya-tabirnamesi` adında bir klasör oluştur. Alt klasörleri ilk notebook kendisi açacak.
-2. Bu klasörü **kimseyle paylaşma**. İçinde lisanslı veri ve ileride kendi rüyaların olacak.
-3. Bilgisayarına Drive masaüstü uygulaması kurman gerekmez. Veri yalnızca Colab üzerinden okunup yazılacak.
-
-## 4. Colab Secrets [ZORUNLU]
-
-1. colab.research.google.com adresinden yeni bir notebook aç.
-2. Sol kenar çubuğundaki **anahtar simgesine (Secrets)** tıkla ve şunları ekle:
-   - `ANTHROPIC_API_KEY`: 1. adımdaki anahtar
-   - `GITHUB_TOKEN`: 2. adımdaki token (yalnızca repo özelse)
-3. Notebook'ların bu gizli bilgilere erişimini, ilk çalıştırmada açılan izin penceresinden onayla.
-
-Secrets Google hesabına bağlıdır. Bütün notebook'larında kullanabilirsin ve notebook paylaşılsa bile değerleri görünmez.
-
-## 5. Bilgisayarda (yalnızca kod yazmak için)
-
-Bilgisayarda veri ya da ağır bir paket olmayacak. Kodu yazmak ve hafif testleri çalıştırmak için şunlar yeterli:
+## 3. Bilgisayar [ZORUNLU]
 
 - **VS Code** ve **Git** (ikisi de kurulu).
-- **İsteğe bağlı: uv.** Verisiz birim testlerini ve ruff denetimini bilgisayarda hızlıca çalıştırmak istersen kur:
+- **uv** (kurulu değilse):
 
 ```powershell
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 ```
 
-uv kurmazsan testleri yalnızca Colab'de çalıştırırsın, bu da sorun değil.
-
-uv kuruluysa repo klasöründe bir kez:
+Repo klasöründe bir kez:
 
 ```powershell
-uv sync                      # .venv ve hafif bağımlılıklar (Chroma, Gradio gibi ağır paketler kurulmaz)
+uv sync                      # .venv ve temel bağımlılıklar
 uv run nbstripout --install  # notebook çıktılarını commit'ten önce temizleyen git filtresi
-uv run pytest                # verisiz testler; hepsi geçmeli, kontrat testleri "skipped" görünür
+uv run pytest                # hepsi geçmeli; veri yoksa kontrat testleri "skipped" görünür
 ```
+
+Arayüz (Gradio) ve vektör indeksi gerektiğinde ağır paketler: `uv sync --extra hepsi`.
 
 Her değişiklikten sonra: `uv run pytest` ve `uv run ruff check . && uv run ruff format .`
 
-## 6. Elle doğrulanacaklar (10 dakika)
+## 4. Kaynakları indir
+
+```powershell
+uv run python scripts/download_sources.py            # Aşama 0: nablusi, miller
+uv run python scripts/download_sources.py --asama 3  # bütün kaynaklar
+```
+
+Dosyalar `data/raw/` altına iner. Her dosyanın SHA256 özeti `data/raw/KAYNAK_OZETLERI.json` dosyasına yazılır. Bu özetler `src/ruya/ingest/kaynaklar.py`'deki `sha256` alanlarına işlenir; böylece kaynak sonradan değişirse indirme hata verir.
+
+## 5. Elle doğrulanacaklar (10 dakika)
 
 - [ ] [Zenodo'daki OpenITI kaydını](https://zenodo.org/records/17767721) aç ve lisansın CC BY-NC-SA 4.0 olduğunu gör. Atıf künyesi sonra `docs/KAYNAKLAR.md` dosyasına eklenecek.
-- [ ] Push'tan sonra Colab'de `notebooks/00_ortam_kontrolu.ipynb`'yi aç (Dosya → Notebook aç → GitHub; repo özelse "özel depoları dahil et" seçeneğiyle GitHub hesabını yetkilendir) ve çalıştır. Kurulum hücresinin yazdırdığı Python sürümünü ve GPU durumunu buraya not et; birim testleri Colab'de de geçmeli. GPU için: Çalışma zamanı → Çalışma zamanı türünü değiştir → T4 GPU.
+- [ ] VS Code'da `notebooks/00_ortam_kontrolu.ipynb`'yi `.venv` çekirdeğiyle aç ve çalıştır.
