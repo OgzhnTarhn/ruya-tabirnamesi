@@ -1,1 +1,1 @@
-"""Claude API erişimi. Bütün LLM çağrıları ``llm.client.LLMIstemcisi`` üzerinden geçer."""
+"""LLM erişimi (EVREN geçidi). Bütün LLM çağrıları ``llm.client.LLMIstemcisi`` üzerinden geçer."""
