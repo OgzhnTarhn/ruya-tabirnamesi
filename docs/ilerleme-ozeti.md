@@ -13,7 +13,7 @@ Sistem birbirinden bağımsız iki parçadan oluşuyor.
 |---|---|---|
 | Ne zaman çalışır | Bir kez (kaynak eklenince yeniden) | Her rüyada |
 | Ne yapar | Ham kitapları ayrıştırır, sembol atar, çevirir, indeksler | Rüyadan sembol çıkarır, maddeleri getirir, yorum yazar |
-| Süre ve maliyet | Saatler, birkaç dolar (Batch API) | ~20–30 saniye, ~0,10 $ |
+| Süre ve kota | Saatler, birkaç milyon token (eşzamanlı istekler) | İki LLM çağrısı; servisin yoğunluğuna göre saniyeler ile bir iki dakika arası |
 | Kod | `ingest/`, `enrich/`, `index/` | `pipeline/` |
 | Çıktı | `entries.jsonl` (madde deposu) | `SorguKaydi` (yorum + ölçümler) |
 
@@ -23,13 +23,13 @@ Sistem birbirinden bağımsız iki parçadan oluşuyor.
 data/raw/nablusi.txt ─┐                               "Rüyamda siyah bir yılan gördüm"
 data/raw/miller.txt  ─┤                                        │
                       ▼                                        ▼
-               ingest/ (regex)                        1. extract   (Claude, JSON)
+               ingest/ (regex)                        1. extract   (DeepSeek, JSON)
                       ▼                                        ▼
          data/interim/*.jsonl                         2. map       (sözlük + zeyrek)
                       ▼                                        ▼
-     enrich/ (Claude Batch: sembol, çeviri)  ───────► 3. retrieve  (symbol_id ile)
+     enrich/ (DeepSeek: sembol, çeviri)     ───────► 3. retrieve  (symbol_id ile)
                       ▼                                        ▼
-       data/processed/entries.jsonl ─────────────────► 4. synthesize (Claude, atıflı)
+       data/processed/entries.jsonl ─────────────────► 4. synthesize (DeepSeek, atıflı)
                                                                ▼
        sozluk/symbols.json (git, elle onaylı) ───────►      Yorum + uyarı
 ```
@@ -60,7 +60,7 @@ Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama
 |---|---|---|
 | Dil | Python ≥3.11 | uv ile kurulur |
 | Paketler | `pyproject.toml` + **uv** | Tek bağımlılık kaynağı; `uv.lock` kurulumu tekrarlanabilir kılar |
-| LLM | **Claude API** (`anthropic` SDK), Opus 5.5 | Yerleşik atıf (`search_result` + citations), JSON şeması, Batch API, prompt önbelleği |
+| LLM | **EVREN LLM geçidi**, `deepseek-v4.1-flash` (`httpx` ile) | OpenAI uyumlu API, JSON şeması; 1 Aralık 2026'ya kadar ücretsiz, günde 15 milyon token. Claude API kullanılamadığı için seçildi (TK-03) |
 | Veri doğrulama | **Pydantic v2**, `extra="forbid"` | Yanlış yazılmış alan adı sessizce kaybolmaz, hata verir |
 | Ayarlar | **pydantic-settings**, `RUYA_` önekli ortam değişkenleri | `.env` dosyası yok, gizli bilgi diske yazılmaz |
 | Türkçe kök bulma | **zeyrek** | Java gerektirmez; "yılanlar" → "yılan" |
@@ -70,7 +70,7 @@ Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama
 | Arayüz | **Gradio** (`gr.Blocks`) | Yerelde (`localhost`) açılır; `share=True` yasak |
 | Kalite | pytest, ruff, nbstripout | Test, lint, notebook çıktısı temizliği |
 
-**Bilerek kullanılmayanlar:** LangChain/LlamaIndex (öğrenmeyi gizler, atıf özelliğini sarmalar), ajan yapısı (adımlar baştan belli), ayrı veritabanı sunucusu (~10 bin kayıt için gereksiz).
+**Bilerek kullanılmayanlar:** LangChain/LlamaIndex (öğrenmeyi gizler; atıf doğrulamasını kendimiz yazıyoruz), ajan yapısı (adımlar baştan belli), ayrı veritabanı sunucusu (~10 bin kayıt için gereksiz).
 
 ---
 
@@ -109,7 +109,7 @@ Bunun ilk sürümü deneme notebook'unda yazıldı (`nablusi_paragraflari`). Haf
 
 ### 4.3 Zenginleştirme · `enrich/` (Hafta 3, 6, 8)
 
-Burada LLM devreye giriyor, ama **toplu ve indirimli** olarak.
+Burada LLM devreye giriyor, **toplu** olarak.
 
 | İş | Ne yapar | Neden LLM |
 |---|---|---|
@@ -117,10 +117,11 @@ Burada LLM devreye giriyor, ama **toplu ve indirimli** olarak.
 | `translate.py` | `metin_asli` → `metin_tr` | Arapça/İngilizce → Türkçe; terim sözlüğü (`terimler.md`) talimata gömülü |
 | `conditions.py` (Aşama 3) | "Kadın görürse …" kalıplarını `kosullar` alanına ayrıştırır | Serbest metinden yapı çıkarma |
 
-**Message Batches API:** Binlerce isteği tek seferde gönderiyorsun, sonuçlar 24 saat içinde geliyor, fiyat **%50 indirimli**. Akış şöyle:
-1. İstekler hazırlanır; her birinin `custom_id` alanı `entry_id` olur.
-2. Batch gönderilir ve batch kimliği `data/cache/batch/` altına yazılır. Süreç kapansa bile kimlik kaybolmaz.
-3. Sonra sonuçlar okunur ve `custom_id` ile maddelerle eşleştirilir. Sonuçlar sırasız gelir, bu yüzden sıraya güvenilmez.
+**Toplu istekler (`LLMIstemcisi.toplu`):** Geçitte Batch API olmadığı için istekler eşzamanlı gönderilir (varsayılan 4 iş parçacığı). Akış şöyle:
+1. İstekler hazırlanır; her birinin anahtarı `entry_id` olur.
+2. `toplu(istekler)` her isteği `mesaj` üzerinden gönderir; her yanıt diske (`data/cache/llm/`) yazılır.
+3. İş yarıda kesilirse (bilgisayar kapandı, kota doldu) yeniden başlatılır; önbellekteki istekler tekrar gönderilmez, iş kaldığı yerden sürer.
+4. Tek bir isteğin hatası bütün işi durdurmaz; o anahtarın sonucu hata olarak döner, sonra yeniden denenir.
 
 ### 4.4 Madde kaydı: `entries.jsonl`
 
@@ -176,7 +177,7 @@ Oturum başında bu dosyadan bellekte iki tablo kurulur: **varyant tablosu** (`"
 
 ### Adım 1 · Çıkarım · `pipeline/extract.py` (Hafta 4)
 
-Claude'a rüya verilir, **JSON şemasıyla** (`output_config.format`) yapılandırılmış çıktı istenir. Model şemaya uymayan bir şey döndüremez:
+Modele rüya verilir, **JSON şemasıyla** (`response_format` + `json_schema`, `strict: true`) yapılandırılmış çıktı istenir. Yanıt ayrıca Pydantic şemasıyla doğrulanır:
 
 ```json
 {
@@ -190,7 +191,6 @@ Claude'a rüya verilir, **JSON şemasıyla** (`output_config.format`) yapıland�
 ```
 
 - `olumsuz: true` olan semboller ("ısırmadı") sonraki adımlara geçmez. Olumsuzlama testi tam olarak bunu ölçüyor.
-- `effort: low` kullanılır; bu kolay bir iş.
 - En fazla 8 sembol işlenir, fazlası listelenir.
 
 ### Adım 2 · Eşleme · `pipeline/map.py` (Hafta 4)
@@ -216,19 +216,28 @@ Sıralama ölçütleri:
 
 ### Adım 4 · Sentez · `pipeline/synthesize.py` (Hafta 5)
 
-Projenin en önemli teknik parçası **Citations API**. Her madde Claude'a bir `search_result` bloğu olarak verilir:
+Projenin en önemli teknik parçası **atıf doğrulama**. Maddeler modele numaralı kaynaklar olarak verilir:
 
-```python
-{"type": "search_result",
- "source": "nablusi:004310",
- "title": "Nablusi · حية (yılan)",
- "content": [{"type": "text", "text": "<Türkçe çeviri + asıl metin>"}],
- "citations": {"enabled": True}}
+```
+[K1] nablusi:004310 · Nablusi · حية (yılan)
+Yılan rüyada düşmanla yorumlanır; siyah yılan daha güçlü bir düşmandır...
+حية يدل على عدو ...
 ```
 
-Model yanıtı **metin blokları** olarak döner ve her blok hangi kaynağa dayandığını yapılandırılmış biçimde taşır. Verilmemiş bir kaynağa atıf yapmak API düzeyinde **imkânsız**. "Uydurmama" hedefi böyle güvenceye alınıyor.
+Model yanıtı JSON olarak döner; her bölüm hangi kaynağa dayandığını ve kaynaktan kısa bir alıntıyı taşır:
 
-**Neden çıkarım ve sentez iki ayrı çağrı?** Citations ile JSON şemalı çıktı aynı istekte kullanılamıyor (400 hatası). Çıkarım JSON ister, sentez atıf ister; bu yüzden iki çağrı var.
+```json
+{"bolumler": [
+   {"metin": "Nablusi'ye göre siyah yılan güçlü bir düşmana işaret eder.",
+    "kaynaklar": [{"entry_id": "nablusi:004310", "alinti": "siyah yılan daha güçlü bir düşmandır"}]}],
+ "bulunamayanlar": []}
+```
+
+Sonra kod (`atiflari_dogrula`) her atıfı denetler:
+- `entry_id` modele verilen maddelerden biri değilse atıf **atılır** ve "uydurma atıf" olarak sayılır.
+- Alıntı maddenin metninde geçmiyorsa alıntı boşaltılır ve sayılır.
+
+Claude'un Citations API'si uydurma atıfı baştan engelliyordu; burada engellenmiyor ama **her seferinde yakalanıyor ve ölçülüyor**. Değerlendirmedeki "uydurma atıf = 0" hedefi bunu izliyor.
 
 Çıktı yapısı: her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan" ve "Ayrışan" noktalar, en sonda "Kaynaklarda bulunmayanlar" ve zorunlu uyarı metni. Kurallar [05](05-yorum-yontemi.md) ve [07](07-etik-ve-hukuk.md)'den geliyor: kesin konuşmamak, "Diyanet'e göre" dememek, çelişkileri uzlaştırmayıp yan yana koymak.
 
@@ -247,19 +256,20 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
 
 ---
 
-## 6. Claude API'yi nasıl kullanıyoruz?
+## 6. LLM'i nasıl kullanıyoruz?
 
-Bütün çağrılar tek bir sarmalayıcıdan geçecek: `llm/client.py` (Hafta 4).
+Bütün çağrılar tek bir sarmalayıcıdan geçiyor: `llm/client.py` (hazır, 31 Ekim).
 
 | Konu | Nasıl |
 |---|---|
-| **Effort** | Opus 5.5'te düşünme (thinking) kapatılamaz; derinlik ve maliyet `output_config.effort` ile ayarlanır. Çıkarım `low`, sentez ve çeviri `medium`. Düşünme tokenları çıktı olarak faturalanır. |
-| **Yapılandırılmış çıktı** | `output_config={"format": {"type": "json_schema", "schema": ...}}` |
-| **Prompt önbelleği** | Sabit sistem talimatı `cache_control` ile işaretlenir; tekrar eden isteklerde o kısım ~%95 ucuz okunur. Çalıştığı `usage.cache_read_input_tokens` ile doğrulanır. Talimata tarih/saat yazılmaz, önbelleği bozar. |
-| **Disk önbelleği** | Her isteğin SHA-256 özeti → `data/cache/llm/<özet>.json`. Aynı istek ikinci kez ücret ödetmez. |
+| **Geçit** | EVREN LLM geçidi, OpenAI uyumlu `POST /v1/chat/completions`. Anahtar `EVREN_LLM_API_KEY` ortam değişkeninde. |
+| **Yapılandırılmış çıktı** | `response_format={"type": "json_schema", "json_schema": {"name": ..., "schema": ..., "strict": True}}` |
+| **Düşünme tokenları** | Model yanıt vermeden önce düşünür; bu tokenlar `completion_tokens`'a dahildir. Kısa bir istekte bile yüzlerce token tutabilir, `max_tokens` geniş verilir. |
+| **Prompt önbelleği** | Geçit aynı önekle başlayan istekleri kendisi önbellekler. Sabit talimat mesajların başında durur; `usage.prompt_tokens_details.cached_tokens` ile görülür. |
+| **Disk önbelleği** | Her isteğin SHA-256 özeti → `data/cache/llm/<özet>.json`. Aynı istek ikinci kez gönderilmez; toplu işler bu sayede kaldığı yerden devam eder. |
 | **Gizlilik** | Rüya içeren istekler (`ruya_icerir=True`) varsayılan olarak diske **yazılmaz**; yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (değerlendirme bunu açar). Loglara rüya metni girmez. |
-| **Hatalar** | 429 ve 5xx'i SDK kendisi tekrar dener; 400 tekrarlanmaz. Her yanıtta önce `stop_reason` okunur: `refusal` → `ModelReddetti`, `max_tokens` → `YanitKesildi`. |
-| **Maliyet** | `usage`'dan token sayıları okunur, `config.FIYATLAR` ile dolara çevrilir, `SorguKaydi`'ya yazılır. Hedef: rüya başına ≤ 0,15 $. |
+| **Hatalar** | 429, 502, 503, 504 ve bağlantı/zaman aşımı hataları aynı `Idempotency-Key` ile en fazla 4 kez denenir. `Retry-After` 30 saniyeyi aşarsa günlük kota dolmuş sayılır, beklenmez. `finish_reason == "length"` → `YanitKesildi`, `refusal` → `ModelReddetti`. |
+| **Kota ve maliyet** | `usage`'dan token sayıları okunur, `SorguKaydi`'ya yazılır. 1 Aralık'a kadar ücretsiz; asıl sınır günlük 15 milyon token ve servisin hızı. |
 | **Talimatlar** | `prompts/<is>_v<n>.md`. Ölçümde kullanılmış bir sürüm bir daha değiştirilmez; değişiklik yeni sürüm dosyasıyla yapılır. Böylece her ölçüm tekrarlanabilir. |
 
 ---
@@ -334,8 +344,9 @@ class Bagimliliklar:
 | Eşleme | Doğru `symbol_id` oranı | ≥ %85 |
 | Getirme | Kaynak çeşitliliği | ≥ 1,5 kaynak/sembol |
 | Sentez | Atıf kapsamı (atıflı iddia bölümü oranı) | %100 |
+| Sentez | Uydurma atıf (doğrulamada atılan) | 0 |
 | Sentez | Sadakat (elle, 10 yanıt) | 0 uydurma cümle |
-| İşletim | Süre / maliyet | ≤ 30 sn / ≤ 0,15 $ |
+| İşletim | Rüya başına süre | ≤ 30 sn (servis hızına bağlı, ölçülecek) |
 
 **Recall ve precision:** Recall "beklenen sembollerin kaçını buldum?", precision "bulduklarımın kaçı doğru?" sorusunu cevaplar. Biri yüksek diğeri düşükse sistem ya çok şey kaçırıyor ya da çok şey uyduruyor demektir.
 
@@ -348,7 +359,7 @@ Her ölçüm `data/raporlar/` altına tarihli bir rapor yazar, özet satırı [o
 | D1 | e5-large ile Qwen3-Embedding | Aşama 2 |
 | D2 | Reranker var / yok | Aşama 2 |
 | D3 | Kaynak başı N = 1, 2, 3 | Aşama 2 |
-| D4 | Opus 5.5 / Sonnet 5.5 / Haiku 5.5 | Aşama 4 |
+| D4 | EVREN'deki başka bir sohbet modeliyle karşılaştırma | Aşama 4 |
 | D5 | API modeli ile yerel açık model | Aşama 4 (isteğe bağlı) |
 
 ---
@@ -389,7 +400,8 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | `entry_id` kararlılığı | Satır numarasına bağlı | Kaynak sabitleme + SHA256 denetimi |
 | Türkçe harfler | `"I".lower()` yanlış | Kendi `kucuk_harf()` fonksiyonumuz + testleri |
 | Diller arası vektör arama | Türkçe sorgu, Arapça metin | e5 çok dilli model, `query:`/`passage:` önekleri, D1 deneyi |
-| Maliyet | Opus pahalı, düşünme tokenları gizli maliyet | Batch (%50), prompt önbelleği, disk önbelleği, effort ayarı, her çağrıda maliyet kaydı |
+| Hız ve ücretsiz dönem | Servis yoğunken tek istek 100 saniyeyi aşabiliyor; ücretsizlik 1 Aralık'ta bitiyor | Eşzamanlı toplu istekler, disk önbelleği (kaldığı yerden devam), bütün korpusun çevirisini Hafta 3 sonuna çekmek (R13, R14) |
+| Atıf güvencesi | Atıf API'si yok; model verilmemiş kaynağa atıf yapabilir | Kodda doğrulama; uydurma atıflar atılır ve sayılır |
 
 ---
 
@@ -398,8 +410,10 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 - **Hazır:**
   - Şemalar, ayarlar ve boru hattı çatısı (`run.py`).
   - İndirme betiği.
-  - Mimari testleri (167 test geçiyor).
-  - Hafta 1 deneme notebook'u.
+  - EVREN LLM istemcisi (`llm/client.py`): önbellek, yeniden deneme, toplu istekler.
+  - Mimari ve birim testleri (180'den fazla test geçiyor).
+  - Hafta 1 deneme notebook'u (bilgisayarda, DeepSeek ile).
+  - Dört kaynak `data/raw/` altında (5,8 MB).
 - **Yalnızca imza:** Diğer bütün modüller. Her fonksiyonun gövdesi `NotImplementedError("Hafta N …")`; hangi hafta yazılacağı kodda yazılı.
 - **Sıradaki:**
   1. Kurulum: API anahtarı ortam değişkeninde, `uv sync` ([10](10-kurulum-rehberi.md)).
@@ -409,14 +423,14 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | Tarih | Teknik iş | Taş |
 |---|---|---|
 | 2–8 Kasım | `ingest/miller.py`, `ingest/nablusi.py`, `text/turkce.py` | |
-| 9–15 Kasım | `enrich/assign_symbols.py`, `enrich/translate.py` (Batch), `symbols.json` (50 sembol), test seti | K1 |
-| 16–22 Kasım | `llm/client.py`, `extract.py`, `map.py`, `retrieve.py` | |
-| 23–29 Kasım | `synthesize.py` (Citations), Gradio, `metrikler.py`, ilk ölçüm | K2 · v0.1 |
+| 9–15 Kasım | `enrich/assign_symbols.py`, `enrich/translate.py` (`toplu`), `symbols.json` (50 sembol), test seti; ücretsiz dönem bitmeden bütün korpusun çevirisi | K1 |
+| 16–22 Kasım | `extract.py`, `map.py`, `retrieve.py` | |
+| 23–29 Kasım | `synthesize.py` (atıf doğrulama), Gradio, `metrikler.py`, ilk ölçüm | K2 · v0.1 |
 | 30 Kasım–13 Aralık | Chroma + e5, vektör yedeği, reranker, Freud, D1–D3 | K3 · v0.2 |
 | 14 Aralık–10 Ocak | İbn Sirin, `conditions.py`, bağlam formu, `sentez_v2` | K4 · v0.3 |
 | 11–17 Ocak | D4 model karşılaştırması, README | K5 · v1.0 |
 
-**Açık kararlar:** S3 (bütçe tavanı, öneri 10 $/ay) ve S4 (repo şu an özel; belgeye işlenmeli). Ayrıntı: [09](09-riskler-ve-acik-sorular.md).
+**Açık kararlar:** S4 (repo şu an özel; belgeye işlenmeli). 1 Aralık sonrası EVREN fiyatı açıklanınca bütçe konuşulacak. Ayrıntı: [09](09-riskler-ve-acik-sorular.md).
 
 ---
 
@@ -430,10 +444,10 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | **Reranker** | Getirilen adayları sorguyla birlikte tek tek okuyup daha isabetli yeniden sıralayan model |
 | **Diller arası arama** | Türkçe sorguyla Arapça/İngilizce metin bulmak; çok dilli embedding modeli gerektirir |
 | **Structured output** | LLM'in yanıtını verilen JSON şemasına uymaya zorlamak |
-| **Citations / search_result** | Claude'un yanıttaki her iddiayı verilen kaynak bloklarından birine bağlaması |
-| **Effort** | Opus 5.5'te modelin ne kadar düşüneceğini (ve ne kadar token harcayacağını) belirleyen ayar |
+| **Atıf doğrulama** | Modelin gösterdiği kaynak kimliklerinin ve alıntıların, ona gerçekten verilen maddelerde bulunup bulunmadığını kodda denetlemek |
+| **Düşünme tokenları** | Modelin yanıttan önce ürettiği iç akıl yürütme; çıktı tokenı sayılır |
 | **Prompt caching** | Tekrar eden talimat önekini sunucuda önbelleğe alıp ucuz okumak |
-| **Batch API** | Toplu, asenkron, %50 indirimli istek gönderimi |
+| **Idempotency-Key** | Bir isteğe verilen tekil kimlik; yeniden denemede aynı kalır, geçit isteği iki kez çalıştırmaz |
 | **Recall / precision** | Kapsama ("kaçını buldum?") / isabet ("bulduklarımın kaçı doğru?") |
 | **Recall@5** | Doğru maddenin ilk 5 sonuç içinde olma oranı |
 | **Fixture** | Testlerde kullanılan küçük, sabit örnek veri |
