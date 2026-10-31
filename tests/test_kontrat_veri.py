@@ -1,14 +1,13 @@
-"""Kontrat testleri: Drive'daki gerçek veri şemaya uyuyor mu? (docs/03, bölüm 5.5)
+"""Kontrat testleri: data/ altındaki gerçek veri şemaya uyuyor mu? (docs/03, bölüm 5.5)
 
-Yalnızca veri varken çalışır (Colab). Bilgisayarda kendiliğinden atlanır.
-Colab'de: ``!cd /content/ruya-tabirnamesi && python -m pytest -m veri``
+Yalnızca veri varken çalışır; veri yoksa testler kendiliğinden atlanır.
+``uv run pytest -m veri``
 """
 
 import pytest
 
 from ruya.config import Ayarlar
 from ruya.dosya import jsonl_oku
-from ruya.hatalar import VeriYoluYok
 from ruya.ingest.kaynaklar import LISANS_KODLARI
 from ruya.schemas import Madde
 
@@ -17,10 +16,7 @@ pytestmark = pytest.mark.veri
 
 @pytest.fixture(scope="module")
 def maddeler() -> list[Madde]:
-    try:
-        yol = Ayarlar().maddeler_dosyasi
-    except VeriYoluYok:
-        pytest.skip("veri yolu yok (bilgisayarda beklenen durum)")
+    yol = Ayarlar().maddeler_dosyasi
     if not yol.is_file():
         pytest.skip(f"{yol} henüz yok")
     return list(jsonl_oku(yol, Madde))  # her satır şemaya göre doğrulanır

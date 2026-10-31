@@ -9,13 +9,6 @@ class RuyaHatasi(Exception):
     """Projedeki bütün özel hataların atası."""
 
 
-class VeriYoluYok(RuyaHatasi):
-    """Veri isteyen bir işlev, veri klasörü tanımlı değilken çağrıldı.
-
-    Bilgisayarda veri yoktur; bu hata orada beklenen davranıştır.
-    """
-
-
 class ApiAnahtariYok(RuyaHatasi):
     """ANTHROPIC_API_KEY ortam değişkeni tanımlı değil."""
 

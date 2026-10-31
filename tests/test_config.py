@@ -1,42 +1,47 @@
-import sys
-import types
 from pathlib import Path
 
 import pytest
 
 from ruya import config
 from ruya.config import Ayarlar
-from ruya.hatalar import VeriYoluYok
 
 
 @pytest.fixture
 def temiz_ortam(monkeypatch):
     for ad in (
         "RUYA_DATA_DIR",
-        "RUYA_WORK_DIR",
         "RUYA_LLM_CACHE",
         "RUYA_GECMIS",
         "RUYA_SORGU_ONBELLEGI",
     ):
         monkeypatch.delenv(ad, raising=False)
-    monkeypatch.delitem(sys.modules, "google.colab", raising=False)
 
 
-def test_bilgisayarda_veri_yolu_yok(temiz_ortam):
+def test_varsayilan_veri_yolu_repodaki_data(temiz_ortam):
     ayar = Ayarlar()
-    assert ayar.data_dir is None
-    with pytest.raises(VeriYoluYok):
-        _ = ayar.maddeler_dosyasi
+    assert ayar.data_dir == config.REPO_KOKU / "data"
+    assert ayar.maddeler_dosyasi == config.REPO_KOKU / "data" / "processed" / "entries.jsonl"
+    assert ayar.ham_klasoru == config.REPO_KOKU / "data" / "raw"
+    assert ayar.chroma_klasoru == config.REPO_KOKU / "data" / "index" / "chroma"
 
 
-def test_colabda_drive_yollari_varsayilan(temiz_ortam, monkeypatch):
-    monkeypatch.setitem(sys.modules, "google.colab", types.ModuleType("google.colab"))
-    ayar = Ayarlar()
-    assert ayar.data_dir == config.COLAB_VERI_KLASORU
-    assert ayar.chroma_klasoru == config.COLAB_CALISMA_KLASORU / "chroma"
-    assert ayar.maddeler_dosyasi == (
-        config.COLAB_VERI_KLASORU / "data" / "processed" / "entries.jsonl"
-    )
+def test_butun_veri_yollari_data_altinda(tmp_path):
+    # Gizlilik: git'e girmeyen klasörün dışına hiçbir şey yazılmaz.
+    ayar = Ayarlar(data_dir=tmp_path)
+    for yol in (
+        ayar.ham_klasoru,
+        ayar.ara_klasoru,
+        ayar.islenmis_klasoru,
+        ayar.maddeler_dosyasi,
+        ayar.indeks_klasoru,
+        ayar.chroma_klasoru,
+        ayar.llm_onbellek_klasoru,
+        ayar.batch_klasoru,
+        ayar.rapor_klasoru,
+        ayar.gecmis_klasoru,
+        ayar.log_klasoru,
+    ):
+        assert yol.is_relative_to(tmp_path)
 
 
 def test_ortam_degiskenleri_okunur(temiz_ortam, monkeypatch, tmp_path):
