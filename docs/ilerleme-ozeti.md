@@ -1,193 +1,447 @@
-# İlerleme Özeti: Ne yaptık, nasıl yaptık, sırada ne var?
+# Teknik Rehber: Sistemi nasıl kuracağız?
 
-> Tarih: 31 Ekim 2026 · Takvimde: Hafta 1'in sonu (deneme haftası)
-> Bu belge projeye bir süre ara verip döndüğünde "neredeydik?" sorusunu cevaplamak için yazıldı. Ayrıntılar her bölümde bağlantısı verilen belgelerde.
+> Tarih: 31 Ekim 2026 · Takvimde: Hafta 1'in sonu
+> Bu belge projeye teknik olarak hâkim olman için yazıldı: sistemin parçaları nasıl çalışacak, hangi teknik neden seçildi, her hafta kodda tam olarak ne yazılacak. Ayrıntıların asıl kaynakları: [03 · mimari](03-mimari.md), [04 · teknoloji](04-teknoloji-secimi.md), [12 · kod yapısı](12-kod-yapisi-ve-sozlesmeler.md), [02 · veri](02-veri-kaynaklari-ve-semasi.md), [06 · ölçme](06-degerlendirme.md).
 
 ---
 
-## 1. Proje bir paragrafta
+## 1. Büyük resim: iki ayrı dünya
 
-Sen bir rüya anlatıyorsun. Sistem rüyadaki sembolleri buluyor (ör. "siyah, büyük yılan"). Her sembolü bir sembol kimliğine eşliyor (`yilan`). Sonra Nablusi, İbn Sirin'e atfedilen *Muntahab*, Miller ve Freud'da o sembol için ne yazıldığını getiriyor. En son bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiriyor.
+Sistem birbirinden bağımsız iki parçadan oluşuyor.
 
-Asıl amaç RAG'ı (getirmeyle güçlendirilmiş üretim) hazır bir framework kullanmadan, katman katman kendi elinle öğrenmek. Proje kişisel kalacak; internete açılmayacak. Bkz. [00-proje-vizyonu.md](00-proje-vizyonu.md).
-
-Bir sorgunun izlediği yol dört adımdan oluşuyor ([03-mimari.md](03-mimari.md)):
+| | Çevrimdışı: veri hattı | Çevrimiçi: sorgu boru hattı |
+|---|---|---|
+| Ne zaman çalışır | Bir kez (kaynak eklenince yeniden) | Her rüyada |
+| Ne yapar | Ham kitapları ayrıştırır, sembol atar, çevirir, indeksler | Rüyadan sembol çıkarır, maddeleri getirir, yorum yazar |
+| Süre ve maliyet | Saatler, birkaç dolar (Batch API) | ~20–30 saniye, ~0,10 $ |
+| Kod | `ingest/`, `enrich/`, `index/` | `pipeline/` |
+| Çıktı | `entries.jsonl` (madde deposu) | `SorguKaydi` (yorum + ölçümler) |
 
 ```
-Rüya metni
-  → 1. Çıkarım   (Claude: rüyadaki semboller ve nitelikleri, JSON olarak)
-  → 2. Eşleme    (sembol sözlüğü + zeyrek ile kök bulma; Aşama 2'de vektör yedeği)
-  → 3. Getirme   (symbol_id ile her kaynaktan en fazla N madde)
-  → 4. Sentez    (Claude: kaynak gösteren Türkçe yorum + uyarı metni)
+ÇEVRİMDIŞI (bir kez)                                  ÇEVRİMİÇİ (her rüya)
+                                                       
+data/raw/nablusi.txt ─┐                               "Rüyamda siyah bir yılan gördüm"
+data/raw/miller.txt  ─┤                                        │
+                      ▼                                        ▼
+               ingest/ (regex)                        1. extract   (Claude, JSON)
+                      ▼                                        ▼
+         data/interim/*.jsonl                         2. map       (sözlük + zeyrek)
+                      ▼                                        ▼
+     enrich/ (Claude Batch: sembol, çeviri)  ───────► 3. retrieve  (symbol_id ile)
+                      ▼                                        ▼
+       data/processed/entries.jsonl ─────────────────► 4. synthesize (Claude, atıflı)
+                                                               ▼
+       sozluk/symbols.json (git, elle onaylı) ───────►      Yorum + uyarı
 ```
 
+**Kural:** Sorgu kodu (`pipeline/`) veri hattı kodunu (`ingest/`, `enrich/`) asla içe aktarmaz; yalnızca onun ürettiği dosyaları okur. Bu kuralı `tests/test_mimari.py` denetliyor.
+
 ---
 
-## 2. Nasıl çalışıyoruz?
+## 2. Neden "önce sözlük, sonra vektör"?
 
-### Çalışma ortamı ([11](11-calisma-ortami-colab-drive.md))
+Klasik RAG şöyle çalışır: soruyu vektöre çevir, en benzer metin parçalarını bul, LLM'e ver. Bizim problemimiz farklı. Rüya tabiri bir **sözlükte sembol arama** problemi. Kullanıcı "yılan" dediğinde bize "yılana benzeyen metinler" değil, **yılan maddesi** lazım.
 
-| Ne | Nerede | Neden |
+Bu yüzden ana yol **kesin eşleme**:
+
+```
+"yılan" ──► symbols.json ──► symbol_id = "yilan" ──► yilan etiketli bütün maddeler
+```
+
+Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama 2). Örneğin kullanıcı "piton" yazdı ama sözlükte yalnızca "yılan" varsa, vektör benzerliği bunu yakalayabilir.
+
+**Sonuç:** Asıl iş kodda değil, verinin hazırlanmasında: her maddeye doğru `symbol_id`'yi atamak ve sözlüğü iyi kurmak.
+
+---
+
+## 3. Teknoloji yığını
+
+| Parça | Seçim | Neden |
 |---|---|---|
-| Kod | Bilgisayarda (`C:\ruya-tabirnamesi`), GitHub'da özel repo | Kod VS Code'da yazılıyor, git ile izleniyor |
-| Çalıştırma | Google Colab | GPU, bol disk; bilgisayara model ya da veri indirilmiyor |
-| Veri | Google Drive (`MyDrive/ruya-tabirnamesi/`) | Lisans (NC/SA), boyut ve rüyaların gizliliği yüzünden veri git'e girmiyor |
-| Gizli bilgiler | Yalnızca Colab Secrets | API anahtarı hiçbir dosyaya yazılmıyor |
+| Dil | Python ≥3.11 | Colab'in sürümü |
+| Paketler | `pyproject.toml`; bilgisayarda **uv**, Colab'de `pip install -e .` | Tek bağımlılık kaynağı; `-e` sayesinde `git pull` hemen geçerli olur |
+| LLM | **Claude API** (`anthropic` SDK), Opus 5.5 | Yerleşik atıf (`search_result` + citations), JSON şeması, Batch API, prompt önbelleği |
+| Veri doğrulama | **Pydantic v2**, `extra="forbid"` | Yanlış yazılmış alan adı sessizce kaybolmaz, hata verir |
+| Ayarlar | **pydantic-settings**, `RUYA_` önekli ortam değişkenleri | `.env` dosyası yok, gizli bilgi diske yazılmaz |
+| Türkçe kök bulma | **zeyrek** | Java gerektirmez; "yılanlar" → "yılan" |
+| Embedding (Aşama 2) | `intfloat/multilingual-e5-large` | Türkçe sorgu ↔ Arapça/İngilizce metin, diller arası arama |
+| Vektör deposu (Aşama 2) | **Chroma** (`PersistentClient`) | Sunucusuz; `where={"symbol_id": ...}` filtresi var |
+| Reranker (Aşama 2) | `BAAI/bge-reranker-v2-m3` | Bir sembolün çok maddesi varsa rüya cümlesine göre yeniden sıralar |
+| Arayüz | **Gradio** (`gr.Blocks`) | Colab hücresinin içinde açılır; `share=True` yasak |
+| Kalite | pytest, ruff, nbstripout | Test, lint, notebook çıktısı temizliği |
 
-Bilgisayarda yalnızca **verisiz testler** çalışıyor (`uv run pytest`). Gerçek veriyle çalışan her şey Colab'de oluyor.
-
-### İş bölümü
-
-- **Sen:** Kararları veriyorsun (bütçe, repo görünürlüğü, sembol listesini onaylama), Colab'de notebook'ları çalıştırıyorsun, deneylerde çeviri ve atama kalitesini elle puanlıyorsun.
-- **Claude (ben):** Belgeleri yazıyorum, mimariyi kuruyorum, kod işini küçük görevlere bölüp plan yazıyorum, sonucu okuyup doğruluyorum, commit ediyorum. Push etmiyorum; push'u sen yapıyorsun.
-- **Orkestra (EVREN agent'ları):** Kodu ve testleri yazıyor. Ben görevi tanımlıyorum ("şu dosyada şu işlev, şu davranış, şu kontrol komutu geçmeli"). Agent'lar (`kodcu`, `testci`, `hizli` …) dosyayı düzenliyor ve kontrol komutu geçene kadar deniyor. Sonra ben `git diff`'i okuyup bütün testleri çalıştırıyorum. Böylece Claude token'ı kod yazmaya değil, plan ve doğrulamaya harcanıyor.
-
-### Kurallar ([CLAUDE.md](../CLAUDE.md), [12](12-kod-yapisi-ve-sozlesmeler.md))
-
-- **Önce belge, sonra kod.** Şema ya da davranış değişikliği önce `docs/`'ta yazılıyor.
-- **TDD.** Davranış değişikliğinde önce kırmızı test, sonra onu geçiren kod.
-- **Katman kuralı.** Her modül yalnızca izin verilen modülleri içe aktarabiliyor. Ağır paketler (chromadb, torch, gradio, zeyrek) yalnızca işlev içinde yükleniyor. `tests/test_mimari.py` bunu otomatik denetliyor.
-- **Model adları** yalnızca `src/ruya/config.py` içinde duruyor.
-- **Atomik commit'ler.** Her commit tek bir mantıksal değişiklik; mesajlar Türkçe ve emir kipinde.
-- **Commit öncesi** `uv run pytest` ve `uv run ruff check .` temiz olmalı.
+**Bilerek kullanılmayanlar:** LangChain/LlamaIndex (öğrenmeyi gizler, atıf özelliğini sarmalar), ajan yapısı (adımlar baştan belli), ayrı veritabanı sunucusu (~10 bin kayıt için gereksiz).
 
 ---
 
-## 3. Şimdiye kadar ne yaptık? (zaman sırasıyla)
+## 4. Veri hattı: kitaptan madde deposuna
 
-### 21 Ekim · Araştırma ve planlama (22 commit)
+### 4.1 İndirme (hazır)
 
-- Kaynak araştırması yapıldı ([arastirma/rapor.md](arastirma/rapor.md)). Hangi tabirnamelerin yasal olarak kullanılabileceği belirlendi.
-- Nablusi ve Miller'ın ham dosyaları bir kez **incelendi** (kod yazılmadan). Nablusi'de ~5.746 paragraf, ~2.400 başlıklı madde ve ~3.300 alt paragraf görüldü. Miller'da 2.256 madde başlığı tek bir regex'le yakalanabiliyor ([02, bölüm 2](02-veri-kaynaklari-ve-semasi.md)).
-- 00–11 arası proje belgeleri yazıldı: vizyon, gereksinimler, veri, mimari, teknoloji seçimleri, klasik tabir yöntemi, değerlendirme, etik ve hukuk, 12 haftalık takvim, riskler, kurulum.
-- Çalışma ortamı "her şey bilgisayarda" yerine **Colab + Drive** olarak değiştirildi; bütün belgeler buna göre güncellendi.
+`scripts/download_sources.py` kaynakları Drive'daki `data/raw/` klasörüne indirir ve her dosyanın SHA256 özetini `KAYNAK_OZETLERI.json`'a yazar.
 
-### 23 Ekim · Mimari iskelet (27 commit)
+**Neden özet ve commit sabitleme önemli?** Madde kimliği satır numarasından türüyor (`nablusi:004310` = 4310. satır). Kaynak dosyada tek bir satır eklenirse bütün kimlikler kayar, test setindeki "beklenen maddeler" yanlış maddeleri gösterir. Bu yüzden OpenITI adresleri belirli bir commit'e sabitli, Gutenberg dosyaları da özetle denetleniyor.
 
-- Python paketi kuruldu: `pyproject.toml`, uv, ruff, pytest, nbstripout.
-- `config.py`: Colab algılama, Drive yolları, model adları ve fiyatlar.
-- `schemas.py`: bütün veri sözleşmeleri Pydantic ile tanımlandı (`Madde`, sembol kaydı, boru hattı ara sonuçları, test örneği).
-- Bütün modüllerin **imzaları** yazıldı: hangi fonksiyon ne alır, ne döndürür, hangi hafta yazılacak. Gövdeler bilerek boş bırakıldı.
-- `pipeline/run.py`: dört adımı bağımlılık enjeksiyonuyla birleştiren çatı.
-- Mimari testleri, kontrat testleri, Colab kurulum betiği, ortam kontrol notebook'u, kaynak indirme betiği.
-- Ek belgeler: [12 · kod yapısı](12-kod-yapisi-ve-sozlesmeler.md), [KAYNAKLAR](KAYNAKLAR.md), [terimler](terimler.md), şablonlar.
-- İlerleme panosu ve mimari GIF'i ([rapor/](rapor/), [gorseller/mimari.gif](gorseller/mimari.gif)).
+### 4.2 Ayrıştırma · `ingest/` (Hafta 2)
 
-### 30 Ekim · Proje incelemesi ve düzeltmeler (10 commit)
+Her kaynak için bir ayrıştırıcı. Girdisi ham metin, çıktısı `Madde` listesi. Burada LLM yok, yalnızca regex ve kurallar var.
 
-Projenin baştan sona bir incelemesi yapıldı (mimari, veri, hukuk, gizlilik, ölçüm). Bulunan sorunlar düzeltildi:
+**Nablusi (OpenITI mARkdown biçimi):**
 
-| Sorun | Düzeltme |
-|---|---|
-| Rüya içeren LLM yanıtları Drive'daki önbellekte birikebilirdi | Rüya içeren istekler artık varsayılan olarak önbelleğe **yazılmıyor**. Açmak için `RUYA_SORGU_ONBELLEGI=on` gerekiyor. Değerlendirme betiği bunu kendisi açıyor, çünkü test setindeki rüyalar zaten repoda. |
-| OpenITI adresleri `master` dalını gösteriyordu; kaynak değişirse `entry_id`'ler (satır numarasına bağlı) kayardı | Nablusi ve İbn Sirin adresleri belirli commit'lere sabitlendi. İndirilen dosyanın SHA256 özeti beklenenle uyuşmazsa indirme hata veriyor. |
-| İndirme yarıda kalırsa özetler kaybolabiliyordu | Özet dosyası her indirmeden sonra yazılıyor. |
-| Lisans alanı yalnızca "boş değil" diye denetleniyordu | Geçerli lisans kodları listesi eklendi ve testle denetleniyor. |
-| Mimari testi göreli içe aktarmaları (`from ..x import`) göremiyordu | Göreli içe aktarma yasaklandı; zeyrek de tembel yüklenen paketlere eklendi. |
-| "Atıf kapsamı" ölçütünün birimi belirsizdi | Birim "iddia bölümü" olarak tanımlandı ([06](06-degerlendirme.md)). |
+```
+### | باب الحاء                       ← bab (bölüm) başlığı
+# - (حية) يدل على عدو ...             ← yeni paragraf, parantez içi = başlık (yılan)
+~~ وإن رآه مظلوم انتصر PageV01P142    ← devam satırı + sayfa işareti
+# - (ومن رأى) حية سوداء ...           ← alt paragraf ("kim görürse ...")
+```
 
-Sonra Hafta 1 deneme notebook'u yazıldı: [`notebooks/deneyler/01_veri_ve_ceviri.ipynb`](../notebooks/deneyler/01_veri_ve_ceviri.ipynb).
+Ayrıştırıcının işleri:
+- `# - (` ile başlayan satır yeni paragraf, `~~` ile başlayan satır devam satırı.
+- `PageV01P142` sayfa işaretini ve `ms008` el yazması işaretini metinden temizleyip sayfayı `konum` alanına yazmak. Dikkat: OpenITI'de işaret sayfayı **kapatır**, yani işaretten önceki metin o sayfaya aittir.
+- Başlıklı maddeyi (`(حية)` → sembolün kendisi) alt paragraftan (`(ومن رأى)`) ayırmak.
+- Alt paragrafı `ust_madde_id` ile başlıklı maddesine bağlamak.
 
----
+Bunun ilk sürümü deneme notebook'unda yazıldı (`nablusi_paragraflari`). Hafta 2'de testleriyle birlikte `src/ruya/ingest/nablusi.py`'ye taşınacak.
 
-## 4. Şu anki durum
+**Miller (Gutenberg):** Çok daha kolay. `*** START/END ***` arasını al, `^_([^_]+)_\.(\[\d+\])?$` regex'iyle başlıkları yakala (`_Snakes_.`), aradaki paragrafları gövde yap.
 
-**Toplam:** 59 commit · 167 test geçiyor · veri henüz indirilmedi · Colab'de henüz hiçbir şey çalıştırılmadı.
+**Türkçe normalleştirme · `text/turkce.py` (Hafta 2):** Python'da `"I".lower()` → `"i"` verir, Türkçede `"ı"` olmalı. `"İ".lower()` ise `"i̇"` (noktalı, iki karakter) verir. Kendi `kucuk_harf()` fonksiyonumuzu yazacağız: önce I→ı, İ→i, sonra `lower()`, ardından boşluk ve noktalama temizliği. Eşlemenin tamamı buna dayanıyor.
 
-### Çalışan kod
+### 4.3 Zenginleştirme · `enrich/` (Hafta 3, 6, 8)
 
-| Dosya | Ne yapıyor |
-|---|---|
-| `src/ruya/config.py` | Ortam algılama, yollar, model adları, fiyatlar, ayarlar |
-| `src/ruya/schemas.py` | Bütün veri yapıları |
-| `src/ruya/ingest/kaynaklar.py` | 4 kaynağın künyesi, lisansı, sabit adresi |
-| `src/ruya/pipeline/run.py` | Boru hattı çatısı (adımlar boş) |
-| `dosya.py`, `kayit.py`, `etik.py`, `hatalar.py`, `llm/talimatlar.py` | Yardımcılar |
-| `scripts/download_sources.py` | Kaynakları Drive'a indirip SHA256 ile denetler |
-| `notebooks/_kurulum.py`, `00_ortam_kontrolu.ipynb` | Colab kurulumu ve kontrolü |
-| `notebooks/deneyler/01_veri_ve_ceviri.ipynb` | Hafta 1 denemesi |
+Burada LLM devreye giriyor, ama **toplu ve indirimli** olarak.
 
-### İmzası hazır, gövdesi boş olanlar
-
-Bu dosyalardaki her fonksiyon `NotImplementedError("Hafta N …")` ile bitiyor, yani hangi hafta yazılacağı kodda yazılı.
-
-| Hafta | Dosyalar |
-|---|---|
-| 2 | `ingest/miller.py`, `ingest/nablusi.py`, `text/turkce.py` |
-| 3 | `enrich/assign_symbols.py`, `enrich/translate.py`, `index/build_symbols.py` |
-| 4 | `llm/client.py`, `pipeline/extract.py`, `pipeline/map.py`, `pipeline/retrieve.py` |
-| 5 | `pipeline/synthesize.py`, `app/gradio_app.py`, `degerlendirme/*` |
-| 6–8 | `index/build_vectors.py`, `index/store.py`, `index/yedek.py`, `ingest/freud.py`, `ingest/ibn_sirin.py`, `enrich/conditions.py` |
-
-### Henüz olmayanlar
-
-- **Talimatlar:** `prompts/` altında hiç talimat dosyası yok (ilki Hafta 3'te).
-- **Sembol sözlüğü:** `sozluk/symbols.json` boş (50 sembol Hafta 3'te).
-- **Test seti:** Hiç yok (20 rüya Hafta 3'te).
-
----
-
-## 5. Sırada ne var?
-
-### Hemen: kurulum (~30 dk, senin işin) · [10-kurulum-rehberi.md](10-kurulum-rehberi.md)
-
-1. Claude Console'da API anahtarı oluştur ve aylık harcama limiti koy.
-2. Drive'da `MyDrive/ruya-tabirnamesi/` klasörünü aç.
-3. Colab Secrets'a `ANTHROPIC_API_KEY` ve `GITHUB_TOKEN` ekle. Repo özel olduğu için token gerekli; yalnızca bu repoyu okuyabilen fine-grained bir token yeterli.
-4. Colab'de `00_ortam_kontrolu.ipynb`'yi çalıştır. Testler bilgisayardaki gibi geçmeli.
-
-### Sonra: Hafta 1 denemesi → K0 kararı · [deneyler/01](deneyler/01-veri-ve-ceviri.md)
-
-`01_veri_ve_ceviri.ipynb`'yi Colab'de sırayla çalıştır. Notebook dört hipotezi ölçüyor:
-
-| | Soru | Eşik | Sen ne yapacaksın |
-|---|---|---|---|
-| H1 | Nablusi paragrafları kurallarla doğru ayrışıyor mu? | 50'de ≥ 48 | Tabloya bakıp yanlışları `HATALI_H1`'e yazmak |
-| H2 | Claude alt paragrafların sembolünü doğru buluyor mu? | 10'da ≥ 8 | Türkçe özete bakıp `DOGRU_H2`'yi doldurmak |
-| H3 | Çeviri kalitesi yeterli mi? | Ortalama ≥ 3/5 | 20 çeviriyi aslıyla okuyup puanlamak |
-| H4 | Bütün Nablusi'nin çevirisi bütçeye sığıyor mu? | Opus ile ≤ 15 $ | Hiçbir şey; notebook kendisi hesaplıyor |
-
-Son hücrenin yazdırdığı tabloyu deney belgesine yapıştıracağız. **Kritik karar:** Çeviri 3/5'in altında kalırsa çeviri talimatı iyileştirilecek ya da İngilizce ara katman denenecek; bu takvime 1 hafta ekler.
-
-İlk indirmeden sonra Gutenberg kaynaklarının SHA256 değerleri `KAYNAK_OZETLERI.json`'dan `kaynaklar.py`'ye işlenecek. Bunu bana yapıştırman yeterli.
-
-### Takvimin geri kalanı · [08](08-yol-haritasi-takvim.md)
-
-| Tarih | Ne | Kilometre taşı |
+| İş | Ne yapar | Neden LLM |
 |---|---|---|
-| 2–8 Kasım | Miller ve Nablusi ayrıştırıcıları, Türkçe metin normalleştirme | |
-| 9–15 Kasım | 50 sembollük sözlük, sembol atama, Batch API ile çeviri, 20 rüyalık test seti | **K1 · Veri hazır** |
-| 16–22 Kasım | LLM istemcisi, çıkarım, eşleme, getirme | |
-| 23–29 Kasım | Sentez, Gradio arayüzü, ilk ölçüm | **K2 · v0.1-mvp** (uçtan uca çalışan ilk sürüm) |
-| 30 Kasım–13 Aralık | Bütün korpus, vektör arama (Chroma), reranker, Freud, D1–D3 deneyleri | **K3 · v0.2** |
-| 14 Aralık–10 Ocak | İbn Sirin, koşullu yorum, bağlam formu, uzlaşı/ayrışma çıktısı (yılbaşı tamponu dahil) | **K4 · v0.3** |
-| 11–17 Ocak | Opus, Sonnet ve Haiku karşılaştırması, son README | **K5 · v1.0** |
+| `assign_symbols.py` | Her paragrafa `symbol_ids` atar | Nablusi'nin ~3.300 alt paragrafından bazıları yeni sembol getiriyor; kuralla bulunamıyor |
+| `translate.py` | `metin_asli` → `metin_tr` | Arapça/İngilizce → Türkçe; terim sözlüğü (`terimler.md`) talimata gömülü |
+| `conditions.py` (Aşama 3) | "Kadın görürse …" kalıplarını `kosullar` alanına ayrıştırır | Serbest metinden yapı çıkarma |
 
-Her hafta aynı döngüyle ilerleyeceğiz: ilgili belgeyi oku → orkestra planı → agent'lar yazar → ben doğrularım → commit → sen push edip Colab'de çalıştırırsın → sonucu belgeye işleriz.
+**Message Batches API:** Binlerce isteği tek seferde gönderiyorsun, sonuçlar 24 saat içinde geliyor, fiyat **%50 indirimli**. Akış şöyle:
+1. İstekler hazırlanır; her birinin `custom_id` alanı `entry_id` olur.
+2. Batch gönderilir ve batch kimliği Drive'a (`cache/batch/`) yazılır. Colab oturumu kapansa bile kimlik kaybolmaz.
+3. Sonra sonuçlar okunur ve `custom_id` ile maddelerle eşleştirilir. Sonuçlar sırasız gelir, bu yüzden sıraya güvenilmez.
+
+### 4.4 Madde kaydı: `entries.jsonl`
+
+Veri hattının son ürünü. Her satır bir `Madde`:
+
+```json
+{
+  "entry_id": "nablusi:004310",
+  "kaynak": "nablusi", "gelenek": "islami_klasik", "dil": "ar",
+  "lisans": "CC-BY-NC-SA-4.0",
+  "konum": {"bab": "باب الحاء", "sayfa": "V01P142", "satir": 4310},
+  "baslik_asli": "حية",
+  "ust_madde_id": null,
+  "symbol_ids": ["yilan"],
+  "metin_asli": "…", "metin_tr": "…",
+  "ceviri": {"yontem": "llm", "model": "…", "gozden_gecirildi": false},
+  "kosullar": null, "yontem": null, "kapsam": null
+}
+```
+
+`lisans` boş olamaz (hukuki zorunluluk). `kosullar` Aşama 3'e kadar `null` kalır.
+
+### 4.5 Sembol sözlüğü: `sozluk/symbols.json`
+
+Projenin kalbi. Git'te duruyor, çünkü senin **elle onayladığın** bir veri:
+
+```json
+"yilan": {
+  "ad_tr": "yılan",
+  "varyantlar_tr": ["yılan", "engerek", "kobra", "piton"],
+  "ar": ["حية", "ثعبان", "أفعى"],
+  "en": ["snake", "snakes", "serpent", "serpents"],
+  "gozden_gecirildi": true
+}
+```
+
+Yaşam döngüsü: LLM önerir → öneri Drive'a yazılır → sen okuyup `symbols.json`'a eklersin → `pytest` şemayı ve çakışmaları denetler → commit. Bir varyant iki sembolde birden geçerse test bunu hata olarak yakalar.
+
+Oturum başında bu dosyadan bellekte iki tablo kurulur: **varyant tablosu** (`"engerek"` → `"yilan"`) ve **sembol → maddeler tablosu**. Diske yazılmaz; 150 sembol ve 10 bin madde için kurulumu bir saniyeden kısa sürer.
+
+### 4.6 Vektör indeksi · `index/` (Aşama 2, Hafta 6)
+
+- Her maddenin metni ve her sembolün adı/tanımı **multilingual-e5-large** ile 1024 boyutlu vektöre çevrilir (Colab GPU'sunda).
+- **Önemli tuzak:** e5 modeli `query: ` ve `passage: ` önekleri ister. Unutulursa kalite sessizce düşer, hata da vermez.
+- Vektörler Chroma'ya `symbol_id` metadata'sıyla yazılır.
+- Chroma içinde SQLite var ve SQLite Drive bağlantısı üzerinde güvenli değil. Bu yüzden indeks Colab'in yerel diskinde (`/content/calisma/chroma`) kurulur, Drive'a zip olarak yedeklenir, sonraki oturumda zip'ten açılır.
 
 ---
 
-## 6. Açık kararlar ve bekleyen küçük işler
+## 5. Sorgu boru hattı: bir rüyanın yolculuğu
 
-| Konu | Durum | Nerede |
+Örnek girdi: *"Rüyamda denize girdim, sudan siyah bir yılan çıktı, çok korktum. Yılan beni ısırmadı."*
+
+### Adım 1 · Çıkarım · `pipeline/extract.py` (Hafta 4)
+
+Claude'a rüya verilir, **JSON şemasıyla** (`output_config.format`) yapılandırılmış çıktı istenir. Model şemaya uymayan bir şey döndüremez:
+
+```json
+{
+  "semboller": [
+    {"yalin": "deniz", "nitelikler": [], "eylem": "girdi", "olumsuz": false},
+    {"yalin": "yılan", "nitelikler": ["siyah"], "eylem": "gördü", "duygu": "korku", "olumsuz": false},
+    {"yalin": "ısırık", "olumsuz": true}
+  ],
+  "ruya_turu_ipucu": null
+}
+```
+
+- `olumsuz: true` olan semboller ("ısırmadı") sonraki adımlara geçmez. Olumsuzlama testi tam olarak bunu ölçüyor.
+- `effort: low` kullanılır; bu kolay bir iş.
+- En fazla 8 sembol işlenir, fazlası listelenir.
+
+### Adım 2 · Eşleme · `pipeline/map.py` (Hafta 4)
+
+Her sembol için sırayla:
+1. `kucuk_harf("Yılan")` → `"yılan"` → varyant tablosunda var mı? → **birebir**
+2. Yoksa zeyrek ile kök bul ("yılanlar" → "yılan") ve tekrar ara → **kök**
+3. Yoksa (Aşama 2) vektör yedeği: en yakın sembol, benzerlik eşiğin üstündeyse → **vektör**
+4. Hiçbiri tutmazsa `symbol_id = None` → **yok** (yanıtta "kaynaklarda bulunamadı")
+
+Çıktı: `Eslesme(sembol, symbol_id="yilan", yontem="birebir", guven=1.0)`. `yontem` hata ayıklama sekmesinde görünür; neyin neden eşleştiğini her zaman görebilirsin.
+
+### Adım 3 · Getirme · `pipeline/retrieve.py` (Hafta 4)
+
+`symbol_id="yilan"` için bütün maddeler alınır, sonra **kaynak başına en fazla N tane** (varsayılan N=2) seçilir. Böylece tek bir kaynak yanıtı domine etmez.
+
+Sıralama ölçütleri:
+1. **Nitelik eşleşmesi:** "siyah" niteliği `metin_tr` içinde geçen madde öne çıkar.
+2. **Bağlam koşulu** (Aşama 3): kullanıcı "kadın" dediyse kadın koşullu yorum öne çıkar.
+3. **Başlıklı madde** alt paragraftan önce gelir.
+
+Çıktı `Aday` nesneleri: madde, skor ve gerekçe ("nitelik eşleşti: siyah"). Gerekçeler hata ayıklama sekmesinde görünür.
+
+### Adım 4 · Sentez · `pipeline/synthesize.py` (Hafta 5)
+
+Projenin en önemli teknik parçası **Citations API**. Her madde Claude'a bir `search_result` bloğu olarak verilir:
+
+```python
+{"type": "search_result",
+ "source": "nablusi:004310",
+ "title": "Nablusi · حية (yılan)",
+ "content": [{"type": "text", "text": "<Türkçe çeviri + asıl metin>"}],
+ "citations": {"enabled": True}}
+```
+
+Model yanıtı **metin blokları** olarak döner ve her blok hangi kaynağa dayandığını yapılandırılmış biçimde taşır. Verilmemiş bir kaynağa atıf yapmak API düzeyinde **imkânsız**. "Uydurmama" hedefi böyle güvenceye alınıyor.
+
+**Neden çıkarım ve sentez iki ayrı çağrı?** Citations ile JSON şemalı çıktı aynı istekte kullanılamıyor (400 hatası). Çıkarım JSON ister, sentez atıf ister; bu yüzden iki çağrı var.
+
+Çıktı yapısı: her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan" ve "Ayrışan" noktalar, en sonda "Kaynaklarda bulunmayanlar" ve zorunlu uyarı metni. Kurallar [05](05-yorum-yontemi.md) ve [07](07-etik-ve-hukuk.md)'den geliyor: kesin konuşmamak, "Diyanet'e göre" dememek, çelişkileri uzlaştırmayıp yan yana koymak.
+
+### Orkestrasyon · `pipeline/run.py` (hazır)
+
+```python
+def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
+    cikarim, k1  = extract(girdi, bag.istemci)
+    eslesmeler   = map_symbols(cikarim.gecerli_semboller[:8], bag.varyantlar, bag.vektor)
+    getirilenler = retrieve(eslesmeler, bag.depo, girdi.baglam, girdi.gelenekler, n)
+    yorum, k2    = synthesize(cikarim, eslesmeler, getirilenler, girdi.baglam, bag.istemci)
+    return SorguKaydi(...)   # her adımın çıktısı + süre, token, maliyet
+```
+
+`SorguKaydi` hem arayüzün hem değerlendirmenin kullandığı tek nesne. Gradio'daki hata ayıklama sekmesi bu nesnenin her alanını gösterecek.
+
+---
+
+## 6. Claude API'yi nasıl kullanıyoruz?
+
+Bütün çağrılar tek bir sarmalayıcıdan geçecek: `llm/client.py` (Hafta 4).
+
+| Konu | Nasıl |
+|---|---|
+| **Effort** | Opus 5.5'te düşünme (thinking) kapatılamaz; derinlik ve maliyet `output_config.effort` ile ayarlanır. Çıkarım `low`, sentez ve çeviri `medium`. Düşünme tokenları çıktı olarak faturalanır. |
+| **Yapılandırılmış çıktı** | `output_config={"format": {"type": "json_schema", "schema": ...}}` |
+| **Prompt önbelleği** | Sabit sistem talimatı `cache_control` ile işaretlenir; tekrar eden isteklerde o kısım ~%95 ucuz okunur. Çalıştığı `usage.cache_read_input_tokens` ile doğrulanır. Talimata tarih/saat yazılmaz, önbelleği bozar. |
+| **Disk önbelleği** | Her isteğin SHA-256 özeti → Drive'da `cache/llm/<özet>.json`. Aynı istek ikinci kez ücret ödetmez. |
+| **Gizlilik** | Rüya içeren istekler (`ruya_icerir=True`) varsayılan olarak diske **yazılmaz**; yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (değerlendirme bunu açar). Loglara rüya metni girmez. |
+| **Hatalar** | 429 ve 5xx'i SDK kendisi tekrar dener; 400 tekrarlanmaz. Her yanıtta önce `stop_reason` okunur: `refusal` → `ModelReddetti`, `max_tokens` → `YanitKesildi`. |
+| **Maliyet** | `usage`'dan token sayıları okunur, `config.FIYATLAR` ile dolara çevrilir, `SorguKaydi`'ya yazılır. Hedef: rüya başına ≤ 0,15 $. |
+| **Talimatlar** | `prompts/<is>_v<n>.md`. Ölçümde kullanılmış bir sürüm bir daha değiştirilmez; değişiklik yeni sürüm dosyasıyla yapılır. Böylece her ölçüm tekrarlanabilir. |
+
+---
+
+## 7. Kod mimarisi: neden böyle?
+
+### Katmanlar
+
+```
+4 · Üst        kayit, degerlendirme
+3 · Sorgu      pipeline/*
+2 · Veri       ingest/*, enrich/*, index/*
+1 · Araçlar    text/turkce, llm/*
+0 · Temel      schemas, config, hatalar, etik, dosya
+```
+
+Bir modül yalnızca kendi katmanından ya da altındakilerden içe aktarabilir. `tests/test_mimari.py` her dosyanın `import` satırlarını AST ile okuyup bunu denetliyor. Göreli içe aktarma (`from ..x`) bu denetimden kaçabileceği için yasak.
+
+### Bağımlılık enjeksiyonu
+
+Boru hattı dış dünyaya (API, depo, sözlük) yalnızca tek bir nesne üzerinden erişir:
+
+```python
+@dataclass
+class Bagimliliklar:
+    istemci: LLMIstemcisi
+    varyantlar: dict[str, str]     # "engerek" → "yilan"
+    depo: MaddeDeposu              # Protocol
+    vektor: VektorArayici | None   # Aşama 2
+    ayar: Ayarlar
+```
+
+- **Testte:** Sahte istemci ve sahte depo verilir. API çağrılmaz, para harcanmaz, test milisaniyede biter.
+- **Aşama 2'de:** Bellekteki depo yerine Chroma'lı depo takılır. `pipeline/` kodu değişmez, çünkü somut sınıfı değil `Protocol`'ü (arayüzü) tanır.
+
+### Tembel içe aktarma
+
+`chromadb`, `torch`, `gradio`, `zeyrek` modülün başında değil, kullanıldıkları fonksiyonun içinde içe aktarılır. Böylece bilgisayarda bu dev paketler kurulu olmadan bütün paket içe aktarılabiliyor ve testler çalışıyor.
+
+### Test türleri
+
+| Tür | Nerede | Ne sınar |
 |---|---|---|
-| **S3** · Model ve aylık bütçe tavanı | Cevap bekliyor; öneri: Opus 5.5 ile başla, tavan 10 $/ay | [09](09-riskler-ve-acik-sorular.md) |
-| **S4** · Repo özel mi, açık mı? | Repo şu an özel görünüyor; belgede de "özel" diye işaretlenmeli | [09](09-riskler-ve-acik-sorular.md) |
-| Haiku'nun önbellek okuma fiyatı | `config.py`'de boş, Haiku maliyeti olduğundan yüksek hesaplanıyor; doğrulanmış fiyat bulununca eklenecek | `src/ruya/config.py` |
-| Gutenberg SHA256 değerleri | İlk indirmeden sonra işlenecek | `src/ruya/ingest/kaynaklar.py` |
+| Birim | Bilgisayar + Colab | Ayrıştırıcı, normalleştirme, eşleme, getirme; `tests/fixtures/`'daki birkaç satırlık örneklerle |
+| Mimari | Bilgisayar + Colab | Katman kuralı, model adları, tembel içe aktarma, notebook temizliği |
+| Kontrat (`-m veri`) | Yalnızca Colab | Gerçek `entries.jsonl`'daki her kayıt şemaya uyuyor mu, `entry_id` benzersiz mi |
+| Değerlendirme | Colab, ücretli | Test setiyle uçtan uca ölçüm (bölüm 8) |
 
 ---
 
-## 7. Kısa sözlük
+## 8. Ölçerek ilerlemek
+
+### Test seti (`eval/dataset/ruyalar_v1.jsonl`, Hafta 3)
+
+```json
+{"id": "r007",
+ "metin": "Rüyamda denize girdim, sudan siyah bir yılan çıktı, çok korktum.",
+ "beklenen_semboller": ["deniz", "yilan"],
+ "beklenen_nitelikler": {"yilan": ["siyah"]},
+ "olmamasi_gerekenler": [],
+ "beklenen_maddeler": {"yilan": ["nablusi:004310", "miller:018710"]}}
+```
+
+20 rüyayla başlayacağız (Aşama 3'te 40–50). Aralarında özel testler de olacak: kaynakta olmayan sembol ("uzay gemisi"), olumsuzlama ("yılan görmedim"), çok kelimeli sembol ("ölmüş babam"), ağır içerik.
+
+### Ölçütler (`degerlendirme/metrikler.py`, Hafta 5)
+
+| Adım | Ölçüt | MVP hedefi |
+|---|---|---|
+| Çıkarım | Sembol recall / precision | ≥ %80 / ≥ %80 |
+| Çıkarım | Olumsuzlama hatası | 0 |
+| Eşleme | Doğru `symbol_id` oranı | ≥ %85 |
+| Getirme | Kaynak çeşitliliği | ≥ 1,5 kaynak/sembol |
+| Sentez | Atıf kapsamı (atıflı iddia bölümü oranı) | %100 |
+| Sentez | Sadakat (elle, 10 yanıt) | 0 uydurma cümle |
+| İşletim | Süre / maliyet | ≤ 30 sn / ≤ 0,15 $ |
+
+**Recall ve precision:** Recall "beklenen sembollerin kaçını buldum?", precision "bulduklarımın kaçı doğru?" sorusunu cevaplar. Biri yüksek diğeri düşükse sistem ya çok şey kaçırıyor ya da çok şey uyduruyor demektir.
+
+Her ölçüm Drive'a tarihli bir rapor yazar, özet satırı [olcumler.md](olcumler.md)'ye girer. Böylece "talimatı değiştirdim, iyileşti mi?" sorusunun cevabı her zaman bir sayıdır.
+
+### Deneyler
+
+| | Neyi karşılaştırır | Ne zaman |
+|---|---|---|
+| D1 | e5-large ile Qwen3-Embedding | Aşama 2 |
+| D2 | Reranker var / yok | Aşama 2 |
+| D3 | Kaynak başı N = 1, 2, 3 | Aşama 2 |
+| D4 | Opus 5.5 / Sonnet 5.5 / Haiku 5.5 | Aşama 4 |
+| D5 | Claude ile Colab GPU'sunda açık model | Aşama 4 (isteğe bağlı) |
+
+---
+
+## 9. Aşama 3: klasik tabir yöntemini koda dökmek
+
+Projeyi sıradan bir RAG'dan ayıran kısım bu. Ayrıntı: [05 · yorum yöntemi](05-yorum-yontemi.md).
+
+- **Koşullu yorum:** Maddelerdeki "kadın görürse …, mazlum görürse …" kalıpları LLM ile yapılandırılmış alana ayrıştırılır: `{"kosul": {"cinsiyet": "kadin"}, "yorum_tr": "…"}`. Sorgu anında kullanıcının bağlam formuyla karşılaştırılır; eşleşen yorum öne çıkar, diğerleri "diğer vecihler" olur.
+- **Rüya türü:** Çıkarım adımı rahmânî / şeytânî / nefsânî için yalnızca bir **ipucu** verir. Kesin hüküm vermez.
+- **Türetme yolları:** "Zıddıyla tabir" (ölüm = uzun ömür) gibi yöntemler `yontem` etiketine yazılır ve kullanıcıya açıklanır.
+- **Uzlaşı ve ayrışma:** `sentez_v2.md` kaynakların nerede birleştiğini ve nerede ayrıştığını ayrı başlıklar altında gösterir.
+
+---
+
+## 10. Bir hafta nasıl geçecek? (geliştirme döngüsü)
+
+Hafta 2'yi (ayrıştırıcılar) örnek alalım:
+
+1. **Belge:** İlgili belge okunur ([02](02-veri-kaynaklari-ve-semasi.md) bölüm 2, [12](12-kod-yapisi-ve-sozlesmeler.md) bölüm 2). Şema değişecekse önce belge güncellenir.
+2. **Fixture:** `tests/fixtures/` altına gerçek biçimi taklit eden 10–20 satırlık örnek konur. Gerçek veri bilgisayara inmez.
+3. **Plan:** Ben orkestra planı yazarım: "`nablusi.py`'de `ayristir(ham_dosya) -> Iterator[Madde]`, şu davranışlar, şu kenar durumları."
+4. **Kırmızı:** `testci` agent'ı testleri yazar, testler başarısız olur (henüz kod yok).
+5. **Yeşil:** `kodcu` agent'ı testleri geçirecek kodu yazar.
+6. **Doğrulama:** Ben `git diff`'i okurum, `pytest` ve `ruff` çalıştırırım, gerekirse düzeltirim, commit ederim.
+7. **Push ve Colab:** Sen push edersin. Colab'de `02_ayristir.ipynb` çalışır; kurulum hücresi `git pull` yapar, gerçek veri üzerinde istatistikler ve kontrat testleri koşar.
+8. **Geri bildirim:** Beklenmeyen bir şey çıkarsa (ör. paragraf sayısı 5.746 değil 4.900) çıktıyı bana yapıştırırsın; fixture'a o vaka eklenir ve döngü tekrarlanır.
+
+---
+
+## 11. Bilinen zor noktalar
+
+| Zorluk | Neden zor | Planımız |
+|---|---|---|
+| Nablusi alt paragrafları | ~3.300 paragrafın bir kısmı yeni sembol getiriyor; kuralla bulunamıyor | LLM ataması; Hafta 1'de 10 örnekle ölçülüyor (H2) |
+| Çeviri kalitesi | Arapça bilen biri yok (S6) | Terim sözlüğü, yan yana okuma, 1–5 puan; 3'ün altındaysa İngilizce ara katman |
+| Nitelik eşleşmesi çeviriye bağlı | Çeviri "kara yılan" derse "siyah" eşleşmez | Terimler.md'de tek karşılık; asıl çözüm Aşama 3'teki yapılandırılmış `kosullar` |
+| `entry_id` kararlılığı | Satır numarasına bağlı | Kaynak sabitleme + SHA256 denetimi |
+| Türkçe harfler | `"I".lower()` yanlış | Kendi `kucuk_harf()` fonksiyonumuz + testleri |
+| Diller arası vektör arama | Türkçe sorgu, Arapça metin | e5 çok dilli model, `query:`/`passage:` önekleri, D1 deneyi |
+| Chroma ve Drive | SQLite ağ diskinde bozulabilir | Yerel diskte kur, zip olarak yedekle |
+| Maliyet | Opus pahalı, düşünme tokenları gizli maliyet | Batch (%50), prompt önbelleği, disk önbelleği, effort ayarı, her çağrıda maliyet kaydı |
+
+---
+
+## 12. Şu an neredeyiz?
+
+- **Hazır:**
+  - Şemalar, ayarlar ve boru hattı çatısı (`run.py`).
+  - İndirme betiği, Colab kurulumu.
+  - Mimari testleri (167 test geçiyor).
+  - Hafta 1 deneme notebook'u.
+- **Yalnızca imza:** Diğer bütün modüller. Her fonksiyonun gövdesi `NotImplementedError("Hafta N …")`; hangi hafta yazılacağı kodda yazılı.
+- **Sıradaki:**
+  1. Kurulum: API anahtarı, Drive klasörü, Colab Secrets ([10](10-kurulum-rehberi.md)).
+  2. `notebooks/deneyler/01_veri_ve_ceviri.ipynb`'yi Colab'de çalıştırıp H1–H4'ü puanlamak.
+  3. Hafta 2: ayrıştırıcılar.
+
+| Tarih | Teknik iş | Taş |
+|---|---|---|
+| 2–8 Kasım | `ingest/miller.py`, `ingest/nablusi.py`, `text/turkce.py` | |
+| 9–15 Kasım | `enrich/assign_symbols.py`, `enrich/translate.py` (Batch), `symbols.json` (50 sembol), test seti | K1 |
+| 16–22 Kasım | `llm/client.py`, `extract.py`, `map.py`, `retrieve.py` | |
+| 23–29 Kasım | `synthesize.py` (Citations), Gradio, `metrikler.py`, ilk ölçüm | K2 · v0.1 |
+| 30 Kasım–13 Aralık | Chroma + e5, vektör yedeği, reranker, Freud, D1–D3 | K3 · v0.2 |
+| 14 Aralık–10 Ocak | İbn Sirin, `conditions.py`, bağlam formu, `sentez_v2` | K4 · v0.3 |
+| 11–17 Ocak | D4 model karşılaştırması, README | K5 · v1.0 |
+
+**Açık kararlar:** S3 (bütçe tavanı, öneri 10 $/ay) ve S4 (repo şu an özel; belgeye işlenmeli). Ayrıntı: [09](09-riskler-ve-acik-sorular.md).
+
+---
+
+## 13. Teknik sözlük
 
 | Terim | Anlamı |
 |---|---|
-| **RAG** | Getirmeyle güçlendirilmiş üretim: LLM cevabı kendi hafızasından değil, getirilen kaynak metinlerden yazar |
-| **Madde** | Bir tabirnamedeki tek bir kayıt (ör. Nablusi'deki "yılan" paragrafı); `entries.jsonl`'daki bir satır |
-| **symbol_id** | Bir sembolün dilden bağımsız kimliği (`yilan`); bütün kaynakları birbirine bağlayan anahtar |
-| **entry_id** | Bir maddenin kimliği: `kaynak:satır_no` (ör. `nablusi:004123`) |
-| **Alt paragraf** | Nablusi'de "ومن رأى" ("kim … görürse") ile başlayan paragraf; çoğunlukla önceki başlığa ait, bazen yeni bir sembol |
-| **Koşullu yorum** | Aynı sembolün görene göre farklı yorumu ("bekâr görürse …, evli görürse …") |
-| **Batch API** | Claude'a toplu istek gönderme; %50 indirimli, sonuç 24 saat içinde |
-| **Orkestra** | Kod yazdırma aracı: Claude plan yazar, EVREN agent'ları yazar, Claude doğrular |
-| **K0–K5** | Takvimdeki kilometre taşları |
+| **RAG** | Getirmeyle güçlendirilmiş üretim: LLM cevabı kendi hafızasından değil, ona verilen kaynak metinlerden yazar |
+| **Embedding** | Metnin anlamını temsil eden sayı vektörü; benzer anlamlı metinlerin vektörleri birbirine yakındır |
+| **Vektör deposu** | Embedding'leri saklayıp "buna en yakın k tane" sorgusunu hızlı cevaplayan veritabanı (Chroma) |
+| **Reranker** | Getirilen adayları sorguyla birlikte tek tek okuyup daha isabetli yeniden sıralayan model |
+| **Diller arası arama** | Türkçe sorguyla Arapça/İngilizce metin bulmak; çok dilli embedding modeli gerektirir |
+| **Structured output** | LLM'in yanıtını verilen JSON şemasına uymaya zorlamak |
+| **Citations / search_result** | Claude'un yanıttaki her iddiayı verilen kaynak bloklarından birine bağlaması |
+| **Effort** | Opus 5.5'te modelin ne kadar düşüneceğini (ve ne kadar token harcayacağını) belirleyen ayar |
+| **Prompt caching** | Tekrar eden talimat önekini sunucuda önbelleğe alıp ucuz okumak |
+| **Batch API** | Toplu, asenkron, %50 indirimli istek gönderimi |
+| **Recall / precision** | Kapsama ("kaçını buldum?") / isabet ("bulduklarımın kaçı doğru?") |
+| **Recall@5** | Doğru maddenin ilk 5 sonuç içinde olma oranı |
+| **Fixture** | Testlerde kullanılan küçük, sabit örnek veri |
+| **Protocol** | Python'da "şu metotlara sahip her nesne olur" diyen arayüz tanımı; sahte nesne takmayı sağlar |
+| **Bağımlılık enjeksiyonu** | Kodun dış kaynaklarını kendisi kurmak yerine dışarıdan almak; test edilebilirliğin temeli |
+| **Tembel içe aktarma** | Ağır paketi yalnızca gerektiği an içe aktarmak |
+| **TDD** | Önce başarısız test (kırmızı), sonra onu geçiren kod (yeşil) |
+| **entry_id / symbol_id** | Madde kimliği (`nablusi:004310`) / sembol kimliği (`yilan`) |
+| **mARkdown** | OpenITI'nin Arapça metin işaretleme biçimi (`###`, `~~`, `PageV..P..`) |
+| **nbstripout** | Notebook çıktılarını commit'ten önce silen git filtresi; rüyalar ve API yanıtları GitHub'a gitmez |
