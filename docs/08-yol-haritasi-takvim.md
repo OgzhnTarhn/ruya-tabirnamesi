@@ -51,7 +51,7 @@ gantt
 - [x] Proje belgeleri (00–11)
 - [x] Mimari iskelet (23 Ekim): `src/ruya/` paketi, veri sözleşmeleri, modül arayüzleri, mimari testleri; eksik belgeler (12, KAYNAKLAR, terimler, şablonlar)
 - [ ] Belgeleri oku, açık soruları cevapla ([09](09-riskler-ve-acik-sorular.md))
-- [ ] Hesaplar: Claude Developer Platform, API anahtarı, harcama limiti; GitHub özel repo ([10-kurulum-rehberi.md](10-kurulum-rehberi.md))
+- [x] API anahtarı: `EVREN_LLM_API_KEY` kullanıcı ortam değişkeninde (31 Ekim; Claude API yerine EVREN, TK-03); GitHub özel repo ([10-kurulum-rehberi.md](10-kurulum-rehberi.md))
 - [x] ~~Google Drive klasörü ve Colab Secrets~~ (31 Ekim: bilgisayarda çalışmaya geçildi; API anahtarı kullanıcı ortam değişkeninde)
 - [x] İlk push
 
@@ -59,14 +59,15 @@ gantt
 
 **Amaç:** Projenin iki büyük bilinmeyenini cevaplamak. Hepsi bilgisayarda, `notebooks/deneyler/01_veri_ve_ceviri.ipynb` içinde yapılır. Veri `data/` altına iner.
 
+- [ ] `config.py` ve `llm/client.py`: EVREN geçidi, `deepseek-v4.1-flash`, disk önbelleği, yeniden deneme, `toplu` (31 Ekim kararıyla Hafta 4'ten öne alındı; deneme bu istemciyi kullanır)
 - [ ] `notebooks/_kurulum.py`: bilgisayara uyarla (anahtar kontrolü, autoreload); Colab sürümü 23 Ekim'de yazılmıştı
 - [ ] `00_ortam_kontrolu.ipynb` ile Python sürümünü, API anahtarını ve `data/` yollarını kontrol et
 
-- [ ] `scripts/download_sources.py` (hazır) ile Nablusi ve Miller'ı `data/raw/` altına indir; SHA256 değerleri `data/raw/KAYNAK_OZETLERI.json`'a yazılır.
+- [x] `scripts/download_sources.py` ile dört kaynağı `data/raw/` altına indir; SHA256 değerleri `kaynaklar.py`'ye sabitlendi (31 Ekim).
 - [ ] Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.
-- [ ] 10 Nablusi ve 10 Miller maddesini Claude ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.
+- [ ] 10 Nablusi ve 10 Miller maddesini `deepseek-v4.1-flash` ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.
 - [ ] 10 alt paragrafı "hangi sembole ait?" sorusuyla LLM'e sınıflandırt ve doğruluğu say.
-- [ ] Gerçek token sayılarını `count_tokens` ile ölç ve tüm korpusun çeviri maliyetini yeniden hesapla.
+- [ ] Gerçek token sayılarını ve istek sürelerini ölç; tüm korpusun çevirisinin günlük kotaya ve 1 Aralık'a kadar sürecek ücretsiz döneme sığıp sığmadığını hesapla.
 - [ ] **Çıktı:** `docs/deneyler/01-veri-ve-ceviri.md`. Hipotez, sonuç ve karar.
 
 **Karar noktası (K0):** Çeviri kalitesi 3/5'in altındaysa çeviri talimatı iyileştirilir ya da İngilizce ara katman denenir. Bu durumda 1 hafta kayma olur.
@@ -86,14 +87,13 @@ gantt
 
 - [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
-- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir. Bu işler `03_zenginlestir.ipynb` üzerinden yapılır; Batch iş kimlikleri `data/cache/batch/` altına yazılır.
+- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini `LLMIstemcisi.toplu` ile çevir; yanıtlar disk önbelleğine yazıldığı için iş kesilirse kaldığı yerden devam eder.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
 - [ ] `docs/kurallar.md` (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
 - [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
 
 ### Hafta 4 · 16–22 Kasım · Aşama 1: Boru hattı (adım 1–3)
 
-- [ ] `llm/client.py`: disk önbelleği, maliyet hesabı, hata yönetimi, `stop_reason` kontrolü
 - [ ] `pipeline/extract.py` ve `prompts/cikarim_v1.md`: JSON şemalı sembol çıkarımı
 - [ ] `pipeline/map.py`: birebir eşleme, zeyrek ile kök eşleme ve testleri
 - [ ] `pipeline/retrieve.py`: `symbol_id` ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri
@@ -101,7 +101,7 @@ gantt
 
 ### Hafta 5 · 23–29 Kasım · Aşama 1: Sentez, arayüz, ölçüm → **v0.1-mvp**
 
-- [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: `search_result` ve atıflar
+- [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: numaralı kaynaklar, JSON çıktısı ve `atiflari_dogrula`
 - [ ] `pipeline/run.py` ve `SorguKaydi`
 - [ ] `app/gradio_app.py` ve `05_arayuz.ipynb`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
 - [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
@@ -109,7 +109,7 @@ gantt
 
 ### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
 
-- [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (Batch API, bütçe kontrolüyle)
+- [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (`toplu`, kota kontrolüyle). ⚠️ EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bu iş Hafta 3'ün sonuna, ücretsiz döneme çekilmeli (R13, [09](09-riskler-ve-acik-sorular.md)).
 - [ ] `symbols.json` dosyasını ~150 sembole genişlet
 - [ ] `index/build_vectors.py` ve `04_indeks.ipynb`: Chroma ve embedding modeli; indeks `data/index/chroma` altında
 - [ ] Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla
@@ -145,8 +145,8 @@ gantt
 
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
 
-- [ ] D4: Opus 5.5, Sonnet 5.5 ve Haiku 5.5 karşılaştırması (sentez ve çıkarım)
-- [ ] D5 (isteğe bağlı): Colab GPU'sunda açık model (Gemma, Qwen)
+- [ ] D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (sentez ve çıkarım)
+- [ ] D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)
 - [ ] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim
 - [ ] `v1.0` etiketi
 
