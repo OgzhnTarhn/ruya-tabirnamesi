@@ -56,6 +56,7 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
                 "1143CabdGhaniNabulusi.TactirAnam.Shamela0001217-ara1"
             ),
             asama=0,
+            sha256="51c93a0ea7088a2c82c9c61b1ad59c99066e71048592db70a4638d31abe55f48",
         ),
         KaynakBilgisi(
             kaynak="miller",
@@ -66,6 +67,7 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
             lisans="PD",
             url="https://www.gutenberg.org/cache/epub/926/pg926.txt",
             asama=0,
+            sha256="ba11ed0002f180cd2598dc59d36c80c9b84e60a6bd9e27a58f35f6610695e8ba",
         ),
         KaynakBilgisi(
             kaynak="freud",
@@ -76,6 +78,7 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
             lisans="PD",
             url="https://www.gutenberg.org/ebooks/66048.txt.utf-8",
             asama=2,
+            sha256="8973b83e306ba0baeec4c4e60395d9f990a3c81a7354b618cb82a61800dde34a",
         ),
         KaynakBilgisi(
             kaynak="ibn_sirin",
@@ -91,6 +94,7 @@ KAYNAKLAR: dict[str, KaynakBilgisi] = {
                 "0110IbnSirin.MuntakhabKalamFiTafsirAhlam.Shamela0021615-ara1"
             ),
             asama=3,
+            sha256="be1a56318d437b56c1a3729b09b61db53a0632537ec415cf13fb1910161e1eb4",
             atif_notu=OPENITI_ATIF_NOTU,
         ),
     )
