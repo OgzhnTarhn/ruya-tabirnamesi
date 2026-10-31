@@ -15,7 +15,7 @@ from ruya.schemas import (
     Yorum,
 )
 
-KULLANIM = Kullanim(model="claude-opus-5-5", girdi_token=100, cikti_token=50, maliyet_usd=0.002)
+KULLANIM = Kullanim(model="deepseek-v4.1-flash", girdi_token=100, cikti_token=50, maliyet_usd=0.002)
 
 
 @pytest.fixture

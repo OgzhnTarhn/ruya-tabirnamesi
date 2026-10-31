@@ -110,7 +110,7 @@ def test_log_kaydinda_ruya_metni_yok(ornek_maddeler):
             AdimOlcumu(
                 adim="cikarim",
                 sure_sn=1.5,
-                kullanim=Kullanim(model="claude-opus-5-5", maliyet_usd=0.01),
+                kullanim=Kullanim(model="deepseek-v4.1-flash", maliyet_usd=0.01),
             ),
             AdimOlcumu(adim="esleme", sure_sn=0.01),
         ],

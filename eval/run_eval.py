@@ -2,7 +2,7 @@
 
 Bilgisayarda::
 
-    uv run python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket asama1-opus
+    uv run python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket asama1-deepseek
 
 Her çalıştırma ücretlidir. Geliştirme sırasında LLM disk önbelleği açık kalır;
 burada ayrıca rüya içeren istekler için sorgu önbelleği açılır (docs/03, 5.2).
@@ -21,7 +21,7 @@ from ruya.pipeline.run import varsayilan_bagimliliklar
 def main(argv: list[str] | None = None) -> None:
     ayristirici = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ayristirici.add_argument("--dataset", type=Path, required=True)
-    ayristirici.add_argument("--etiket", required=True, help="ör. asama1-opus")
+    ayristirici.add_argument("--etiket", required=True, help="ör. asama1-deepseek")
     args = ayristirici.parse_args(argv)
     # Test setindeki rüyalar zaten repoda; aynı ölçüm ikinci kez ücret ödetmesin (docs/03, 5.2).
     ayar = ayarlar().model_copy(update={"sorgu_onbellegi": True})
