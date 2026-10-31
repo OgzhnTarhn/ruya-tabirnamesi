@@ -2,7 +2,7 @@
 
 - Kod, veri ve çalıştırma aynı bilgisayarda: veri ``<repo>/data`` altında durur ve
   hiçbir zaman git'e eklenmez (lisans ve gizlilik).
-- Claude model adları ve fiyatları **yalnızca bu dosyada** tanımlanır (CLAUDE.md).
+- LLM model adları, API adresi ve fiyatları **yalnızca bu dosyada** tanımlanır (CLAUDE.md).
 - Ayarlar ``RUYA_`` önekli ortam değişkenlerinden okunur. ``.env`` dosyası
   kullanılmaz; gizli bilgiler (API anahtarı) yalnızca ortam değişkeni
   olarak durur, hiçbir dosyaya yazılmaz.
@@ -26,39 +26,30 @@ TEST_SETI_KLASORU = REPO_KOKU / "eval" / "dataset"
 # data/ git'e eklenmez; lisans ve gizlilik.
 VERI_KLASORU = REPO_KOKU / "data"
 
-# --- Modeller (TK-04) -------------------------------------------------------
-MODEL_CIKARIM = "claude-opus-5-5"
-MODEL_SENTEZ = "claude-opus-5-5"
-MODEL_CEVIRI = "claude-opus-5-5"
-MODEL_SEMBOL_ATAMA = "claude-opus-5-5"
-MODEL_KOSUL = "claude-opus-5-5"
+# --- LLM: EVREN geçidi (TK-03, TK-04) ---------------------------------------
+MODEL_CIKARIM = "deepseek-v4.1-flash"
+MODEL_SENTEZ = "deepseek-v4.1-flash"
+MODEL_CEVIRI = "deepseek-v4.1-flash"
+MODEL_SEMBOL_ATAMA = "deepseek-v4.1-flash"
+MODEL_KOSUL = "deepseek-v4.1-flash"
 
-# Opus 5.5'te düşünme kapatılamaz; derinlik ve maliyet effort ile ayarlanır.
-# Opus 5.5'in varsayılanı "medium" olduğu için her iş için açıkça yazılır.
-EFFORT_CIKARIM = "low"
-EFFORT_SENTEZ = "medium"
-EFFORT_CEVIRI = "medium"
-EFFORT_SEMBOL_ATAMA = "low"
-EFFORT_KOSUL = "low"
+LLM_ADRESI = "https://evren-llmapi.ssyz.org.tr"
+LLM_ANAHTAR_DEGISKENI = "EVREN_LLM_API_KEY"
 
 
 @dataclass(frozen=True)
 class Fiyat:
-    """Milyon token başına dolar."""
+    """Milyon token başına fiyat (sağlayıcının kredi birimi)."""
 
     girdi: float
     cikti: float
     onbellek_okuma: float | None = None  # None: girdi fiyatıyla hesaplanır (temkinli)
 
 
-# 23 Ekim 2026 itibarıyla birinci taraf API fiyatları. Değişirse yalnızca burası güncellenir.
-# Haiku 5.5 fiyatı 100 bin token altındaki istemler için geçerlidir.
+# EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; fiyat açıklanınca yalnızca burası güncellenir.
 FIYATLAR: dict[str, Fiyat] = {
-    "claude-opus-5-5": Fiyat(girdi=4.00, cikti=20.00, onbellek_okuma=0.20),
-    "claude-sonnet-5-5": Fiyat(girdi=2.00, cikti=10.00, onbellek_okuma=0.20),
-    "claude-haiku-5-5": Fiyat(girdi=0.10, cikti=0.50),
+    "deepseek-v4.1-flash": Fiyat(girdi=0.0, cikti=0.0),
 }
-BATCH_INDIRIMI = 0.5  # Message Batches API toplu işlerde %50 indirimli
 
 
 class Ayarlar(BaseSettings):

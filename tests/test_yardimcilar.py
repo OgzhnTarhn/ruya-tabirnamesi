@@ -5,7 +5,8 @@ import json
 
 import pytest
 
-from ruya.config import Ayarlar
+from ruya import config
+from ruya.config import Ayarlar, Fiyat
 from ruya.dosya import jsonl_oku, jsonl_yaz
 from ruya.kayit import gecmise_yaz, sorgu_logla
 from ruya.llm.client import maliyet_hesapla, onbellek_anahtari
@@ -22,16 +23,20 @@ def test_onbellek_anahtari_sira_bagimsiz():
     assert len(a) == 64
 
 
-def test_maliyet_hesabi():
-    # Opus 5.5: 4 $ / 20 $ milyon token başına
-    assert maliyet_hesapla("claude-opus-5-5", 1_000_000, 0) == pytest.approx(4.0)
-    assert maliyet_hesapla("claude-opus-5-5", 10_000, 1_500) == pytest.approx(0.07)
-    assert maliyet_hesapla("claude-opus-5-5", 10_000, 1_500, batch=True) == pytest.approx(0.035)
-    assert maliyet_hesapla("claude-opus-5-5", 0, 0, onbellek_okuma_token=1_000_000) == (
+def test_maliyet_hesabi(monkeypatch):
+    # Gerçek fiyatlara bağlı kalmamak için tabloya test modeli eklenir.
+    monkeypatch.setitem(
+        config.FIYATLAR, "test-model", Fiyat(girdi=4.0, cikti=20.0, onbellek_okuma=0.2)
+    )
+    assert maliyet_hesapla("test-model", 1_000_000, 0) == pytest.approx(4.0)
+    assert maliyet_hesapla("test-model", 10_000, 1_500) == pytest.approx(0.07)
+    assert maliyet_hesapla("test-model", 0, 0, onbellek_okuma_token=1_000_000) == (
         pytest.approx(0.20)
     )
     with pytest.raises(KeyError):
         maliyet_hesapla("bilinmeyen-model", 1, 1)
+    # EVREN ücretsiz döneminde maliyet sıfırdır.
+    assert maliyet_hesapla(config.MODEL_SENTEZ, 10_000, 1_500) == 0.0
 
 
 def test_talimat_oku(tmp_path):

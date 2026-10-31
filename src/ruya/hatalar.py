@@ -10,15 +10,27 @@ class RuyaHatasi(Exception):
 
 
 class ApiAnahtariYok(RuyaHatasi):
-    """ANTHROPIC_API_KEY ortam değişkeni tanımlı değil."""
+    """EVREN_LLM_API_KEY ortam değişkeni tanımlı değil."""
 
 
 class ModelReddetti(RuyaHatasi):
-    """Model isteği reddetti (stop_reason == "refusal")."""
+    """Model isteği reddetti (yanıtta ``message.refusal`` dolu)."""
 
 
 class YanitKesildi(RuyaHatasi):
-    """Yanıt max_tokens sınırında kesildi (stop_reason == "max_tokens")."""
+    """Yanıt max_tokens sınırında kesildi (``finish_reason == "length"``)."""
+
+
+class LLMHatasi(RuyaHatasi):
+    """Geçit hata döndürdü ve yeniden denemeler tükendi ya da hata tekrarlanamaz."""
+
+    def __init__(self, mesaj: str, durum: int | None = None) -> None:
+        super().__init__(mesaj)
+        self.durum = durum
+
+
+class YanitBozuk(RuyaHatasi):
+    """JSON şeması istenen yanıt ayrıştırılamadı."""
 
 
 class SozlukHatasi(RuyaHatasi):

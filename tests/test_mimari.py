@@ -52,7 +52,7 @@ AGIR_PAKETLER = {
     "zeyrek",
 }
 
-MODEL_ADI = re.compile(r"claude-(opus|sonnet|haiku|fable|mythos)-[0-9]")
+MODEL_ADI = re.compile(r"claude-(opus|sonnet|haiku|fable|mythos)-[0-9]|deepseek-v[0-9]")
 
 
 def _moduller() -> list[Path]:
