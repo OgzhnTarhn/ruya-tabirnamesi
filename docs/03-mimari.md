@@ -173,7 +173,8 @@ Veri repodaki `data/` klasöründe durur ve git'e girmez (bkz. [11](11-calisma-o
   - Çevrimdışı işler (çeviri, sembol atama, koşul ayrıştırma) rüya içermez ve yalnızca `RUYA_LLM_CACHE` ayarına uyar.
 - **Ölçüm:** Her yanıttaki `usage` okunur: `prompt_tokens`, `completion_tokens` (düşünme tokenları dahil), `prompt_tokens_details.cached_tokens`. Tutar `FIYATLAR` tablosundan hesaplanıp `SorguKaydi`'ya yazılır. EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz olduğu için fiyatlar şimdilik 0; asıl sınır günlük token kotasıdır (15 milyon).
 - **Hata yönetimi:**
-  - 429, 5xx ve geçidin "model şu anda dolu" yanıtı yeniden denenir: üstel bekleme, en fazla 4 deneme, `Retry-After` başlığı varsa ona uyulur. Diğer 4xx hataları tekrarlanmaz.
+  - 429, 502, 503, 504 (geçidin "model şu anda dolu" yanıtı dahil) ve bağlantı kurulamama hataları yeniden denenir: üstel bekleme, en fazla 4 deneme, `Retry-After` başlığı varsa ona uyulur. `Retry-After` 30 saniyeden uzunsa (günlük kota doldu) beklenmez, hata verilir. Diğer 4xx hataları tekrarlanmaz.
+  - Her mantıksal çağrı bir `Idempotency-Key` başlığı taşır ve yeniden denemelerde aynı kalır; geçit aynı isteği iki kez çalıştırmaz.
   - Zaman aşımı uzun tutulur (180 sn); model yük altında dakikalarca yanıt üretebiliyor.
   - `finish_reason == "length"` → `YanitKesildi`; `message.refusal` doluysa → `ModelReddetti`; tekrar denemeler tükenirse ya da tekrarlanmayan bir hata gelirse → `LLMHatasi`.
   - JSON şeması istenen yanıt ayrıştırılamazsa → `YanitBozuk`.
