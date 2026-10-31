@@ -48,8 +48,7 @@ data/
 ├── processed/    # entries.jsonl
 ├── index/        # chroma/ (Aşama 2); sembol sözlüğü git'te: sozluk/symbols.json
 ├── cache/
-│   ├── llm/      # LLM yanıt önbelleği: istek başına bir JSON dosyası
-│   └── batch/    # toplu işlerin durumları
+│   └── llm/      # LLM yanıt önbelleği: istek başına bir JSON dosyası
 ├── raporlar/     # değerlendirme raporları (tarihli)
 ├── gecmis/       # isteğe bağlı rüya geçmişi (RUYA_GECMIS=on ise)
 └── logs/         # sorgu logları (rüya metni olmadan)
