@@ -49,7 +49,7 @@ Dosyalar indirildi ve yapıları incelendi. Kod yazılmadı. Bulgular veri tasar
 
 ## 3. Veri işleme hattı
 
-Bütün veri **Google Drive**'da, `MyDrive/ruya-tabirnamesi/` altında durur. Bilgisayara inmez. İşleri Colab notebook'ları çalıştırır (bkz. [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)). Aşağıdaki yollar bu Drive klasörüne göredir.
+Bütün veri repodaki `data/` klasöründe durur (bkz. [11-calisma-ortami.md](11-calisma-ortami.md)). Aşağıdaki yollar repo köküne göredir.
 
 ```
 data/raw/            Ham dosyalar (indirildiği gibi, değiştirilmez)
@@ -64,14 +64,14 @@ data/processed/entries.jsonl  Zenginleştirilmiş, son kayıtlar
    │  index/build_symbols.py  ← sözlük + maddelerden arama tabloları (bellekte, diske yazılmaz)
    │  index/build_vectors.py  ← Chroma (Aşama 2)
    ▼
-data/index/  chroma.zip (Chroma, Colab'in yerel diskinde açılır)
+data/index/  chroma/ (Aşama 2)
 
 (git) sozluk/symbols.json   ← elle onaylanan sembol indeksi repoda durur
 ```
 
 Her dosyayı kimin ürettiği ve kimin okuduğu: [12-kod-yapisi-ve-sozlesmeler.md](12-kod-yapisi-ve-sozlesmeler.md), bölüm 5.
 
-Veri git'e **eklenmez**. Repoda bir `data/` klasörü bile bulunmaz; `.gitignore` yalnızca önlem olarak duruyor. Bunun üç nedeni var: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `01_kaynaklari_indir.ipynb` (içinde `scripts/download_sources.py`) Colab'den doğrudan Drive'a indirir.
+Veri git'e **eklenmez**: `data/` `.gitignore`'da. Bunun üç nedeni var: lisans (SA ve NC koşulları), dosya boyutu ve kendi rüyaların. Ham veriyi `scripts/download_sources.py` `data/raw/` altına indirir.
 
 ## 4. Veri şeması
 
@@ -118,7 +118,7 @@ Alan kuralları:
 
 ### 4.2 `symbols.json`: kanonik sembol indeksi
 
-> **Konum: git'te, `sozluk/symbols.json`.** Bu dosya veri setinin kendisi değil. Senin elle onayladığın bir sözlük. Değişiklikleri sürümlenmeli ve commit geçmişinde görünmeli. İçinde yalnızca kelimeler ve eşlemeler var, lisanslı metin yok. Colab bu dosyayı repodan okur.
+> **Konum: git'te, `sozluk/symbols.json`.** Bu dosya veri setinin kendisi değil. Senin elle onayladığın bir sözlük. Değişiklikleri sürümlenmeli ve commit geçmişinde görünmeli. İçinde yalnızca kelimeler ve eşlemeler var, lisanslı metin yok. Kod bu dosyayı doğrudan repodan okur.
 
 ```json
 {

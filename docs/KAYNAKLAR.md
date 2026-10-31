@@ -8,7 +8,7 @@
 
 ## 1. Korpus kaynakları
 
-Bu metinler ayrıştırılıp `entries.jsonl`'e girer. Veri yalnızca Google Drive'da durur, git'e eklenmez.
+Bu metinler ayrıştırılıp `entries.jsonl`'e girer. Veri yalnızca bilgisayarda, `data/` altında durur, git'e eklenmez.
 
 ### 1.1 Nablusi · *Ta'tîrü'l-enâm fî ta'bîri'l-menâm* (Aşama 0)
 

@@ -52,17 +52,17 @@ gantt
 - [x] Mimari iskelet (23 Ekim): `src/ruya/` paketi, veri sözleşmeleri, modül arayüzleri, mimari testleri; eksik belgeler (12, KAYNAKLAR, terimler, şablonlar)
 - [ ] Belgeleri oku, açık soruları cevapla ([09](09-riskler-ve-acik-sorular.md))
 - [ ] Hesaplar: Claude Developer Platform, API anahtarı, harcama limiti; GitHub özel repo ([10-kurulum-rehberi.md](10-kurulum-rehberi.md))
-- [ ] Google Drive'da `ruya-tabirnamesi` klasörü; Colab Secrets'a `ANTHROPIC_API_KEY` (ve repo özelse `GITHUB_TOKEN`)
-- [ ] İlk push: Colab'in repoyu çekebilmesi için
+- [x] ~~Google Drive klasörü ve Colab Secrets~~ (31 Ekim: bilgisayarda çalışmaya geçildi; API anahtarı kullanıcı ortam değişkeninde)
+- [x] İlk push
 
 ### Hafta 1 · 26 Ekim – 1 Kasım · Deneme (atılabilir kod)
 
-**Amaç:** Projenin iki büyük bilinmeyenini cevaplamak. Hepsi Colab'de, `notebooks/deneyler/01_veri_ve_ceviri.ipynb` içinde yapılır. Veri doğrudan Drive'a iner.
+**Amaç:** Projenin iki büyük bilinmeyenini cevaplamak. Hepsi bilgisayarda, `notebooks/deneyler/01_veri_ve_ceviri.ipynb` içinde yapılır. Veri `data/` altına iner.
 
-- [x] `notebooks/_kurulum.py`: Drive bağlama, Secrets, git pull, pip install (ilk hücrenin metni: `notebooks/README.md`)
-- [ ] `00_ortam_kontrolu.ipynb` ile Colab'in Python sürümünü, GPU erişimini, Drive ve Secrets'ı kontrol et
+- [ ] `notebooks/_kurulum.py`: bilgisayara uyarla (anahtar kontrolü, autoreload); Colab sürümü 23 Ekim'de yazılmıştı
+- [ ] `00_ortam_kontrolu.ipynb` ile Python sürümünü, API anahtarını ve `data/` yollarını kontrol et
 
-- [ ] `scripts/download_sources.py` (hazır) ile Nablusi ve Miller'ı Drive'a indir; SHA256 değerleri `data/raw/KAYNAK_OZETLERI.json`'a yazılır.
+- [ ] `scripts/download_sources.py` (hazır) ile Nablusi ve Miller'ı `data/raw/` altına indir; SHA256 değerleri `data/raw/KAYNAK_OZETLERI.json`'a yazılır.
 - [ ] Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.
 - [ ] 10 Nablusi ve 10 Miller maddesini Claude ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.
 - [ ] 10 alt paragrafı "hangi sembole ait?" sorusuyla LLM'e sınıflandırt ve doğruluğu say.
@@ -74,19 +74,19 @@ gantt
 ### Hafta 2 · 2–8 Kasım · Aşama 0: Ayrıştırıcılar
 
 - [x] Repo iskeleti: `pyproject.toml`, `src/ruya/`, `tests/`, ruff ve pytest ayarları, `nbstripout` git filtresi (23 Ekim)
-- [x] `config.py`: Colab ya da bilgisayar algılama, Drive yolları (23 Ekim)
+- [x] `config.py`: veri yolları (23 Ekim; 31 Ekim'de Colab/Drive yerine `data/`)
 - [ ] `notebooks/01_kaynaklari_indir.ipynb` ve `02_ayristir.ipynb`
 - [x] `schemas.py`: `Madde`, `SymbolKaydi` ve boru hattı veri sınıfları (23 Ekim)
 - [ ] `ingest/miller.py` ve birim testleri (~2.256 madde)
 - [ ] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
 - [ ] `text/turkce.py`: Türkçe küçük harf ve normalleştirme, testleri
-- [x] Kontrat testi: bütün kayıtlarda `lisans` dolu ve `entry_id` benzersiz (`tests/test_kontrat_veri.py`, veri gelince Colab'de `-m veri`)
+- [x] Kontrat testi: bütün kayıtlarda `lisans` dolu ve `entry_id` benzersiz (`tests/test_kontrat_veri.py`, veri gelince `-m veri`)
 
 ### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
 
 - [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
-- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir. Bu işler `03_zenginlestir.ipynb` üzerinden yapılır; Batch iş kimlikleri Drive'a yazılır.
+- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini Batch API'den çevir. Bu işler `03_zenginlestir.ipynb` üzerinden yapılır; Batch iş kimlikleri `data/cache/batch/` altına yazılır.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
 - [ ] `docs/kurallar.md` (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
 - [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
@@ -104,14 +104,14 @@ gantt
 - [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: `search_result` ve atıflar
 - [ ] `pipeline/run.py` ve `SorguKaydi`
 - [ ] `app/gradio_app.py` ve `05_arayuz.ipynb`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
-- [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (Drive) ve `docs/olcumler.md`
+- [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
 - [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
 
 ### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
 
 - [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (Batch API, bütçe kontrolüyle)
 - [ ] `symbols.json` dosyasını ~150 sembole genişlet
-- [ ] `index/build_vectors.py` ve `04_indeks.ipynb`: Chroma ve multilingual-e5-large, **Colab GPU**'sunda; indeks Drive'a zip olarak yedeklenir
+- [ ] `index/build_vectors.py` ve `04_indeks.ipynb`: Chroma ve embedding modeli; indeks `data/index/chroma` altında
 - [ ] Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla
 
 ### Hafta 7 · 7–13 Aralık · Aşama 2: Reranker, Freud, deneyler → **v0.2**

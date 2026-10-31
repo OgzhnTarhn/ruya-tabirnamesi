@@ -59,7 +59,7 @@ flowchart BT
 
 **Testlerle korunan diğer kurallar:**
 
-- **Ağır paketler tembel yüklenir.** `chromadb`, `sentence_transformers`, `torch`, `transformers`, `gradio`, `google.colab` ve `zeyrek` modül düzeyinde içe aktarılmaz; yalnızca onları kullanan işlevin içinde. Böylece bütün paket bilgisayarda, bu paketler kurulmadan içe aktarılabilir ve birim testleri çalışır (zeyrek kurulu ama analizörü yavaş yüklenir).
+- **Ağır paketler tembel yüklenir.** `chromadb`, `sentence_transformers`, `torch`, `transformers`, `gradio` ve `zeyrek` modül düzeyinde içe aktarılmaz; yalnızca onları kullanan işlevin içinde. Böylece bütün paket bilgisayarda, bu paketler kurulmadan içe aktarılabilir ve birim testleri çalışır (zeyrek kurulu ama analizörü yavaş yüklenir).
 - **Göreli içe aktarma yok.** `from ..index import store` gibi satırlar katman testinden kaçabileceği için yasaktır; her zaman `from ruya.index import store` yazılır.
 - **Model adları yalnızca `src/ruya/config.py` içinde.** `src/`, `app/`, `eval/`, `scripts/`, `notebooks/` altında başka bir dosyada `claude-…` geçemez.
 - **Notebook'lar çıktısız commit edilir** ve ortak kurulum hücresiyle başlar.
@@ -73,8 +73,8 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 
 | Modül | Sorumluluk | Ana öğeler | Durum |
 |---|---|---|---|
-| `config.py` | Ortam algılama, yollar, model adları, fiyatlar | `Ayarlar`, `ayarlar()`, `colabda_mi()`, `MODEL_*`, `EFFORT_*`, `FIYATLAR`, `SOZLUK_DOSYASI`, `TALIMAT_KLASORU` | ✅ |
-| `hatalar.py` | Projeye özgü hatalar | `VeriYoluYok`, `ApiAnahtariYok`, `ModelReddetti`, `YanitKesildi`, `SozlukHatasi` | ✅ |
+| `config.py` | Veri yolları (`data/`), model adları, fiyatlar | `Ayarlar`, `ayarlar()`, `VERI_KLASORU`, `MODEL_*`, `EFFORT_*`, `FIYATLAR`, `SOZLUK_DOSYASI`, `TALIMAT_KLASORU` | ✅ |
+| `hatalar.py` | Projeye özgü hatalar | `ApiAnahtariYok`, `ModelReddetti`, `YanitKesildi`, `SozlukHatasi` | ✅ |
 | `schemas.py` | Bütün veri sözleşmeleri (bölüm 3) | `Madde`, `SymbolKaydi`, `RuyaGirdisi` … `SorguKaydi`, `TestOrnegi` | ✅ |
 | `etik.py` | Sabit metinler | `UYARI_METNI`, `GUVENLIK_NOTU`, `SEMBOL_YOK_MESAJI`, `YASAK_IFADELER` | ✅ |
 | `dosya.py` | JSONL okuma/yazma | `jsonl_oku(yol, sema)`, `jsonl_yaz(kayitlar, yol)`, `jsonl_ekle(dict, yol)` | ✅ |
@@ -120,7 +120,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`) | 🧩 Hafta 5 |
 | `eval/run_eval.py` | CLI: `--dataset`, `--etiket` | ✅ (gövde `degerlendir`'e bağlı) |
 | `scripts/download_sources.py` | CLI: `--asama`, `--kaynak`, `--yeniden` | ✅ |
-| `notebooks/_kurulum.py` | Drive, Secrets, git pull, pip install, ortam değişkenleri | ✅ |
+| `notebooks/_kurulum.py` | Anahtar kontrolü, autoreload, yolların gösterimi | 🔁 bilgisayara uyarlanacak |
 
 **Neden gövdeler boş?** Proje bir öğrenme projesi (H1): ayrıştırma, eşleme, getirme, sentez ve ölçütler takvimdeki haftalarda, belgeler okunarak yazılacak. Şimdi hazır olanlar, o işlerin üzerine oturacağı **sözleşmeler**: veri sınıfları, imzalar, yollar, kurallar ve onları koruyan testler. Her `NotImplementedError` mesajı hangi haftada yazılacağını söyler.
 
@@ -168,7 +168,7 @@ class Bagimliliklar:
     ayar: Ayarlar
 ```
 
-- **Colab'de:** `varsayilan_bagimliliklar()` sözlüğü repodan, maddeleri Drive'dan okur, istemciyi kurar. Arayüz notebook'u ve değerlendirme bunu çağırır.
+- **Gerçek çalıştırmada:** `varsayilan_bagimliliklar()` sözlüğü repodan, maddeleri `data/`'dan okur, istemciyi kurar. Arayüz notebook'u ve değerlendirme bunu çağırır.
 - **Testlerde:** Sahte (fake) depo ve sahte istemci verilir; API çağrılmaz, para harcanmaz. `tests/test_run.py` bu yolla orkestrasyonu sınar.
 - **Aşama 2'de:** `BellekDeposu` yerine Chroma'lı bir depo, `vektor` alanına `ChromaVektorArayici` takılır. `pipeline/` kodu değişmez; çünkü somut sınıfları değil `store.py`'deki Protocol'leri bilir.
 
@@ -178,23 +178,22 @@ Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(.
 
 | Dosya | Üreten | Okuyan | Yer | Şema |
 |---|---|---|---|---|
-| `data/raw/<kaynak>.txt` | `scripts/download_sources.py` | `ingest/*` | Drive | ham |
-| `data/raw/KAYNAK_OZETLERI.json` | `download_sources.py` | sen (değişiklik kontrolü) | Drive | URL, lisans, bayt, SHA256 |
-| `data/interim/<kaynak>.jsonl` | `ingest/<kaynak>.py` | `enrich/*` | Drive | `Madde` (çeviri ve koşul alanları boş) |
-| `data/interim/sembol_onerileri.json` | `enrich/assign_symbols.py` | sen (gözden geçirme) | Drive | serbest |
-| `data/processed/entries.jsonl` | `enrich/*` (son adım) | `index/*`, `pipeline/` | Drive | `Madde` |
+| `data/raw/<kaynak>.txt` | `scripts/download_sources.py` | `ingest/*` | `data/` | ham |
+| `data/raw/KAYNAK_OZETLERI.json` | `download_sources.py` | sen (değişiklik kontrolü) | `data/` | URL, lisans, bayt, SHA256 |
+| `data/interim/<kaynak>.jsonl` | `ingest/<kaynak>.py` | `enrich/*` | `data/` | `Madde` (çeviri ve koşul alanları boş) |
+| `data/interim/sembol_onerileri.json` | `enrich/assign_symbols.py` | sen (gözden geçirme) | `data/` | serbest |
+| `data/processed/entries.jsonl` | `enrich/*` (son adım) | `index/*`, `pipeline/` | `data/` | `Madde` |
 | `sozluk/symbols.json` | **sen** (elle onay) | `index/build_symbols.py` | **git** | `SozlukDosyasi` |
-| `data/index/chroma.zip` | `index/yedek.py` | `index/yedek.py` | Drive (yedek) | Chroma |
-| `/content/calisma/chroma/` | `index/build_vectors.py` | `index/*` | Colab yerel diski (geçici) | Chroma |
-| `cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | Drive | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
-| `cache/batch/<etiket>.json` | `LLMIstemcisi.batch_gonder` | `batch_sonuclari` | Drive | batch kimliği, durum |
-| `logs/sorgular.jsonl` | `kayit.sorgu_logla` | sen | Drive | `SorguKaydi.log_kaydi()` |
-| `gecmis/<yıl-ay>.jsonl` | `kayit.gecmise_yaz` | sen | Drive (isteğe bağlı) | `SorguKaydi` |
-| `raporlar/<tarih>_<etiket>.md` | `degerlendirme/calistir.py` | sen | Drive | Markdown |
+| `data/index/chroma/` | `index/build_vectors.py` | `index/*` | `data/` | Chroma |
+| `data/cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | `data/` | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
+| `data/cache/batch/<etiket>.json` | `LLMIstemcisi.batch_gonder` | `batch_sonuclari` | `data/` | batch kimliği, durum |
+| `data/logs/sorgular.jsonl` | `kayit.sorgu_logla` | sen | `data/` | `SorguKaydi.log_kaydi()` |
+| `data/gecmis/<yıl-ay>.jsonl` | `kayit.gecmise_yaz` | sen | `data/` (isteğe bağlı) | `SorguKaydi` |
+| `data/raporlar/<tarih>_<etiket>.md` | `degerlendirme/calistir.py` | sen | `data/` | Markdown |
 | `docs/olcumler.md` | **sen** (özet satırı) | — | **git** | tablo |
 | `eval/dataset/ruyalar_v1.jsonl` | **sen** | `degerlendirme/` | **git** (özel repo) | `TestOrnegi` |
 
-**Sözlükten türeyen tablolar diskte tutulmaz.** Varyant tablosu (ad → `symbol_id`) ve sembol → madde tablosu her oturum başında bellekte kurulur. 50–150 sembol ve ~10 bin madde için bu bir saniyeden kısa sürer. Böylece "Drive'daki tablo eski kaldı" türünden bir hata hiç oluşmaz. Drive'daki `data/index/` klasöründe yalnızca Chroma yedeği durur.
+**Sözlükten türeyen tablolar diskte tutulmaz.** Varyant tablosu (ad → `symbol_id`) ve sembol → madde tablosu her oturum başında bellekte kurulur. 50–150 sembol ve ~10 bin madde için bu bir saniyeden kısa sürer. Böylece "diskteki tablo eski kaldı" türünden bir hata hiç oluşmaz. `data/index/` klasöründe yalnızca Chroma indeksi durur.
 
 ### Sembol sözlüğünün yaşam döngüsü
 
@@ -203,11 +202,11 @@ flowchart LR
     A[Test setindeki rüyalar<br/>+ Nablusi ve Miller başlıkları] -->|LLM önerir| B[data/interim/<br/>sembol_onerileri.json]
     B -->|sen okursun| C[sozluk/symbols.json<br/>gozden_gecirildi: true]
     C -->|commit| D[(git)]
-    D -->|Colab: git pull| E[varyant_tablosu<br/>bellekte]
+    C -->|her çalıştırmada okunur| E[varyant_tablosu<br/>bellekte]
     C -->|tests/test_sozluk.py| C
 ```
 
-1. **Öneri:** LLM sembol ve varyant önerir; öneriler Drive'a yazılır, repoya doğrudan girmez.
+1. **Öneri:** LLM sembol ve varyant önerir; öneriler `data/interim/` altına yazılır, repoya doğrudan girmez.
 2. **Onay:** Sen `symbols.json`'a eklersin ya da düzeltirsin, `gozden_gecirildi: true` yaparsın.
 3. **Doğrulama:** `uv run pytest tests/test_sozluk.py`, ardından commit. Bir varyantın iki sembolde birden geçmesi `varyant_tablosu` tarafından hata olarak yakalanır.
 4. **Tutarlılık:** Zenginleştirmeden sonra `sozluk_maddeler_tutarliligi` sözlükte olmayan `symbol_id`'leri ve hiç maddesi olmayan onaylı sembolleri listeler.
@@ -223,7 +222,6 @@ flowchart LR
 
 | Hata | Kim fırlatır | Arayüzün davranışı (03, bölüm 5.4) |
 |---|---|---|
-| `VeriYoluYok` | `Ayarlar.veri()` | Bilgisayarda beklenen durum; Colab'de kurulum hücresi çalıştırılmamış demektir |
 | `ApiAnahtariYok` | `LLMIstemcisi` | Açılışta net mesaj |
 | `ModelReddetti` | `LLMIstemcisi` (`stop_reason == "refusal"`) | `etik.REDDEDILDI_MESAJI`, olay loglanır |
 | `YanitKesildi` | `LLMIstemcisi` (`stop_reason == "max_tokens"`) | Loglanır; `max_tokens` artırılır |
@@ -244,19 +242,16 @@ flowchart LR
 ## 9. Günlük geliştirme döngüsü
 
 ```
-Bilgisayar (VS Code)                        Colab
-────────────────────                        ─────
 1. docs/ altındaki ilgili belgeyi oku
 2. Testi yaz (tests/fixtures ile)
 3. Kodu yaz → uv run pytest
 4. uv run ruff check . && uv run ruff format .
-5. git commit (atomik, Türkçe)
-6. push (sen)                       ──▶     7. Notebook'un kurulum hücresi: git pull
-                                            8. Gerçek veriyle çalıştır, çıktıyı Drive'a yaz
-                                            9. Gerekirse: python -m pytest -m veri
+5. Gerçek veriyle çalıştır (betik ya da notebook); çıktı data/ altına yazılır
+6. Gerekirse: uv run pytest -m veri
+7. git commit (atomik, Türkçe); push (sen)
 ```
 
-Küçük bir değişikliği Colab'de görmek 5 dakikadan uzun sürüyorsa (R12) mantık notebook'ta birikmiş demektir; `src/ruya/` altına taşı ve bilgisayarda test et.
+Mantık notebook'ta birikmeye başlarsa `src/ruya/` altına taşı ve test et.
 
 ## 10. Yeni bir kaynak eklemek (kontrol listesi)
 
@@ -265,5 +260,5 @@ Küçük bir değişikliği Colab'de görmek 5 dakikadan uzun sürüyorsa (R12) 
 3. `ingest/kaynaklar.py` → `KAYNAKLAR` sözlüğüne `KaynakBilgisi` ekle. Adres sabit bir sürümü göstermeli (git deposuysa commit; değilse ilk indirmeden sonra `sha256` alanı doldurulur). Neden: `entry_id` satır numarasına bağlı ([02](02-veri-kaynaklari-ve-semasi.md), bölüm 4.1).
 4. `tests/fixtures/` altına ham dosyadan birkaç satır koy (kaynağı ve lisansı dosyanın başında yaz).
 5. `ingest/<kaynak>.py` içinde `ayristir` işlevini yaz, testini yaz.
-6. Colab'de: indir → ayrıştır → zenginleştir → `entries.jsonl`; `pytest -m veri`.
+6. İndir → ayrıştır → zenginleştir → `entries.jsonl`; `uv run pytest -m veri`.
 7. Gerekirse `schemas.Gelenek` ve `Dil` türlerini genişlet.

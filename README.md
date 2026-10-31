@@ -2,7 +2,7 @@
 
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
-> **Durum:** Planlama ve mimari iskelet tamam (23 Ekim 2026). Veri sözleşmeleri, modül arayüzleri, Colab kurulumu ve mimari testleri hazır; adımların gövdeleri takvimdeki haftalarda yazılacak.
+> **Durum:** Planlama ve mimari iskelet tamam (23 Ekim 2026). Veri sözleşmeleri, modül arayüzleri ve mimari testleri hazır; adımların gövdeleri takvimdeki haftalarda yazılacak.
 > **Sonraki adım:** Hesaplar ve ilk push ([10](docs/10-kurulum-rehberi.md)), ardından Hafta 1'deki veri ve çeviri denemesi ([takvim](docs/08-yol-haritasi-takvim.md), [deney notu](docs/deneyler/01-veri-ve-ceviri.md)).
 
 ## Belgeler
@@ -19,8 +19,8 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 | 07 | [Etik ve hukuk](docs/07-etik-ve-hukuk.md) | Veri ve telif kuralları, yorum dili, uyarı metni, KVKK |
 | 08 | [Yol haritası ve takvim](docs/08-yol-haritasi-takvim.md) | 12 haftalık plan, kilometre taşları ([.ics](docs/takvim.ics)) |
 | 09 | [Riskler ve açık sorular](docs/09-riskler-ve-acik-sorular.md) | Senin cevaplaman gereken sorular, risk kaydı |
-| 10 | [Kurulum rehberi](docs/10-kurulum-rehberi.md) | Hesaplar, Drive klasörü, Colab Secrets |
-| 11 | [Çalışma ortamı](docs/11-calisma-ortami-colab-drive.md) | Kod bilgisayarda, çalıştırma Colab'de, veri Drive'da |
+| 10 | [Kurulum rehberi](docs/10-kurulum-rehberi.md) | API anahtarı, uv, kaynakları indirme |
+| 11 | [Çalışma ortamı](docs/11-calisma-ortami.md) | Kod, çalıştırma ve veri bilgisayarda; veri `data/` altında, git'e girmez |
 | 12 | [Kod yapısı ve sözleşmeler](docs/12-kod-yapisi-ve-sozlesmeler.md) | Katmanlar, modül imzaları, veri ürünleri, adlandırma, geliştirme döngüsü |
 | — | [Kaynaklar](docs/KAYNAKLAR.md) | Künyeler, lisanslar, atıf metinleri |
 | — | [Terimler](docs/terimler.md) | Çeviride kullanılan tabir terimleri |
@@ -41,7 +41,7 @@ Rüya metni
   → Kaynaklı, gelenek etiketli Türkçe yorum + uyarı
 ```
 
-**Ortam:** Kod bilgisayarda (VS Code + Git) · çalıştırma Google Colab'de · veri Google Drive'da
+**Ortam:** Her şey bilgisayarda (VS Code + Git + uv) · veri `data/` altında, git'e girmez
 
 **Teknolojiler:** Python ≥3.11 · Anthropic SDK · Chroma · multilingual-e5-large · zeyrek · Gradio · pytest · ruff · nbstripout
 
@@ -49,7 +49,7 @@ Rüya metni
 
 ```
 src/ruya/     paket: config, schemas, llm, ingest, enrich, index, pipeline, degerlendirme
-notebooks/    ince Colab notebook'ları (ilk hücre: notebooks/README.md)
+notebooks/    ince notebook'lar: deneyler ve inceleme (VS Code, .venv çekirdeği)
 prompts/      sürümlü sistem talimatları
 sozluk/       elle onaylanan sembol sözlüğü (symbols.json)
 app/ eval/ scripts/   giriş noktaları: Gradio arayüzü, değerlendirme, kaynak indirme
@@ -65,8 +65,8 @@ uv run pytest
 uv run ruff check . ; uv run ruff format .
 ```
 
-Veriyle çalışan her şey Colab'de: [11](docs/11-calisma-ortami-colab-drive.md), [notebooks/README.md](notebooks/README.md).
+Kurulum ve çalıştırma: [10](docs/10-kurulum-rehberi.md), [11](docs/11-calisma-ortami.md).
 
 ## Lisans notu
 
-Kod sana aittir. Veri Google Drive'da durur ve git'e eklenmez. OpenITI metinleri CC BY-NC-SA 4.0 lisanslıdır; Gutenberg metinleri kamu malıdır. Ayrıntılar: [07-etik-ve-hukuk.md](docs/07-etik-ve-hukuk.md), künyeler: [KAYNAKLAR.md](docs/KAYNAKLAR.md).
+Kod sana aittir. Veri `data/` klasöründe durur ve git'e eklenmez. OpenITI metinleri CC BY-NC-SA 4.0 lisanslıdır; Gutenberg metinleri kamu malıdır. Ayrıntılar: [07-etik-ve-hukuk.md](docs/07-etik-ve-hukuk.md), künyeler: [KAYNAKLAR.md](docs/KAYNAKLAR.md).

@@ -58,8 +58,8 @@ Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama
 
 | Parça | Seçim | Neden |
 |---|---|---|
-| Dil | Python ≥3.11 | Colab'in sürümü |
-| Paketler | `pyproject.toml`; bilgisayarda **uv**, Colab'de `pip install -e .` | Tek bağımlılık kaynağı; `-e` sayesinde `git pull` hemen geçerli olur |
+| Dil | Python ≥3.11 | uv ile kurulur |
+| Paketler | `pyproject.toml` + **uv** | Tek bağımlılık kaynağı; `uv.lock` kurulumu tekrarlanabilir kılar |
 | LLM | **Claude API** (`anthropic` SDK), Opus 5.5 | Yerleşik atıf (`search_result` + citations), JSON şeması, Batch API, prompt önbelleği |
 | Veri doğrulama | **Pydantic v2**, `extra="forbid"` | Yanlış yazılmış alan adı sessizce kaybolmaz, hata verir |
 | Ayarlar | **pydantic-settings**, `RUYA_` önekli ortam değişkenleri | `.env` dosyası yok, gizli bilgi diske yazılmaz |
@@ -67,7 +67,7 @@ Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama
 | Embedding (Aşama 2) | `intfloat/multilingual-e5-large` | Türkçe sorgu ↔ Arapça/İngilizce metin, diller arası arama |
 | Vektör deposu (Aşama 2) | **Chroma** (`PersistentClient`) | Sunucusuz; `where={"symbol_id": ...}` filtresi var |
 | Reranker (Aşama 2) | `BAAI/bge-reranker-v2-m3` | Bir sembolün çok maddesi varsa rüya cümlesine göre yeniden sıralar |
-| Arayüz | **Gradio** (`gr.Blocks`) | Colab hücresinin içinde açılır; `share=True` yasak |
+| Arayüz | **Gradio** (`gr.Blocks`) | Yerelde (`localhost`) açılır; `share=True` yasak |
 | Kalite | pytest, ruff, nbstripout | Test, lint, notebook çıktısı temizliği |
 
 **Bilerek kullanılmayanlar:** LangChain/LlamaIndex (öğrenmeyi gizler, atıf özelliğini sarmalar), ajan yapısı (adımlar baştan belli), ayrı veritabanı sunucusu (~10 bin kayıt için gereksiz).
@@ -78,7 +78,7 @@ Vektör arama yalnızca sözlükte bulunamayan semboller için **yedek** (Aşama
 
 ### 4.1 İndirme (hazır)
 
-`scripts/download_sources.py` kaynakları Drive'daki `data/raw/` klasörüne indirir ve her dosyanın SHA256 özetini `KAYNAK_OZETLERI.json`'a yazar.
+`scripts/download_sources.py` kaynakları `data/raw/` klasörüne indirir ve her dosyanın SHA256 özetini `KAYNAK_OZETLERI.json`'a yazar.
 
 **Neden özet ve commit sabitleme önemli?** Madde kimliği satır numarasından türüyor (`nablusi:004310` = 4310. satır). Kaynak dosyada tek bir satır eklenirse bütün kimlikler kayar, test setindeki "beklenen maddeler" yanlış maddeleri gösterir. Bu yüzden OpenITI adresleri belirli bir commit'e sabitli, Gutenberg dosyaları da özetle denetleniyor.
 
@@ -119,7 +119,7 @@ Burada LLM devreye giriyor, ama **toplu ve indirimli** olarak.
 
 **Message Batches API:** Binlerce isteği tek seferde gönderiyorsun, sonuçlar 24 saat içinde geliyor, fiyat **%50 indirimli**. Akış şöyle:
 1. İstekler hazırlanır; her birinin `custom_id` alanı `entry_id` olur.
-2. Batch gönderilir ve batch kimliği Drive'a (`cache/batch/`) yazılır. Colab oturumu kapansa bile kimlik kaybolmaz.
+2. Batch gönderilir ve batch kimliği `data/cache/batch/` altına yazılır. Süreç kapansa bile kimlik kaybolmaz.
 3. Sonra sonuçlar okunur ve `custom_id` ile maddelerle eşleştirilir. Sonuçlar sırasız gelir, bu yüzden sıraya güvenilmez.
 
 ### 4.4 Madde kaydı: `entries.jsonl`
@@ -157,16 +157,16 @@ Projenin kalbi. Git'te duruyor, çünkü senin **elle onayladığın** bir veri:
 }
 ```
 
-Yaşam döngüsü: LLM önerir → öneri Drive'a yazılır → sen okuyup `symbols.json`'a eklersin → `pytest` şemayı ve çakışmaları denetler → commit. Bir varyant iki sembolde birden geçerse test bunu hata olarak yakalar.
+Yaşam döngüsü: LLM önerir → öneri `data/interim/` altına yazılır → sen okuyup `symbols.json`'a eklersin → `pytest` şemayı ve çakışmaları denetler → commit. Bir varyant iki sembolde birden geçerse test bunu hata olarak yakalar.
 
 Oturum başında bu dosyadan bellekte iki tablo kurulur: **varyant tablosu** (`"engerek"` → `"yilan"`) ve **sembol → maddeler tablosu**. Diske yazılmaz; 150 sembol ve 10 bin madde için kurulumu bir saniyeden kısa sürer.
 
 ### 4.6 Vektör indeksi · `index/` (Aşama 2, Hafta 6)
 
-- Her maddenin metni ve her sembolün adı/tanımı **multilingual-e5-large** ile 1024 boyutlu vektöre çevrilir (Colab GPU'sunda).
+- Her maddenin metni ve her sembolün adı/tanımı **multilingual-e5-large** ile 1024 boyutlu vektöre çevrilir (embedding modeli Aşama 2'de kesinleşir).
 - **Önemli tuzak:** e5 modeli `query: ` ve `passage: ` önekleri ister. Unutulursa kalite sessizce düşer, hata da vermez.
 - Vektörler Chroma'ya `symbol_id` metadata'sıyla yazılır.
-- Chroma içinde SQLite var ve SQLite Drive bağlantısı üzerinde güvenli değil. Bu yüzden indeks Colab'in yerel diskinde (`/content/calisma/chroma`) kurulur, Drive'a zip olarak yedeklenir, sonraki oturumda zip'ten açılır.
+- İndeks `data/index/chroma` altında kurulur ve diskte kalır; her çalıştırmada yeniden kurulmaz.
 
 ---
 
@@ -256,7 +256,7 @@ Bütün çağrılar tek bir sarmalayıcıdan geçecek: `llm/client.py` (Hafta 4)
 | **Effort** | Opus 5.5'te düşünme (thinking) kapatılamaz; derinlik ve maliyet `output_config.effort` ile ayarlanır. Çıkarım `low`, sentez ve çeviri `medium`. Düşünme tokenları çıktı olarak faturalanır. |
 | **Yapılandırılmış çıktı** | `output_config={"format": {"type": "json_schema", "schema": ...}}` |
 | **Prompt önbelleği** | Sabit sistem talimatı `cache_control` ile işaretlenir; tekrar eden isteklerde o kısım ~%95 ucuz okunur. Çalıştığı `usage.cache_read_input_tokens` ile doğrulanır. Talimata tarih/saat yazılmaz, önbelleği bozar. |
-| **Disk önbelleği** | Her isteğin SHA-256 özeti → Drive'da `cache/llm/<özet>.json`. Aynı istek ikinci kez ücret ödetmez. |
+| **Disk önbelleği** | Her isteğin SHA-256 özeti → `data/cache/llm/<özet>.json`. Aynı istek ikinci kez ücret ödetmez. |
 | **Gizlilik** | Rüya içeren istekler (`ruya_icerir=True`) varsayılan olarak diske **yazılmaz**; yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (değerlendirme bunu açar). Loglara rüya metni girmez. |
 | **Hatalar** | 429 ve 5xx'i SDK kendisi tekrar dener; 400 tekrarlanmaz. Her yanıtta önce `stop_reason` okunur: `refusal` → `ModelReddetti`, `max_tokens` → `YanitKesildi`. |
 | **Maliyet** | `usage`'dan token sayıları okunur, `config.FIYATLAR` ile dolara çevrilir, `SorguKaydi`'ya yazılır. Hedef: rüya başına ≤ 0,15 $. |
@@ -303,10 +303,10 @@ class Bagimliliklar:
 
 | Tür | Nerede | Ne sınar |
 |---|---|---|
-| Birim | Bilgisayar + Colab | Ayrıştırıcı, normalleştirme, eşleme, getirme; `tests/fixtures/`'daki birkaç satırlık örneklerle |
-| Mimari | Bilgisayar + Colab | Katman kuralı, model adları, tembel içe aktarma, notebook temizliği |
-| Kontrat (`-m veri`) | Yalnızca Colab | Gerçek `entries.jsonl`'daki her kayıt şemaya uyuyor mu, `entry_id` benzersiz mi |
-| Değerlendirme | Colab, ücretli | Test setiyle uçtan uca ölçüm (bölüm 8) |
+| Birim | Bilgisayar, verisiz | Ayrıştırıcı, normalleştirme, eşleme, getirme; `tests/fixtures/`'daki birkaç satırlık örneklerle |
+| Mimari | Bilgisayar, verisiz | Katman kuralı, model adları, tembel içe aktarma, notebook temizliği |
+| Kontrat (`-m veri`) | Veri indirildiyse | Gerçek `entries.jsonl`'daki her kayıt şemaya uyuyor mu, `entry_id` benzersiz mi |
+| Değerlendirme | Elle, API kotası harcar | Test setiyle uçtan uca ölçüm (bölüm 8) |
 
 ---
 
@@ -339,7 +339,7 @@ class Bagimliliklar:
 
 **Recall ve precision:** Recall "beklenen sembollerin kaçını buldum?", precision "bulduklarımın kaçı doğru?" sorusunu cevaplar. Biri yüksek diğeri düşükse sistem ya çok şey kaçırıyor ya da çok şey uyduruyor demektir.
 
-Her ölçüm Drive'a tarihli bir rapor yazar, özet satırı [olcumler.md](olcumler.md)'ye girer. Böylece "talimatı değiştirdim, iyileşti mi?" sorusunun cevabı her zaman bir sayıdır.
+Her ölçüm `data/raporlar/` altına tarihli bir rapor yazar, özet satırı [olcumler.md](olcumler.md)'ye girer. Böylece "talimatı değiştirdim, iyileşti mi?" sorusunun cevabı her zaman bir sayıdır.
 
 ### Deneyler
 
@@ -349,7 +349,7 @@ Her ölçüm Drive'a tarihli bir rapor yazar, özet satırı [olcumler.md](olcum
 | D2 | Reranker var / yok | Aşama 2 |
 | D3 | Kaynak başı N = 1, 2, 3 | Aşama 2 |
 | D4 | Opus 5.5 / Sonnet 5.5 / Haiku 5.5 | Aşama 4 |
-| D5 | Claude ile Colab GPU'sunda açık model | Aşama 4 (isteğe bağlı) |
+| D5 | API modeli ile yerel açık model | Aşama 4 (isteğe bağlı) |
 
 ---
 
@@ -374,7 +374,7 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 4. **Kırmızı:** `testci` agent'ı testleri yazar, testler başarısız olur (henüz kod yok).
 5. **Yeşil:** `kodcu` agent'ı testleri geçirecek kodu yazar.
 6. **Doğrulama:** Ben `git diff`'i okurum, `pytest` ve `ruff` çalıştırırım, gerekirse düzeltirim, commit ederim.
-7. **Push ve Colab:** Sen push edersin. Colab'de `02_ayristir.ipynb` çalışır; kurulum hücresi `git pull` yapar, gerçek veri üzerinde istatistikler ve kontrat testleri koşar.
+7. **Gerçek veriyle çalıştır:** Ayrıştırma bilgisayarda gerçek veri üzerinde çalışır; istatistikler ve kontrat testleri (`uv run pytest -m veri`) koşar. Push'u sen yaparsın.
 8. **Geri bildirim:** Beklenmeyen bir şey çıkarsa (ör. paragraf sayısı 5.746 değil 4.900) çıktıyı bana yapıştırırsın; fixture'a o vaka eklenir ve döngü tekrarlanır.
 
 ---
@@ -389,7 +389,6 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | `entry_id` kararlılığı | Satır numarasına bağlı | Kaynak sabitleme + SHA256 denetimi |
 | Türkçe harfler | `"I".lower()` yanlış | Kendi `kucuk_harf()` fonksiyonumuz + testleri |
 | Diller arası vektör arama | Türkçe sorgu, Arapça metin | e5 çok dilli model, `query:`/`passage:` önekleri, D1 deneyi |
-| Chroma ve Drive | SQLite ağ diskinde bozulabilir | Yerel diskte kur, zip olarak yedekle |
 | Maliyet | Opus pahalı, düşünme tokenları gizli maliyet | Batch (%50), prompt önbelleği, disk önbelleği, effort ayarı, her çağrıda maliyet kaydı |
 
 ---
@@ -398,13 +397,13 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 
 - **Hazır:**
   - Şemalar, ayarlar ve boru hattı çatısı (`run.py`).
-  - İndirme betiği, Colab kurulumu.
+  - İndirme betiği.
   - Mimari testleri (167 test geçiyor).
   - Hafta 1 deneme notebook'u.
 - **Yalnızca imza:** Diğer bütün modüller. Her fonksiyonun gövdesi `NotImplementedError("Hafta N …")`; hangi hafta yazılacağı kodda yazılı.
 - **Sıradaki:**
-  1. Kurulum: API anahtarı, Drive klasörü, Colab Secrets ([10](10-kurulum-rehberi.md)).
-  2. `notebooks/deneyler/01_veri_ve_ceviri.ipynb`'yi Colab'de çalıştırıp H1–H4'ü puanlamak.
+  1. Kurulum: API anahtarı ortam değişkeninde, `uv sync` ([10](10-kurulum-rehberi.md)).
+  2. `notebooks/deneyler/01_veri_ve_ceviri.ipynb`'yi bilgisayarda çalıştırıp H1–H4'ü puanlamak.
   3. Hafta 2: ayrıştırıcılar.
 
 | Tarih | Teknik iş | Taş |

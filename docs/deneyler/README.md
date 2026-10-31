@@ -5,7 +5,7 @@ Her deney kısa bir not olarak burada durur (docs/06, bölüm 4). Not, deney bit
 
 - Şablon: [`_sablon.md`](_sablon.md)
 - Notebook'lar: `notebooks/deneyler/`
-- Ham çıktılar ve tablolar Drive'da (`raporlar/deneyler/`); buraya özet ve karar girer.
+- Ham çıktılar ve tablolar `data/deneyler/` altında; buraya özet ve karar girer.
 
 | # | Deney | Hafta | Not | Durum |
 |---|---|---|---|---|

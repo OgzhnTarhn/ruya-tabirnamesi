@@ -4,14 +4,15 @@
 > Biçim: Her karar için bağlam, seçenekler, karar, gerekçe ve ne zaman yeniden düşünüleceği. Kararlar **TK-xx** koduyla numaralı.
 > Sürüm numaraları kurulum sırasında `pyproject.toml` dosyasında sabitlenecek. Bu belgede yazanlar 21 Ekim 2026 itibarıyla geçerli.
 > Güncelleme (22 Ekim 2026): Çalıştırma ortamı Colab ve Drive oldu (TK-13). Arayüz Streamlit yerine Gradio (TK-09).
+> Güncelleme (31 Ekim 2026): Colab ve Drive bırakıldı; kod, çalıştırma ve veri bilgisayarda (TK-13, revizyon).
 
 ## Özet tablo
 
 | Alan | Karar | Durum |
 |---|---|---|
-| Çalışma ortamı | Kod bilgisayarda; çalıştırma **Google Colab**'de; veri **Google Drive**'da | ✅ Kararlaştırıldı |
-| Dil ve sürüm | Python ≥3.11 (Colab'in sunduğu sürüm) | ✅ |
-| Paket yönetimi | `pyproject.toml`; Colab'de `pip install -e`, bilgisayarda uv | ✅ |
+| Çalışma ortamı | Her şey **bilgisayarda**; veri `data/` altında, git'e girmez | ✅ Kararlaştırıldı (31 Ekim revizyonu) |
+| Dil ve sürüm | Python ≥3.11 (uv ile) | ✅ |
+| Paket yönetimi | `pyproject.toml` + uv | ✅ |
 | LLM sağlayıcı | Claude API (Anthropic Python SDK) | ✅ |
 | LLM modeli | `claude-opus-5-5` (varsayılan); Sonnet 5.5 ve Haiku 5.5 Aşama 4'te karşılaştırılacak | ⚠️ **Senin onayın gerekli** |
 | Embedding | `intfloat/multilingual-e5-large`; aday: `Qwen/Qwen3-Embedding-0.6B` | ✅ (Aşama 2'de ölçülecek) |
@@ -29,20 +30,20 @@
 ## TK-01 · Python ≥3.11
 
 - **Seçenekler:** 3.11, 3.12, 3.13
-- **Karar:** `requires-python = ">=3.11"`. Kod, Colab hangi Python sürümünü sunuyorsa onunla çalışacak şekilde yazılır. Yazım tarihinde Colab'in 3.12 kullandığı biliniyordu; ilk oturumda `python --version` ile doğrulanacak.
-- **Gerekçe:** Colab'in Python sürümünü biz seçemiyoruz. PyTorch zaten kurulu geliyor. Bilgisayarda yalnızca hafif testler çalışacağı için orada da aynı alt sınır yeterli.
-- **Yeniden düşün:** Colab sürüm değiştirirse ya da bir bağımlılık 3.11'i bırakırsa.
+- **Karar:** `requires-python = ">=3.11"`. Python'u uv kurar ve yönetir.
+- **Gerekçe:** İlk kararda Colab'in sunduğu sürüme uyum gözetilmişti (22 Ekim). Colab bırakıldıktan sonra (31 Ekim) da alt sınırı değiştirmek için bir neden yok.
+- **Yeniden düşün:** Bir bağımlılık 3.11'i bırakırsa.
 
-## TK-02 · Paket yönetimi: pyproject + pip (Colab) / uv (bilgisayar)
+## TK-02 · Paket yönetimi: pyproject + uv
 
 - **Seçenekler:** `venv` ve `pip`, Poetry, uv
-- **Karar:** Bağımlılıkların tek kaynağı `pyproject.toml`. Colab'de `pip install -e .` kullanılır. Bilgisayarda kod denetimi ve verisiz testler için uv kullanılır (isteğe bağlı).
+- **Karar:** Bağımlılıkların tek kaynağı `pyproject.toml`; kurulum ve çalıştırma uv ile (`uv sync`, `uv run`). Ağır paketler isteğe bağlı ekte: `uv sync --extra hepsi`. (22 Ekim'deki ilk kararda Colab'de `pip install -e .` kullanılıyordu.)
 - **Gerekçe:**
   - Tek araç hem Python sürümünü hem sanal ortamı hem bağımlılıkları yönetiyor.
   - Çok hızlı.
   - `uv.lock` dosyası kurulumu tekrarlanabilir kılıyor.
   - Windows'ta venv betiklerinin Türkçe karakterli yollarda yaşattığı sorunları da azaltıyor.
-- **Not:** Colab'in hazır kurulu paketleriyle (torch, transformers) sürüm çakışması yaşanmaması için bu paketler `pyproject.toml` dosyasında sabitlenmez, alt sınırla yazılır.
+- **Not:** Sürümler `pyproject.toml`'da alt sınırla yazılır; tam sürümleri `uv.lock` sabitler.
 
 ## TK-03 · LLM sağlayıcı: Claude API
 
@@ -97,13 +98,13 @@
 - **Seçenekler:** Chroma, Qdrant (yerel mod), LanceDB, FAISS, pgvector
 - **Karar:** Chroma, kalıcı istemci modunda (`PersistentClient`)
 - **Gerekçe:** Sunucusuz çalışıyor ve pip ile kuruluyor. Metadata filtresi (`where={"symbol_id": ...}`) projenin ana getirme yolu için birebir uygun. Tam metin filtresi de (`where_document`) var.
-- **Colab notu:** Chroma SQLite kullandığı için Drive bağlantısı üzerinde çalıştırılmaz. İndeks Colab'in yerel diskinde (`/content/calisma/chroma`) kurulur ve Drive'a zip olarak yedeklenir (bkz. [11](11-calisma-ortami-colab-drive.md), bölüm 4).
+- **Konum:** İndeks `data/index/chroma` altında kurulur (bkz. [11](11-calisma-ortami.md), bölüm 3).
 - **Yeniden düşün:** Gerçek hibrit (BM25 ve vektör) arama gerekirse. Bu durumda Qdrant'a geçilir.
 
 ## TK-07 · Reranker (Aşama 2)
 
 - **Karar:** `BAAI/bge-reranker-v2-m3` (0,6B parametre, Apache-2.0, çok dilli)
-- **Ne zaman kullanılır:** Yalnızca bir sembol için kaynak başına N'den fazla madde varsa. Colab GPU'su varsa onu kullanır, yoksa CPU'da da çalışır.
+- **Ne zaman kullanılır:** Yalnızca bir sembol için kaynak başına N'den fazla madde varsa. API'deki reranker ya da yerelde CPU ile çalışır.
 
 ## TK-08 · Türkçe morfoloji: zeyrek
 
@@ -116,7 +117,7 @@
 
 - **Seçenekler:** Streamlit, Gradio, Chainlit, FastAPI ile ayrı bir ön yüz
 - **Karar:** Gradio, `gr.Blocks` ile
-- **Gerekçe:** Uygulama Colab'de çalışacak. Gradio notebook hücresinin içinde doğrudan açılıyor; Streamlit ise Colab'de ek bir tünel servisi gerektiriyor. Gradio'da da sekme (`gr.Tab`), açılır kutu (`gr.Accordion`) ve tablo (`gr.Dataframe`) var, yani hata ayıklama ekranı aynen yapılabiliyor.
+- **Gerekçe:** Karar Colab döneminde verildi: Gradio notebook hücresinin içinde doğrudan açılıyordu; Streamlit ise Colab'de ek bir tünel servisi gerektiriyordu. Bilgisayarda ikisi de çalışır; Gradio'da kalınması için yeniden yazmaya değecek bir neden yok. Gradio'da da sekme (`gr.Tab`), açılır kutu (`gr.Accordion`) ve tablo (`gr.Dataframe`) var, yani hata ayıklama ekranı aynen yapılabiliyor.
 - **Güvenlik:** `launch(share=True)` **kullanılmaz**. Bu ayar herkese açık bir link üretir ve linki bulan herkes senin API anahtarınla sorgu çalıştırabilir.
 - **Yeniden düşün:** Uygulama bir gün sunucuya taşınırsa.
 
@@ -131,8 +132,7 @@
 ## TK-11 · Sürüm kontrolü ⚠️ senin kararın
 
 - **Karar:** Git kullanılacak. Uzak depo için önerim **GitHub'da özel (private) bir repo**.
-- **Neden özel:** `data/` zaten git'e eklenmiyor; veri Drive'da duruyor. Ama prompt dosyalarında ve testlerde kendi rüyaların bulunabilir. Herkese açık yapmak istersen önce bu dosyalar temizlenmeli.
-- **Colab bağlantısı:** Repo özel olursa Colab'in kodu çekebilmesi için yalnızca okuma yetkili bir GitHub tokenı (fine-grained) Colab Secrets'a eklenir. Repo açık olursa token gerekmez.
+- **Neden özel:** `data/` zaten git'e eklenmiyor. Ama prompt dosyalarında ve testlerde kendi rüyaların bulunabilir. Herkese açık yapmak istersen önce bu dosyalar temizlenmeli.
 - **Commit düzeni:**
   - Commitler **atomik** olacak: her commit tek bir mantıksal değişiklik içerir.
   - Mesajlar Türkçe ve emir kipinde yazılacak.
@@ -154,7 +154,7 @@
   - Her şey bilgisayarda
   - Kod bilgisayarda; çalıştırma Colab'de; veri Drive'da
   - Bulut sunucu (VM)
-- **Karar:** Kod bilgisayarda yazılır ve GitHub'a gider. Bütün çalıştırma Colab'de yapılır. Veri, önbellekler ve raporlar Google Drive'da (`MyDrive/ruya-tabirnamesi/`) durur. Ayrıntılar: [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md).
+- **Karar:** Kod bilgisayarda yazılır ve GitHub'a gider. Bütün çalıştırma Colab'de yapılır. Veri, önbellekler ve raporlar Google Drive'da (`MyDrive/ruya-tabirnamesi/`) durur. Ayrıntılar: [11-calisma-ortami.md](11-calisma-ortami.md).
 - **Gerekçe:** Senin tercihin: veri seti bilgisayara inmesin, GPU gerektiren işler Colab'de yapılsın. Ek faydaları:
   - Ücretsiz GPU.
   - Gizli bilgiler için Colab Secrets.
@@ -164,5 +164,6 @@
   - Colab oturumları zaman aşımına uğrar.
   - Drive bağlantısı yavaştır.
 
-  Bu bedeller "notebook'lar ince, mantık `src/` paketinde" kuralıyla ve [11](11-calisma-ortami-colab-drive.md)'deki Drive kurallarıyla hafifletilir.
+  Bu bedeller "notebook'lar ince, mantık `src/` paketinde" kuralıyla ve [11](11-calisma-ortami.md)'deki Drive kurallarıyla hafifletilir.
 - **Yeniden düşün:** Colab sınırları işi gerçekten engellerse. Bu durumda Colab Pro ya da küçük bir bulut sunucu düşünülür.
+- **Revizyon (31 Ekim 2026): her şey bilgisayarda.** LLM ve embedding API'den alınınca GPU gerekçesi ortadan kalktı. Veri küçük (ham kaynaklar 10 MB'ın altında) ve `data/` git'e girmediği için lisans ve gizlilik koşulları bilgisayarda da korunuyor. Colab'in bedelleri (push/pull döngüsü, oturum kopmaları, Drive yavaşlığı, Chroma'nın zip yedeği, gizli repo için token) kalktı. Ayrıntılar: [11](11-calisma-ortami.md).

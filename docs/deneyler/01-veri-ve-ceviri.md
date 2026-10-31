@@ -19,7 +19,7 @@ Projenin iki büyük bilinmeyeni: (1) Nablusi'nin alt paragrafları güvenilir b
 
 ## Yöntem
 
-- **Veri:** `scripts/download_sources.py` ile Nablusi ve Miller Drive'a indirilir; SHA256 kaydedilir.
+- **Veri:** `scripts/download_sources.py` ile Nablusi ve Miller `data/raw/` altına indirilir; SHA256 kaydedilir.
 - **Ayrıştırma:** "ح" (ḥâ) babından ardışık 50 paragraf.
 - **Sembol atama:** Bu 50 paragraftan 10 alt paragraf; doğru cevap elle belirlenir.
 - **Çeviri:** 10 Nablusi + 10 Miller maddesi. Çeviriler aslıyla yan yana okunur. Puanlama: 1 = anlam bozuk, 3 = anlam doğru ama terimler tutarsız, 5 = anlam ve terimler doğru, akıcı. Terimler [terimler.md](../terimler.md)'ye işlenir.

@@ -1,7 +1,7 @@
 # Ölçümler
 
 > Her kilometre taşında ve her deneyden sonra bir satır eklenir (docs/06, bölüm 3).
-> Ayrıntılı rapor Drive'da durur: `raporlar/<tarih>_<etiket>.md`. Buraya yalnızca özet girer.
+> Ayrıntılı rapor `data/raporlar/<tarih>_<etiket>.md` dosyasında durur. Buraya yalnızca özet girer.
 > Hedefler: MVP sütunu Aşama 1, A3 sütunu Aşama 3 sonu için (docs/06, bölüm 2).
 
 ## Özet tablo

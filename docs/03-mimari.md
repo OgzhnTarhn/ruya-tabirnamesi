@@ -3,7 +3,7 @@
 > Durum: v0.2 · Tarih: 23 Ekim 2026 (iskelet kuruldu; klasör yapısı ve getirme çıktısı güncellendi)
 > Kod düzeni, katman kuralları, modül imzaları ve veri ürünleri: [12-kod-yapisi-ve-sozlesmeler.md](12-kod-yapisi-ve-sozlesmeler.md)
 > Teknoloji kararlarının gerekçeleri: [04-teknoloji-secimi.md](04-teknoloji-secimi.md)
-> Çalışma ortamı (Colab, Drive, GitHub): [11-calisma-ortami-colab-drive.md](11-calisma-ortami-colab-drive.md)
+> Çalışma ortamı (bilgisayar, `data/`, GitHub): [11-calisma-ortami.md](11-calisma-ortami.md)
 
 ## 1. Temel tasarım ilkeleri
 
@@ -28,7 +28,7 @@ flowchart TB
     end
 
     subgraph CEVRIMICI["Çevrimiçi: Sorgu (her rüya)"]
-        UI[Gradio arayüzü · Colab] --> P1[1. Sembol çıkarımı<br/>Claude · JSON çıktı]
+        UI[Gradio arayüzü · localhost] --> P1[1. Sembol çıkarımı<br/>Claude · JSON çıktı]
         P1 --> P2[2. Eşleme<br/>symbols.json + zeyrek<br/>yoksa vektör yedeği]
         P2 --> P3[3. Getirme<br/>symbol_id ile · kaynak başı top-N<br/>bağlam filtresi]
         P3 --> P4[4. Sentez<br/>Claude · search_result atıfları]
@@ -106,23 +106,23 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
 C:\ruya-tabirnamesi\
 ├── README.md
 ├── CLAUDE.md                 # proje kuralları
-├── pyproject.toml            # bağımlılıklar (temel + [indeks] [arayuz] [colab] ekleri), ruff, pytest
+├── pyproject.toml            # bağımlılıklar (temel + [indeks] [arayuz] [hepsi] ekleri), ruff, pytest
 ├── uv.lock                   # bilgisayardaki ortamın kilit dosyası
 ├── .gitattributes            # nbstripout filtresi
 ├── .gitignore                # data/, .env, .cache/, logs/ (önlem)
 ├── docs/                     # 00–12, KAYNAKLAR, terimler, kurallar, olcumler, arastirma/, deneyler/
-├── notebooks/                # ince Colab notebook'ları (bkz. docs/11, notebooks/README.md)
-│   ├── _kurulum.py           # ilk hücrenin çağırdığı kurulum: Drive, Secrets, git pull, pip install
+├── notebooks/                # ince notebook'lar: deneyler ve inceleme (bkz. notebooks/README.md)
+│   ├── _kurulum.py           # ilk hücrenin çağırdığı kurulum: anahtar kontrolü, autoreload
 │   ├── 00_ortam_kontrolu.ipynb … 06_degerlendirme.ipynb
 │   └── deneyler/
 ├── prompts/                  # sürümlü sistem talimatları: <is>_v<n>.md (bkz. prompts/README.md)
 ├── sozluk/
 │   └── symbols.json          # elle onaylanan kanonik sembol indeksi (veri değil, sözlük → git'te)
 ├── scripts/
-│   └── download_sources.py   # ham kaynakları Drive'a indirir, SHA256 kaydeder
+│   └── download_sources.py   # ham kaynakları data/raw/ altına indirir, SHA256 kaydeder
 ├── src/ruya/
-│   ├── config.py             # ortamı algılar (Colab/bilgisayar), yollar, model adları ve fiyatlar
-│   ├── hatalar.py            # VeriYoluYok, ModelReddetti, SozlukHatasi…
+│   ├── config.py             # veri yolları (data/), model adları ve fiyatlar
+│   ├── hatalar.py            # ApiAnahtariYok, ModelReddetti, SozlukHatasi…
 │   ├── schemas.py            # Pydantic veri sınıfları: Madde, Sembol, Eslesme, Aday, Yorum, SorguKaydi…
 │   ├── etik.py               # uyarı metni, güvenlik notu, yasak ifadeler
 │   ├── dosya.py              # JSONL okuma/yazma
@@ -144,27 +144,23 @@ C:\ruya-tabirnamesi\
 
 Her modülün sorumluluğu, imzası ve hangi haftada yazılacağı: [12](12-kod-yapisi-ve-sozlesmeler.md), bölüm 2.
 
-Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında durur (bkz. [11](11-calisma-ortami-colab-drive.md), bölüm 3). Ölçüm raporları da Drive'da tutulur. Her kilometre taşında özet tablo `docs/olcumler.md` dosyasına işlenip commit edilir.
+Veri repodaki `data/` klasöründe durur ve git'e girmez (bkz. [11](11-calisma-ortami.md), bölüm 3). Ölçüm raporları da `data/raporlar/` altında tutulur. Her kilometre taşında özet tablo `docs/olcumler.md` dosyasına işlenip commit edilir.
 
 ## 5. Kesişen konular
 
 ### 5.1 Yapılandırma
 
 - `config.py` ayarları ortam değişkenlerinden okur (pydantic-settings).
-- **Ortam algılama:** Kod `"google.colab" in sys.modules` ile Colab'de çalışıp çalışmadığını anlar. Colab'deyse yollar şöyle ayarlanır:
-  - `RUYA_DATA_DIR=/content/drive/MyDrive/ruya-tabirnamesi`
-  - `RUYA_WORK_DIR=/content/calisma`
-
-  Bilgisayarda veri yolu tanımlı değildir. Veri isteyen bir fonksiyon çağrılırsa açık bir hata verir.
-- **Gizli bilgiler:** `ANTHROPIC_API_KEY` Colab Secrets panelinde durur. `notebooks/_kurulum.py` anahtarı `google.colab.userdata.get` ile okur ve ortam değişkenine aktarır. Anahtar hiçbir dosyaya yazılmaz.
+- **Veri yolu:** Bütün veri yolları `<repo>/data` altındadır; `RUYA_DATA_DIR` ile değiştirilebilir. Kod bu klasörün dışına veri yazmaz (`tests/test_config.py`).
+- **Gizli bilgiler:** API anahtarı kullanıcı ortam değişkeninde durur ([10](10-kurulum-rehberi.md), adım 1). Hiçbir dosyaya (`.env` dahil) yazılmaz.
 - **Model adları tek bir yerde:** `MODEL_CIKARIM`, `MODEL_SENTEZ`, `MODEL_CEVIRI`. Model değiştirmek tek satırlık bir iş.
-- `HF_HOME=/content/calisma/hf` olarak ayarlanır. Modeller Colab'in yerel diskine iner, Drive'a yazılmaz.
+- Hugging Face modelleri gerekirse `<repo>/.cache/hf` altına iner (git'e girmez).
 
 ### 5.2 LLM istemcisi (`llm/client.py`)
 
 - **Tek sarmalayıcı:** Bütün Claude çağrıları buradan geçer.
-- **Disk önbelleği (Drive'da `cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). SQLite kullanılmaz, çünkü Drive bağlantısında güvenli değil. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile tamamen kapatılabilir.
-- **Rüya içeren istekler varsayılan olarak önbelleğe yazılmaz.** Çıkarım ve sentez isteklerinde rüya metni, yanıtlarında da rüyanın parçaları (`ham_ifade`) ve yorumu bulunur. Bunlar önbelleğe yazılsaydı rüya geçmişi kapalıyken bile rüyalar Drive'da birikirdi (İOG-03). Bu yüzden:
+- **Disk önbelleği (`data/cache/llm/`):** Her istek için ayrı bir JSON dosyası tutulur. Anahtar, istek içeriğinin özetidir (hash). Tek dosyalı bir veritabanı kullanılmaz; dosyalar tek tek okunup silinebilir. Geliştirme sırasında aynı istek ikinci kez ücret ödetmez. `RUYA_LLM_CACHE=off` ile tamamen kapatılabilir.
+- **Rüya içeren istekler varsayılan olarak önbelleğe yazılmaz.** Çıkarım ve sentez isteklerinde rüya metni, yanıtlarında da rüyanın parçaları (`ham_ifade`) ve yorumu bulunur. Bunlar önbelleğe yazılsaydı rüya geçmişi kapalıyken bile rüyalar diskte birikirdi (İOG-03). Bu yüzden:
   - `LLMIstemcisi.mesaj(istek, ruya_icerir=True)` ile çağrılan istekler diske yalnızca `RUYA_SORGU_ONBELLEGI=on` iken yazılır ve oradan okunur. Varsayılan değer kapalıdır.
   - Değerlendirme bu ayarı açar. Test setindeki rüyalar zaten repoda olduğu için yeni bir şey açığa çıkmaz ve aynı ölçüm ikinci kez ücret ödetmez.
   - Çevrimdışı işler (çeviri, sembol atama, koşul ayrıştırma) rüya içermez ve yalnızca `RUYA_LLM_CACHE` ayarına uyar.
@@ -174,9 +170,9 @@ Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında du
 
 ### 5.3 Loglama ve gizlilik
 
-- **Log içeriği:** Drive'daki `logs/sorgular.jsonl` dosyasına zaman, adım süreleri, token sayıları, maliyet, sembol kimlikleri ve eşleme yöntemleri yazılır. **Rüya metni yazılmaz.**
-- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar Drive'da `gecmis/` altında tutulur. Rüyaların Drive'a yazıldığı başka tek yer, varsayılanı kapalı olan sorgu önbelleğidir (bölüm 5.2).
-- Loglar ve veri Drive'da durur, git'e girmez. Notebook çıktıları `nbstripout` ile temizlenir.
+- **Log içeriği:** `data/logs/sorgular.jsonl` dosyasına zaman, adım süreleri, token sayıları, maliyet, sembol kimlikleri ve eşleme yöntemleri yazılır. **Rüya metni yazılmaz.**
+- **Rüya geçmişi:** Rüyaları saklamak isteğe bağlı bir ayar (`RUYA_GECMIS=on`). Açıksa rüyalar `data/gecmis/` altında tutulur. Rüyaların diske yazıldığı başka tek yer, varsayılanı kapalı olan sorgu önbelleğidir (bölüm 5.2).
+- Loglar ve veri `data/` altında durur, git'e girmez. Notebook çıktıları `nbstripout` ile temizlenir.
 
 ### 5.4 Hata durumları
 
@@ -196,9 +192,9 @@ Veri bu klasörde **yoktur**, Drive'daki `MyDrive/ruya-tabirnamesi/` altında du
   - Eşleme: varyanttan doğru `symbol_id`'ye ulaşılması.
   - Getirme: kaynak başına N sınırının uygulanması.
 - **Mimari testleri (`tests/test_mimari.py`):** katmanlar arası içe aktarma kuralı, model adlarının yalnızca `config.py`'de olması, ağır paketlerin tembel yüklenmesi; ayrıca notebook çıktılarının temizliği ve sözlüğün şemaya uyması.
-- **Kontrat testleri (`tests/test_kontrat_veri.py`, `-m veri`):** `entries.jsonl` dosyasındaki her kayıt şemaya uyuyor, `lisans` alanı dolu, `entry_id` benzersiz. Veri yalnızca Colab'de olduğu için bilgisayarda kendiliğinden atlanır.
-- **Boru hattı testleri:** `eval/run_eval.py` ile test seti üzerinde ölçüm yapılır (bkz. [06-degerlendirme.md](06-degerlendirme.md)). Bu testler LLM çağırdığı için ücretli. Colab'de `06_degerlendirme.ipynb` ile elle çalıştırılır, CI'da çalışmaz.
-- **Nerede çalışır:** Birim testleri veri gerektirmez. `tests/fixtures/` altındaki birkaç satırlık örnekleri kullanır. Bu yüzden hem bilgisayarda hem Colab'de çalışır.
+- **Kontrat testleri (`tests/test_kontrat_veri.py`, `-m veri`):** `entries.jsonl` dosyasındaki her kayıt şemaya uyuyor, `lisans` alanı dolu, `entry_id` benzersiz. Veri henüz yoksa kendiliğinden atlanır.
+- **Boru hattı testleri:** `eval/run_eval.py` ile test seti üzerinde ölçüm yapılır (bkz. [06-degerlendirme.md](06-degerlendirme.md)). Bu testler LLM çağırdığı için ücretli. Elle çalıştırılır, CI'da çalışmaz.
+- **Nerede çalışır:** Birim testleri veri gerektirmez. `tests/fixtures/` altındaki birkaç satırlık örnekleri kullanır. Bu yüzden veri indirilmeden de çalışır.
 
 ## 6. Bilerek yapılmayanlar (ve nedenleri)
 

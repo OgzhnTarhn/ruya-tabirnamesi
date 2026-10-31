@@ -1,7 +1,7 @@
 # 06 · Değerlendirme ve Ölçme Planı
 
 > Durum: Taslak v0.1 · Tarih: 21 Ekim 2026
-> İlke: **Ölçmediğin şeyi iyileştiremezsin.** Her aşama aynı test setiyle ölçülür, ayrıntılı raporlar Drive'da `raporlar/` altına tarihli olarak, özet satırı repoda [olcumler.md](olcumler.md)'ye kaydedilir.
+> İlke: **Ölçmediğin şeyi iyileştiremezsin.** Her aşama aynı test setiyle ölçülür, ayrıntılı raporlar `data/raporlar/` altına tarihli olarak, özet satırı repoda [olcumler.md](olcumler.md)'ye kaydedilir.
 > Kod: ölçütler `src/ruya/degerlendirme/metrikler.py`, test seti şeması `ruya.schemas.TestOrnegi`.
 
 ## 1. Test seti
@@ -68,13 +68,13 @@
 
 ## 3. Nasıl çalıştırılacak?
 
-Colab'de `notebooks/06_degerlendirme.ipynb` açılır, etiket girilir (ör. `asama1-opus`) ve çalıştırılır. Notebook arka planda şunu çağırır:
+Terminalde bir etiketle (ör. `asama1-opus`) şu komut çalıştırılır:
 
 ```
 python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket "asama1-opus"
 ```
 
-- **Çıktı:** Drive'da `raporlar/2026-11-28_asama1-opus.md`. Rapor ölçüt tablosunu, başarısız örnekleri ve toplam maliyeti içerir. Özet satırı repodaki `docs/olcumler.md` dosyasına eklenip commit edilir. Böylece ilerleme git geçmişinde de görünür.
+- **Çıktı:** `data/raporlar/2026-11-28_asama1-opus.md`. Rapor ölçüt tablosunu, başarısız örnekleri ve toplam maliyeti içerir. Özet satırı repodaki `docs/olcumler.md` dosyasına eklenip commit edilir. Böylece ilerleme git geçmişinde de görünür.
 - Sentez sadakati gibi elle yapılan kontroller için betik bir kontrol listesi üretir. Sen işaretlersin.
 - **Maliyet uyarısı:** Her çalıştırma ücretlidir. 20 rüya × ~0,10 $ = ~2 $. Geliştirme sırasında disk önbelleği açık kalır.
 
