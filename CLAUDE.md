@@ -20,4 +20,4 @@
 - Commit'ten önce `uv run pytest` ve `uv run ruff check .` temiz olmalı.
 - `data/`, `.env`, `.cache/`, `logs/` git'e eklenmez.
 - Gizli bilgiler (API anahtarı) yalnızca ortam değişkeninde durur; hiçbir dosyaya (`.env` dahil) yazılmaz.
-- Claude API model adları yalnızca `src/ruya/config.py` içinde tanımlanır.
+- LLM model adları ve API adresi yalnızca `src/ruya/config.py` içinde tanımlanır.

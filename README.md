@@ -34,16 +34,16 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 
 ```
 Rüya metni
-  → 1. Sembol çıkarımı   (Claude · JSON)
+  → 1. Sembol çıkarımı   (DeepSeek · JSON şeması)
   → 2. Eşleme            (sembol indeksi + zeyrek · yoksa vektör yedeği)
   → 3. Getirme           (symbol_id · kaynak başına N madde · bağlam koşulları)
-  → 4. Sentez            (Claude · search_result atıfları)
+  → 4. Sentez            (DeepSeek · numaralı kaynaklar + kodda atıf doğrulama)
   → Kaynaklı, gelenek etiketli Türkçe yorum + uyarı
 ```
 
 **Ortam:** Her şey bilgisayarda (VS Code + Git + uv) · veri `data/` altında, git'e girmez
 
-**Teknolojiler:** Python ≥3.11 · Anthropic SDK · Chroma · multilingual-e5-large · zeyrek · Gradio · pytest · ruff · nbstripout
+**Teknolojiler:** Python ≥3.11 · EVREN LLM geçidi (`deepseek-v4.1-flash`, httpx) · Chroma · multilingual-e5-large · zeyrek · Gradio · pytest · ruff · nbstripout
 
 ## Repo düzeni
 

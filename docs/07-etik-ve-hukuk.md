@@ -44,7 +44,7 @@ Bu kurallar sentez talimatına yazılır ve değerlendirmede otomatik olarak tar
 ## 5. Kişisel veri (KVKK)
 
 - **Neden önemli:** Rüyalar sağlık, din ve cinsel hayat gibi **özel nitelikli** bilgiler içerebilir (KVKK md. 6).
-- **Bugünkü durum:** Yalnızca kendi rüyalarını yerelde işliyorsun. Bu kişisel kullanım istisnasına giriyor (KVKK md. 28/1-a; madde metni doğrulanacak). Ancak rüya metni sentez için Claude API'ye, yani yurt dışına gidiyor. Kendi rüyan için bu senin tercihin.
+- **Bugünkü durum:** Yalnızca kendi rüyalarını yerelde işliyorsun. Bu kişisel kullanım istisnasına giriyor (KVKK md. 28/1-a; madde metni doğrulanacak). Ancak rüya metni çıkarım ve sentez için EVREN LLM geçidine (`evren-llmapi.ssyz.org.tr`), yani üçüncü bir tarafın sunucularına gidiyor; verinin orada nasıl saklandığı doğrulanmadı. Kendi rüyan için bu senin tercihin.
 - **Yerel veri notu:** Rüya geçmişi ve loglar yalnızca senin bilgisayarında, `data/` altında durur. `data/` klasörünü bir bulut senkronizasyon klasörüne (OneDrive vb.) taşırsan bu verinin de oraya gideceğini unutma.
 - **Kurallar:**
   - Varsayılan olarak rüya metni loglanmaz.
