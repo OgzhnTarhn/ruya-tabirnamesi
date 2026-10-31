@@ -1,9 +1,12 @@
-"""Adım 4 · Sentez: kaynaklı Türkçe yorum (Claude, search_result atıfları). Takvim: Hafta 5.
+"""Adım 4 · Sentez: kaynaklı Türkçe yorum (LLM, numaralı kaynaklar, kodda atıf doğrulama).
+Takvim: Hafta 5.
 
-- Her aday bir ``search_result`` bloğu olur: source=entry_id, title="Nablusi · حية (yılan)",
-  content=metin_tr + metin_asli, citations etkin. Atıflar ``Atif`` nesnelerine çevrilir.
+- Adaylar numaralı kaynaklar olarak verilir ([K1] entry_id · başlık, metin_tr, metin_asli);
+  model JSON şemasıyla bolumler[{metin, kaynaklar[{entry_id, alinti}]}] ve bulunamayanlar
+  döndürür. ``atiflari_dogrula`` verilmemiş entry_id içeren atıfları atar, metinde geçmeyen
+  alıntıları boşaltır (docs/03, adım 4).
 - Sistem talimatı ``prompts/sentez_v<n>.md``; kurallar docs/05 bölüm 3 ve docs/07.
-  Sabit talimat prompt önbelleğine alınır.
+  Sabit talimat mesajların başında durur (geçidin önek önbelleği için).
 - Eşleşmeyen ya da maddesi olmayan semboller ``Yorum.bulunamayanlar``'a (İG-31).
 - ``cikarim.hassas_icerik`` ise ``Yorum.guvenlik_notu = etik.GUVENLIK_NOTU``.
 - ``Yorum.uyari`` her zaman ``etik.UYARI_METNI`` (İG-36).

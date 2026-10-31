@@ -215,7 +215,7 @@ Getirilenler = dict[SymbolId, list[Aday]]
 
 
 class Atif(_Sema):
-    """Sentezdeki bir cümlenin dayandığı kaynak parça (search_result atfı)."""
+    """Sentezdeki bir cümlenin dayandığı kaynak parça (kodda doğrulanmış atıf; docs/03, adım 4)."""
 
     entry_id: str
     baslik: str  # "Nablusi · حية (yılan)"

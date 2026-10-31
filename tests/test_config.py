@@ -36,7 +36,6 @@ def test_butun_veri_yollari_data_altinda(tmp_path):
         ayar.indeks_klasoru,
         ayar.chroma_klasoru,
         ayar.llm_onbellek_klasoru,
-        ayar.batch_klasoru,
         ayar.rapor_klasoru,
         ayar.gecmis_klasoru,
         ayar.log_klasoru,

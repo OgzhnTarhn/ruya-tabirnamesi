@@ -1,11 +1,10 @@
-"""Adım 1 · Sembol çıkarımı (Claude, yapılandırılmış JSON çıktı). Takvim: Hafta 4.
+"""Adım 1 · Sembol çıkarımı (LLM, yapılandırılmış JSON çıktı). Takvim: Hafta 4.
 
-- ``output_config.format`` ile JSON şeması (CikarimSonucu); effort: config.EFFORT_CIKARIM.
+- ``response_format`` ile JSON şeması (``json_schema``, ``strict: true``; CikarimSonucu).
 - Semboller yalın ve küçük harfle, **belirginlik sırasıyla** döner; run.py ilk
   ``en_fazla_sembol`` tanesini işler.
 - Olumsuzlanan semboller ``olumsuz=True`` (İG-12); çok kelimeli semboller tek sembol (İG-13).
-- Atıf (citations) ile yapılandırılmış çıktı aynı istekte kullanılamaz; bu yüzden
-  çıkarım ve sentez ayrı çağrılardır.
+- Getirme çıkarımın sonucuna bağlı olduğu için çıkarım ve sentez ayrı çağrılardır.
 - İstek ``istemci.mesaj(istek, ruya_icerir=True)`` ile gönderilir (rüya metni
   içerir; docs/03 bölüm 5.2).
 """

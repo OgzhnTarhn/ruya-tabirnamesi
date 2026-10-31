@@ -13,7 +13,7 @@ from ruya.schemas import Madde
 TALIMAT = "kosul_v1"
 
 
-def batch_istekleri(maddeler: list[Madde]) -> dict[str, dict[str, Any]]:
+def istekler(maddeler: list[Madde]) -> dict[str, dict[str, Any]]:
     raise NotImplementedError("Hafta 8: enrich/conditions.py (docs/08)")
 
 

@@ -99,10 +99,6 @@ class Ayarlar(BaseSettings):
         return self.veri("cache", "llm")
 
     @property
-    def batch_klasoru(self) -> Path:
-        return self.veri("cache", "batch")
-
-    @property
     def rapor_klasoru(self) -> Path:
         return self.veri("raporlar")
 

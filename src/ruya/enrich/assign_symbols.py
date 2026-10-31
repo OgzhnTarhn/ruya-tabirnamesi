@@ -15,9 +15,7 @@ from ruya.schemas import Madde, SymbolKaydi
 TALIMAT = "sembol_atama_v1"
 
 
-def batch_istekleri(
-    maddeler: list[Madde], sozluk: dict[str, SymbolKaydi]
-) -> dict[str, dict[str, Any]]:
+def istekler(maddeler: list[Madde], sozluk: dict[str, SymbolKaydi]) -> dict[str, dict[str, Any]]:
     raise NotImplementedError("Hafta 3: enrich/assign_symbols.py (docs/08)")
 
 
