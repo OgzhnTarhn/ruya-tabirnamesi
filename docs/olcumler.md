@@ -10,7 +10,10 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | *hedef MVP* | | | 20 rüya | | ≥ %80 | ≥ %80 | 0 | ≥ %85 | ölçülür | ≥ 1,5 | %100 | 0 | %100 | 0 | ≤ 30 | ≤ 0,15 |
 | *hedef A3* | | | 40–50 rüya | | ≥ %90 | ≥ %90 | 0 | ≥ %95 | ≥ %80 | ≥ 2 | %100 | 0 | %100 | 0 | ≤ 20 | ≤ 0,10 |
+| 2026-11-02 | asama1-deepseek | 57426f9 | 20 rüya (sentetik; 1'i zaman aşımı) | cikarim_v1, sentez_v1 | %63 | %100 | 0 | %100 | — | 2,9 | %40 | ölçülmedi | ölçülmedi | 0 | ort. 538 | 0,00 |
 
 ## Notlar
 
 Her satırın altına, sayıları değiştiren şeyi bir cümleyle yaz (ör. "cikarim_v2: çok kelimeli sembol örnekleri eklendi").
+
+- **2026-11-02 · asama1-deepseek:** Test seti sentetik ve gözden geçirilmedi. Medyan yerine ortalama süre yazıldı. r006 `ReadTimeout` ile düştü. Atıf kapsamı düşük çünkü `sentez_v1` başlıkları ayrı bölüm istiyor, ölçüt ise yalnızca `#` ile başlayanları başlık sayıyor; ayrıca r005 ve r015 yorumlarında başlıktan başka içerik yok. Recall düşük çünkü `en_fazla_sembol` sınırı eşlemeden önce uygulanıyor ve "güvercin sürüsü", "deniz kenarı" gibi ifadeler eşlenmiyor. Sembolü olmayan rüyalar da gereksiz yere sentezleniyor (r011, r016, r018).
