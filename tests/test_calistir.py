@@ -171,6 +171,82 @@ def test_ruya_hatasi_basarisiz_olarak_kaydedilir_ve_kosu_surer(bag, veri_seti, m
     assert "başarısız" in metin.lower()
 
 
+def _bolum(metin: str, baslik: str) -> str:
+    """``baslik`` ile başlayan bölümü, bir sonraki ``## `` başlığına kadar döndürür."""
+    assert baslik in metin, f"raporda '{baslik}' bölümü yok"
+    baslangic = metin.index(baslik)
+    kalan = metin[baslangic + len(baslik) :]
+    son = kalan.find("\n## ")
+    return kalan if son == -1 else kalan[:son]
+
+
+def _ornek_satiri(bolum: str, ornek_id: str) -> str:
+    """Örnek ayrıntıları tablosunda ``ornek_id`` ile başlayan satır."""
+    for satir in bolum.splitlines():
+        if satir.startswith(f"| {ornek_id}"):
+            return satir
+    raise AssertionError(f"{ornek_id} için tablo satırı yok:\n{bolum}")
+
+
+def test_medyan_sure_yazilir(bag, veri_seti, sahte_yorumla):
+    rapor = degerlendir(veri_seti, "asama1-test", bag)
+    metin = rapor.read_text(encoding="utf-8")
+
+    # Üç örnek de 2,0 saniye sürer; medyan da 2,0'dır.
+    assert "Rüya başına medyan süre:" in metin
+    satir = next(s for s in metin.splitlines() if "Rüya başına medyan süre:" in s)
+    assert any(bicim in satir for bicim in ("2,0", "2.0"))
+    assert "saniye" in satir
+
+
+def test_ornek_ayrintilari_tablosu(bag, veri_seti, sahte_yorumla):
+    rapor = degerlendir(veri_seti, "asama1-test", bag)
+    metin = rapor.read_text(encoding="utf-8")
+
+    assert "## Örnek ayrıntıları" in metin
+    bolum = _bolum(metin, "## Örnek ayrıntıları")
+
+    # Başarılı her örnek için bir satır: kimlik, kaçırılan sembol, atıf kapsamı, süre.
+    for ornek in ORNEKLER:
+        satir = _ornek_satiri(bolum, ornek["id"])
+        assert any(bicim in satir for bicim in ("2,0", "2.0"))  # süre
+        # Atıf kapsamı: yorumda atıf yok, değer sıfır.
+        assert any(bicim in satir for bicim in ("%0", "0%", "0,0", "0.0"))
+
+    # r001: "yilan" eşlendi, "deniz" kaçırıldı.
+    r001 = _ornek_satiri(bolum, "r001")
+    assert "deniz" in r001
+
+    # r003: "olmus_baba" kaçırıldı.
+    r003 = _ornek_satiri(bolum, "r003")
+    assert "olmus_baba" in r003
+
+
+def test_ornek_ayrintilarinda_ruya_metni_yok(bag, veri_seti, sahte_yorumla):
+    rapor = degerlendir(veri_seti, "asama1-test", bag)
+    metin = rapor.read_text(encoding="utf-8")
+
+    bolum = _bolum(metin, "## Örnek ayrıntıları")
+    for ornek in ORNEKLER:
+        assert ornek["metin"] not in bolum
+
+
+def test_ilerleme_satirlari_flush_ile_yazilir(bag, veri_seti, sahte_yorumla, monkeypatch):
+    cagrilar: list[tuple[str, dict]] = []
+
+    def sahte_print(*args, **kwargs):
+        cagrilar.append((" ".join(str(a) for a in args), kwargs))
+
+    monkeypatch.setattr("builtins.print", sahte_print)
+
+    degerlendir(veri_seti, "asama1-test", bag)
+
+    ilerleme = [(metin, kwargs) for metin, kwargs in cagrilar if metin.startswith("[")]
+    assert len(ilerleme) == len(ORNEKLER)
+    for metin, kwargs in ilerleme:
+        assert kwargs.get("flush") is True, metin
+
+
 def test_ozel_ornegin_metni_yazilmaz(bag, tmp_path, monkeypatch, capsys):
     ozel_metin = "GİZLİ RÜYA METNİ: kimsede görünmemeli"
     ornekler = [

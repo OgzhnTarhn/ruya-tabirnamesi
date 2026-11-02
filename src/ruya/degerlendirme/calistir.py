@@ -8,6 +8,7 @@ elle eklenip commit edilir.
 from __future__ import annotations
 
 import datetime as dt
+import statistics
 from pathlib import Path
 
 from ruya.degerlendirme import metrikler
@@ -40,6 +41,18 @@ def _ortalama(degerler: list[float | None]) -> float | None:
     if not gecerli:
         return None
     return sum(gecerli) / len(gecerli)
+
+
+def _medyan(degerler: list[float]) -> float | None:
+    if not degerler:
+        return None
+    return statistics.median(degerler)
+
+
+def _kacirilan_semboller(kayit: SorguKaydi, ornek: TestOrnegi) -> list[str]:
+    """Beklenen ama eşlenemeyen sembol kimlikleri."""
+    eslenen = {eslesme.symbol_id for eslesme in kayit.eslesmeler if eslesme.symbol_id is not None}
+    return [sid for sid in ornek.beklenen_semboller if sid not in eslenen]
 
 
 def _bicimle(deger: float | None, yuzde: bool) -> str:
@@ -103,6 +116,7 @@ def _rapor_metni(
     )
     toplam_sure = sum(kayit.toplam_sure_sn for _, kayit in kayitlar)
     toplam_maliyet = sum(kayit.toplam_maliyet_usd for _, kayit in kayitlar)
+    medyan_sure = _medyan([kayit.toplam_sure_sn for _, kayit in kayitlar])
     sayi = len(kayitlar) or 1
 
     satirlar += [
@@ -113,8 +127,22 @@ def _rapor_metni(
         f"- Rüya başına ortalama token: {toplam_token / sayi:.0f}",
         f"- Toplam süre: {f'{toplam_sure:.1f}'.replace('.', ',')} saniye",
         f"- Rüya başına ortalama süre: {f'{toplam_sure / sayi:.1f}'.replace('.', ',')} saniye",
+        f"- Rüya başına medyan süre: {_bicimle(medyan_sure, False)} saniye",
         f"- Toplam maliyet: {f'{toplam_maliyet:.2f}'.replace('.', ',')} $",
         f"- Rüya başına ortalama maliyet: {f'{toplam_maliyet / sayi:.2f}'.replace('.', ',')} $",
+        "",
+        "## Örnek ayrıntıları",
+        "",
+        "| Örnek | Kaçırılan semboller | Atıf kapsamı | Süre (saniye) |",
+        "|---|---|---|---|",
+    ]
+    for ornek, kayit in kayitlar:
+        kacirilan = ", ".join(_kacirilan_semboller(kayit, ornek)) or "—"
+        atif = _bicimle(metrikler.atif_kapsami(kayit), True)
+        sure = _bicimle(kayit.toplam_sure_sn, False)
+        satirlar.append(f"| {ornek.id} | {kacirilan} | {atif} | {sure} |")
+
+    satirlar += [
         "",
         "## Başarısız örnekler",
         "",
@@ -143,7 +171,7 @@ def degerlendir(veri_seti: Path, etiket: str, bag: Bagimliliklar) -> Path:
     hatalar: list[tuple[str, str]] = []
 
     for sira, ornek in enumerate(ornekler, start=1):
-        print(f"[{sira}/{len(ornekler)}] {ornek.id}")
+        print(f"[{sira}/{len(ornekler)}] {ornek.id}", flush=True)
         girdi = RuyaGirdisi(metin=ornek.metin, baglam=ornek.baglam)
         try:
             kayitlar.append((ornek, run.yorumla(girdi, bag)))
