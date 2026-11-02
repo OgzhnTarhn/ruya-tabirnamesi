@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import pytest
 
+from ruya.config import MODEL_SENTEZ
 from ruya.etik import GUVENLIK_NOTU, UYARI_METNI
 from ruya.hatalar import YanitBozuk
 from ruya.llm.talimatlar import talimat_oku
@@ -309,7 +310,30 @@ def test_ruya_icerir_true_ile_gonderilir():
 def test_sistem_mesaji_sentez_talimati():
     istemci, _, _ = _calistir()
 
-    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v1")
+    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v2")
+
+
+def _sembol_satirlari(kullanici: str) -> list[str]:
+    """``Rüyadaki semboller:`` başlığı ile ilk boş satır arasındaki maddeler."""
+    satirlar = kullanici.splitlines()
+    baslangic = satirlar.index("Rüyadaki semboller:") + 1
+    sonuc: list[str] = []
+    for satir in satirlar[baslangic:]:
+        if not satir:
+            break
+        sonuc.append(satir)
+    return sonuc
+
+
+def test_maddesi_olmayan_sembol_istekte_listelenmez():
+    istemci, yorum, _ = _calistir(
+        eslesmeler=[_eslesme("yılan"), _eslesme("at", symbol_id="at")],
+        getirilenler={"yilan": _getirilenler()["yilan"], "at": []},
+    )
+
+    satirlar = _sembol_satirlari(_mesajlar(_istek(istemci))["user"])
+    assert satirlar == ["- yılan"]
+    assert "at" in yorum.bulunamayanlar
 
 
 def test_adaylar_numarali_kaynak_olarak_verilir():
@@ -382,6 +406,24 @@ def test_maddesi_olmayan_sembol_bulunamayanlara_eklenir():
     )
 
     assert "at" in yorum.bulunamayanlar
+
+
+def test_hic_madde_yoksa_llm_cagrilmaz_ve_bos_yorum_doner():
+    istemci, yorum, kullanim = _calistir(
+        cikarim=_cikarim(hassas_icerik=True),
+        eslesmeler=[_eslesme("yılan"), _eslesme("at", symbol_id="at")],
+        getirilenler={},
+    )
+
+    assert istemci.cagrilar == []
+    assert yorum.bolumler == []
+    assert "yılan" in yorum.bulunamayanlar
+    assert "at" in yorum.bulunamayanlar
+    assert yorum.uyari == UYARI_METNI
+    assert yorum.guvenlik_notu == GUVENLIK_NOTU
+    assert kullanim.girdi_token == 0
+    assert kullanim.cikti_token == 0
+    assert kullanim.model == MODEL_SENTEZ
 
 
 def test_bulunamayanlar_tekrarlanmaz():

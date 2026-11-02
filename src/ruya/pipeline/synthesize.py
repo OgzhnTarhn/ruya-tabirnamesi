@@ -37,7 +37,7 @@ from ruya.schemas import (
     YorumBolumu,
 )
 
-TALIMAT = "sentez_v1"
+TALIMAT = "sentez_v2"
 
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 16000
@@ -156,6 +156,15 @@ def _baglam_metni(baglam: Baglam | None) -> str:
     return "Bağlam: " + ", ".join(parcalar) if parcalar else "Bağlam verilmedi."
 
 
+def _maddesi_olanlar(eslesmeler: list[Eslesme], getirilenler: Getirilenler) -> list[Eslesme]:
+    """Maddesi olan semboller; maddesi olmayanlar istekte listelenmez (İG-31)."""
+    return [
+        eslesme
+        for eslesme in eslesmeler
+        if eslesme.symbol_id is not None and getirilenler.get(eslesme.symbol_id)
+    ]
+
+
 def _kullanici_mesaji(
     eslesmeler: list[Eslesme],
     maddeler: dict[str, Madde],
@@ -244,7 +253,19 @@ def synthesize(
 ) -> tuple[Yorum, Kullanim]:
     """Kaynaklı Türkçe yorumu üretir; atıfları kodda doğrular."""
     maddeler = _maddeler(getirilenler)
-    yanit = istemci.mesaj(_istek_kur(eslesmeler, maddeler, baglam), ruya_icerir=True)
+    if not maddeler:
+        # Maddesi olmayan semboller için modele gitmeye değmez (İG-31).
+        yorum = Yorum(
+            bolumler=[],
+            bulunamayanlar=_bulunamayanlar([], eslesmeler, getirilenler),
+            guvenlik_notu=GUVENLIK_NOTU if cikarim.hassas_icerik else None,
+            uyari=UYARI_METNI,
+        )
+        return yorum, Kullanim(model=MODEL_SENTEZ)
+    yanit = istemci.mesaj(
+        _istek_kur(_maddesi_olanlar(eslesmeler, getirilenler), maddeler, baglam),
+        ruya_icerir=True,
+    )
     ham = _yanit_dogrula(yanit.json())
     yorum = Yorum(
         bolumler=_bolumleri_cevir(ham, maddeler),
