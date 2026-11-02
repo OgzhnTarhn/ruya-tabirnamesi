@@ -83,7 +83,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 
 | Modül | Ana öğeler | Durum |
 |---|---|---|
-| `text/turkce.py` | `kucuk_harf`, `normallestir`, `kokler` | 🧩 Hafta 2, 4 |
+| `text/turkce.py` | `kucuk_harf`, `normallestir`, `kokler` | ✅ |
 | `llm/client.py` | `LLMIstemcisi.mesaj(istek, ruya_icerir=False) -> LLMYaniti`, `.toplu(istekler, eszamanli=4) -> dict[str, LLMYaniti \| RuyaHatasi]` · `LLMYaniti.icerik`, `.json()` · `onbellek_anahtari` ✅ · `maliyet_hesapla` ✅ | 🔁 EVREN'e geçiş |
 | `llm/talimatlar.py` | `talimat_oku("sentez_v1")` | ✅ |
 
@@ -96,18 +96,18 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `enrich/ceviri_birlestir.py` | `ceviri_oku`, `ceviriyi_uygula`: `data/interim/ceviri/` çıktılarını maddelere işler | ✅ |
 | `enrich/assign_symbols.py`, `translate.py` | `istekler(...) -> dict[custom_id, istek]` (`LLMIstemcisi.toplu` ile gönderilir), `sonuclari_uygula(maddeler, yanitlar)` | 🧩 Hafta 3 |
 | `enrich/conditions.py` | aynı arayüz | 🧩 Hafta 8 |
-| `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | 🧩 Hafta 3–4 |
-| `index/store.py` | `MaddeDeposu`, `VektorArayici` (Protocol) ✅, `BellekDeposu` | 🧩 Hafta 4 |
+| `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | ✅ |
+| `index/store.py` | `MaddeDeposu`, `VektorArayici` (Protocol) ✅, `BellekDeposu` | ✅ |
 | `index/build_vectors.py`, `yedek.py` | `vektor_indeksi_kur`, `ChromaVektorArayici`, `indeksi_yedekle/geri_yukle` | 🧩 Hafta 6 |
 
 ### Sorgu (çevrimiçi)
 
 | Modül | İmza | Durum |
 |---|---|---|
-| `pipeline/extract.py` | `extract(girdi, istemci) -> (CikarimSonucu, Kullanim)` | 🧩 Hafta 4 |
-| `pipeline/map.py` | `map_symbols(semboller, varyantlar, vektor=None, esik=0.8) -> list[Eslesme]` | 🧩 Hafta 4 |
-| `pipeline/retrieve.py` | `retrieve(eslesmeler, depo, baglam, gelenekler, n) -> Getirilenler` | 🧩 Hafta 4 |
-| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` | 🧩 Hafta 5 |
+| `pipeline/extract.py` | `extract(girdi, istemci) -> (CikarimSonucu, Kullanim)` | ✅ |
+| `pipeline/map.py` | `map_symbols(semboller, varyantlar, vektor=None, esik=0.8) -> list[Eslesme]` | ✅ |
+| `pipeline/retrieve.py` | `retrieve(eslesmeler, depo, baglam, gelenekler, n) -> Getirilenler` | ✅ |
+| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` | ✅ |
 | `pipeline/run.py` | `yorumla(girdi, bag) -> SorguKaydi`, `Bagimliliklar`, `varsayilan_bagimliliklar()` | ✅ |
 
 ### Üst katman ve giriş noktaları
@@ -115,9 +115,9 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | Modül | Ana öğeler | Durum |
 |---|---|---|
 | `kayit.py` | `sorgu_logla` (rüya metni olmadan), `gecmise_yaz` (yalnızca `RUYA_GECMIS=on`) | ✅ |
-| `degerlendirme/metrikler.py` | `sembol_recall`, `sembol_precision`, `esleme_dogrulugu`, `recall_at_k`, `kaynak_cesitliligi`, `atif_kapsami`, `yasak_ifadeler` | 🧩 Hafta 5 |
-| `degerlendirme/calistir.py` | `degerlendir(veri_seti, etiket, bag) -> rapor yolu` | 🧩 Hafta 5 |
-| `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`) | 🧩 Hafta 5 |
+| `degerlendirme/metrikler.py` | `sembol_recall`, `sembol_precision`, `esleme_dogrulugu`, `recall_at_k`, `kaynak_cesitliligi`, `atif_kapsami`, `yasak_ifadeler` | ✅ |
+| `degerlendirme/calistir.py` | `degerlendir(veri_seti, etiket, bag) -> rapor yolu` | ✅ |
+| `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`) | ✅ |
 | `eval/run_eval.py` | CLI: `--dataset`, `--etiket` | ✅ (gövde `degerlendir`'e bağlı) |
 | `scripts/download_sources.py` | CLI: `--asama`, `--kaynak`, `--yeniden` | ✅ |
 | `notebooks/_kurulum.py` | Anahtar kontrolü, autoreload, yolların gösterimi | 🔁 bilgisayara uyarlanacak |
