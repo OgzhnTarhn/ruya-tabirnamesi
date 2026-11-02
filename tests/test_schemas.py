@@ -55,6 +55,15 @@ def test_symbol_id_ascii_kucuk_harf(ornek_maddeler, symbol_id):
         Madde.model_validate({**ornek_maddeler[0], "symbol_ids": [symbol_id]})
 
 
+def test_sembol_adlari_varsayilan_ve_deger_alir(ornek_maddeler):
+    madde = Madde.model_validate(ornek_maddeler[0])
+    assert madde.sembol_ar is None
+    assert madde.sembol_tr is None
+    madde = Madde.model_validate({**ornek_maddeler[0], "sembol_ar": "حية", "sembol_tr": "yılan"})
+    assert madde.sembol_ar == "حية"
+    assert madde.sembol_tr == "yılan"
+
+
 def test_bilinmeyen_alan_reddedilir(ornek_maddeler):
     with pytest.raises(ValidationError):
         Madde.model_validate({**ornek_maddeler[0], "ceviri_tr": "eski alan adı"})

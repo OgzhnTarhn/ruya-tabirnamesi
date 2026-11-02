@@ -76,6 +76,9 @@ class Madde(_Sema):
     atif_notu: str | None = None  # İbn Sirin: "Nispeti sahih değil (OpenITI metadatası)"
     konum: Konum
     baslik_asli: str | None = None  # alt paragraflarda yok
+    # Çevirinin önerdiği ham sembol adları; sözlük kimliği (symbol_id) değildir.
+    sembol_ar: str | None = None
+    sembol_tr: str | None = None
     ust_madde_id: str | None = Field(default=None, pattern=ENTRY_ID_DESENI)
     symbol_ids: list[SymbolId] = Field(default_factory=list)
     metin_asli: str = Field(min_length=1)
