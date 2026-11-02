@@ -8,6 +8,7 @@ import pytest
 
 from ruya.config import Ayarlar
 from ruya.dosya import jsonl_oku
+from ruya.index.build_symbols import sozlugu_yukle, sozluk_maddeler_tutarliligi
 from ruya.ingest.kaynaklar import LISANS_KODLARI
 from ruya.schemas import Madde
 
@@ -50,3 +51,13 @@ def test_kaynak_sayilari(maddeler):
         kaynak = m.entry_id.split(":", 1)[0]
         sayilar[kaynak] = sayilar.get(kaynak, 0) + 1
     assert sayilar == beklenen
+
+
+def test_sembol_atamasi(maddeler):
+    sembollu = [m for m in maddeler if m.symbol_ids]
+    assert len(sembollu) >= 1000, f"sembol atanan madde sayısı: {len(sembollu)}"
+
+
+def test_sozluk_maddeler_tutarli(maddeler):
+    sorunlar = sozluk_maddeler_tutarliligi(sozlugu_yukle(), maddeler)
+    assert sorunlar == [], "\n".join(sorunlar)
