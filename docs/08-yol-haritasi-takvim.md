@@ -80,7 +80,7 @@ gantt
 - [x] `schemas.py`: `Madde`, `SymbolKaydi` ve boru hattı veri sınıfları (23 Ekim)
 - [x] `ingest/miller.py` ve birim testleri (2.256 madde)
 - [x] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
-- [ ] `text/turkce.py`: Türkçe küçük harf ve normalleştirme, testleri
+- [x] `text/turkce.py`: Türkçe küçük harf ve normalleştirme, testleri
 - [x] Kontrat testi: bütün kayıtlarda `lisans` dolu ve `entry_id` benzersiz (`tests/test_kontrat_veri.py`, veri gelince `-m veri`)
 
 ### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
@@ -90,20 +90,20 @@ gantt
 - [x] Korpus çevirisi öne alındı ve bitti (2 Kasım; [02](02-veri-kaynaklari-ve-semasi.md), bölüm 5). `enrich/ceviri_birlestir.py` çıktıları maddelere işler.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
 - [ ] `docs/kurallar.md` (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
-- [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
+- [x] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (2 Kasım; tamamı sentetik, EVREN üretti. Gözden geçirmen bekleniyor; maddeler sonra eklenecek)
 
 ### Hafta 4 · 16–22 Kasım · Aşama 1: Boru hattı (adım 1–3)
 
-- [ ] `pipeline/extract.py` ve `prompts/cikarim_v1.md`: JSON şemalı sembol çıkarımı
-- [ ] `pipeline/map.py`: birebir eşleme, zeyrek ile kök eşleme ve testleri
-- [ ] `pipeline/retrieve.py`: `symbol_id` ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri
+- [x] `pipeline/extract.py` ve `prompts/cikarim_v1.md`: JSON şemalı sembol çıkarımı
+- [x] `pipeline/map.py`: birebir eşleme, zeyrek ile kök eşleme ve testleri
+- [x] `pipeline/retrieve.py`: `symbol_id` ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri
 - [ ] Test setindeki `beklenen_maddeler` alanlarını doldur
 
 ### Hafta 5 · 23–29 Kasım · Aşama 1: Sentez, arayüz, ölçüm → **v0.1-mvp**
 
-- [ ] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: numaralı kaynaklar, JSON çıktısı ve `atiflari_dogrula`
-- [ ] `pipeline/run.py` ve `SorguKaydi`
-- [ ] `app/gradio_app.py` ve `05_arayuz.ipynb`: rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
+- [x] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: numaralı kaynaklar, JSON çıktısı ve `atiflari_dogrula`
+- [x] `pipeline/run.py` ve `SorguKaydi`
+- [x] `app/gradio_app.py` (2 Kasım; `05_arayuz.ipynb` yerine `scripts/arayuz_ac.py`): rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
 - [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
 - [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
 

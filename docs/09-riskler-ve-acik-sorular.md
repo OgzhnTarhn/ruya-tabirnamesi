@@ -34,7 +34,7 @@ Olasılık ve etki: D = düşük, O = orta, Y = yüksek.
 | R11 | ~~Drive bağlantısı yavaş ya da SQLite ile sorunlu.~~ **Kapandı (31 Ekim):** Drive kullanılmıyor; Chroma doğrudan `data/index/chroma` altında. | — | — | — | — |
 | R12 | ~~Geliştirme döngüsü yavaşlar (bilgisayarda yaz, Colab'de çalıştır).~~ **Kapandı (31 Ekim):** kod yazıldığı yerde gerçek veriyle çalışıyor. | — | — | — | — |
 | R13 | **EVREN'in ücretsiz dönemi 1 Aralık 2026'da bitiyor**; sonraki fiyat belli değil. Takvimde bütün korpusun çevirisi Hafta 6'da (30 Kasım–6 Aralık). | Y | O | Bütün korpusun sembol ataması ve çevirisi Hafta 3 sonuna çekilir; yanıtlar disk önbelleğinde kalır, ücretsiz dönemden sonra yeniden ödenmez | 25 Kasım'da çevrilmemiş madde kalması |
-| R14 | **EVREN servisi yavaş ya da kesintili.** 31 Ekim'de iki model "dolu"/zaman aşımı verdi; orkestra'da DeepSeek turları 2–5 dakika sürdü. | O | O | Yeniden deneme ve uzun zaman aşımı; `toplu` işler önbellek sayesinde kaldığı yerden devam eder; arayüzde bekleme mesajı | Rüya başına medyan süre > 60 sn |
+| R14 | **EVREN servisi yavaş ya da kesintili.** 31 Ekim'de iki model "dolu"/zaman aşımı verdi; orkestra'da DeepSeek turları 2–5 dakika sürdü. 2 Kasım ölçümü: uç uca bir rüya yaklaşık 6 dakika (9 kaynak, sentezin çoğu modelin düşünme tokenları). | O | O | Yeniden deneme ve uzun zaman aşımı; `toplu` işler önbellek sayesinde kaldığı yerden devam eder; arayüzde bekleme mesajı | Rüya başına medyan süre > 60 sn |
 
 ## 3. Doğrulanması gereken bilgiler
 
