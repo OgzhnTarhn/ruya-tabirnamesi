@@ -36,3 +36,17 @@ def test_ust_maddeler_var(maddeler):
 def test_nc_kayitlar_tek_filtreyle_ayrilir(maddeler):
     # İOG-06, V8: lisans alanına göre tek filtre yeterli olmalı
     assert all(m.lisans in LISANS_KODLARI for m in maddeler)
+
+
+def test_metin_tr_dolu(maddeler):
+    eksikler = [m.entry_id for m in maddeler if not (m.metin_tr or "").strip()]
+    assert not eksikler, f"metin_tr boş: {', '.join(eksikler[:10])}"
+
+
+def test_kaynak_sayilari(maddeler):
+    beklenen = {"nablusi": 5782, "miller": 2256, "ibn_sirin": 1544, "freud": 1219}
+    sayilar: dict[str, int] = {}
+    for m in maddeler:
+        kaynak = m.entry_id.split(":", 1)[0]
+        sayilar[kaynak] = sayilar.get(kaynak, 0) + 1
+    assert sayilar == beklenen

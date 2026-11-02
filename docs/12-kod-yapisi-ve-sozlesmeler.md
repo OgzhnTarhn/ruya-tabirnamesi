@@ -182,7 +182,7 @@ Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(.
 | `data/raw/KAYNAK_OZETLERI.json` | `download_sources.py` | sen (değişiklik kontrolü) | `data/` | URL, lisans, bayt, SHA256 |
 | `data/interim/<kaynak>.jsonl` | `ingest/<kaynak>.py` | `enrich/*` | `data/` | `Madde` (çeviri ve koşul alanları boş) |
 | `data/interim/sembol_onerileri.json` | `enrich/assign_symbols.py` | sen (gözden geçirme) | `data/` | serbest |
-| `data/processed/entries.jsonl` | `enrich/*` (son adım) | `index/*`, `pipeline/` | `data/` | `Madde` |
+| `data/processed/entries.jsonl` | `scripts/maddeleri_kur.py` (ayrıştırma + çeviri), sonra `enrich/*` | `index/*`, `pipeline/` | `data/` | `Madde` |
 | `sozluk/symbols.json` | **sen** (elle onay) | `index/build_symbols.py` | **git** | `SozlukDosyasi` |
 | `data/index/chroma/` | `index/build_vectors.py` | `index/*` | `data/` | Chroma |
 | `data/cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | `data/` | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
