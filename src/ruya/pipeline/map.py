@@ -4,7 +4,9 @@ Sıra (docs/03, Adım 2):
 1. text.turkce.normallestir
 2. Varyant tablosunda doğrudan arama → yontem="birebir"
 3. text.turkce.kokler ile kök bulup yeniden arama → yontem="kok"
-4. (Aşama 2) VektorArayici; benzerlik ``esik`` altındaysa → yontem="yok"
+4. Çok kelimeli ifadeyi kelimelere bölüp her kelimeyi (birebir, sonra kök) arama
+   → yontem="parca"
+5. (Aşama 2) VektorArayici; benzerlik ``esik`` altındaysa → yontem="yok"
 """
 
 from __future__ import annotations
@@ -16,6 +18,8 @@ from ruya.text.turkce import kokler, normallestir
 VARSAYILAN_ESIK = 0.80  # Hafta 6'da test setiyle ayarlanacak
 
 KOK_GUVENI = 0.9
+
+PARCA_GUVENI = 0.8
 
 
 def map_symbols(
@@ -43,6 +47,28 @@ def map_symbols(
                     symbol_id=varyantlar[kok_eslesmesi],
                     yontem="kok",
                     guven=KOK_GUVENI,
+                )
+            )
+            continue
+
+        parca_eslesmesi = None
+        kelimeler = anahtar.split()
+        if len(kelimeler) > 1:
+            for kelime in kelimeler:
+                if kelime in varyantlar:
+                    parca_eslesmesi = varyantlar[kelime]
+                    break
+                kelime_koku = next((k for k in kokler(kelime) if k in varyantlar), None)
+                if kelime_koku is not None:
+                    parca_eslesmesi = varyantlar[kelime_koku]
+                    break
+        if parca_eslesmesi is not None:
+            eslesmeler.append(
+                Eslesme(
+                    sembol=sembol,
+                    symbol_id=parca_eslesmesi,
+                    yontem="parca",
+                    guven=PARCA_GUVENI,
                 )
             )
             continue

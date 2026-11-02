@@ -138,6 +138,82 @@ def test_bos_girdi_bos_cikti(kok_yok):
     assert map_mod.map_symbols([], {"yılan": "yilan"}) == []
 
 
+def test_cok_kelimeli_ifade_parca_eslesmesi(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: [], raising=False)
+
+    eslesmeler = map_mod.map_symbols([_sembol("güvercin sürüsü")], {"güvercin": "guvercin"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "guvercin"
+    assert eslesme.yontem == "parca"
+    assert eslesme.guven == 0.8
+
+
+def test_cok_kelimeli_ifade_kok_ile_parca(monkeypatch):
+    monkeypatch.setattr(
+        map_mod, "kokler", lambda kelime: ["namaz"] if kelime == "namazı" else [], raising=False
+    )
+
+    eslesmeler = map_mod.map_symbols([_sembol("sabah namazı")], {"namaz": "namaz"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "namaz"
+    assert eslesme.yontem == "parca"
+
+
+def test_cok_kelimeli_ifade_ilk_kelimeyi_gecer_sonra_durur(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: [], raising=False)
+
+    eslesmeler = map_mod.map_symbols(
+        [_sembol("deniz kenarı")], {"deniz": "deniz", "kenar": "kenar"}
+    )
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "deniz"
+    assert eslesme.yontem == "parca"
+
+
+def test_cok_kelimeli_ifade_hicbir_kelime_eslesmezse_yok(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: [], raising=False)
+
+    eslesmeler = map_mod.map_symbols([_sembol("hastane koridoru")], {"yılan": "yilan"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id is None
+    assert eslesme.yontem == "yok"
+    assert eslesme.guven == 0.0
+
+
+def test_tek_kelime_parca_kullanmaz(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: [], raising=False)
+
+    eslesmeler = map_mod.map_symbols([_sembol("sürüsü")], {"sürü": "suru"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id is None
+    assert eslesme.yontem == "yok"
+
+
+def test_tam_ifade_birebir_parcalardan_once_gelir(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: [], raising=False)
+
+    eslesmeler = map_mod.map_symbols(
+        [_sembol("güvercin sürüsü")],
+        {"güvercin sürüsü": "guvercin_surusu", "güvercin": "guvercin"},
+    )
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "guvercin_surusu"
+    assert eslesme.yontem == "birebir"
+    assert eslesme.guven == 1.0
+
+
 def test_kokler_analizor_hata_verirse_bos_liste(monkeypatch):
     def _patlat() -> None:
         raise RuntimeError("zeyrek yüklenemedi")

@@ -60,7 +60,8 @@ flowchart TB
   2. `symbols.json` içinde doğrudan arama: ad ya da varyant eşleşmesi.
   3. Bulunamazsa zeyrek ile kök bulup yeniden arama.
   4. Yine bulunamazsa vektör yedeği (Aşama 2): en yakın 3 sembolün ad ve tanım vektörlerinden en iyisi seçilir. Benzerlik eşiğin altındaysa `symbol_id=None` döner.
-- `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "vektor" | "yok"`. Hata ayıklama ekranında gösterilir.
+- Birebir ve kök eşleşmesi olmayan çok kelimeli ifadelerde sözcükler soldan sağa tek tek denenir ("güvercin sürüsü" → `guvercin`); yöntem `"parca"`, güven 0,8.
+- `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "vektor" | "yok"`. Hata ayıklama ekranında gösterilir.
 
 ### Adım 3 · Getirme (`pipeline/retrieve.py`)
 

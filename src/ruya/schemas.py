@@ -25,7 +25,7 @@ Gelenek = Literal["islami_klasik", "bati_halk", "psikanalitik"]
 Dil = Literal["ar", "en", "de", "tr"]
 Kapsam = Literal["kisi", "vilayet", "padisah"]
 RuyaTuru = Literal["rahmani", "seytani", "nefsani"]
-EslemeYontemi = Literal["birebir", "kok", "vektor", "yok"]
+EslemeYontemi = Literal["birebir", "kok", "parca", "vektor", "yok"]
 Adim = Literal["cikarim", "esleme", "getirme", "sentez"]
 
 SymbolId = str  # SYMBOL_ID_DESENI'ne uyan bir dize
