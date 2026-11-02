@@ -39,7 +39,11 @@ from ruya.schemas import (
 
 TALIMAT = "sentez_v1"
 
-EN_UZUN_CIKTI_TOKEN = 4000
+# Modelin düşünme tokenları da bu sınıra dahildir.
+EN_UZUN_CIKTI_TOKEN = 16000
+# Uzun maddeler isteği şişirip yavaşlatır; atıf doğrulama yine tam metne bakar.
+EN_UZUN_METIN_TR = 1000
+EN_UZUN_METIN_ASLI = 300
 
 
 # --- Model yanıtının ham biçimi ---------------------------------------------
@@ -177,8 +181,8 @@ def _kullanici_mesaji(
     for numara, madde in enumerate(maddeler.values(), start=1):
         satirlar.append(f"[K{numara}] {madde.entry_id} · {_baslik(madde)}")
         if madde.metin_tr:
-            satirlar.append(madde.metin_tr)
-        satirlar.append(madde.metin_asli)
+            satirlar.append(madde.metin_tr[:EN_UZUN_METIN_TR])
+        satirlar.append(madde.metin_asli[:EN_UZUN_METIN_ASLI])
         satirlar.append("")
     return "\n".join(satirlar).rstrip()
 

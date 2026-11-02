@@ -23,7 +23,8 @@ from ruya.schemas import CikarimSonucu, Kullanim, RuyaGirdisi
 
 TALIMAT = "cikarim_v1"
 
-EN_UZUN_CIKTI_TOKEN = 2000
+# Modelin düşünme tokenları da bu sınıra dahildir.
+EN_UZUN_CIKTI_TOKEN = 8000
 
 
 def _istek_kur(girdi: RuyaGirdisi) -> dict[str, Any]:
