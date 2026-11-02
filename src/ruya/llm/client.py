@@ -146,7 +146,7 @@ class LLMIstemcisi:
         """HTTP istemcisini ilk çağrıda kurar (testler kendi istemcisini verir)."""
         with self._kilit:
             if self._http is None:
-                self._http = httpx.Client(timeout=httpx.Timeout(300.0, connect=10.0))
+                self._http = httpx.Client(timeout=httpx.Timeout(900.0, connect=10.0))
             return self._http
 
     def mesaj(self, istek: dict[str, Any], ruya_icerir: bool = False) -> LLMYaniti:
