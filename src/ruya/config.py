@@ -10,6 +10,7 @@
 
 from __future__ import annotations
 
+import datetime as dt
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -32,6 +33,10 @@ MODEL_SENTEZ = "deepseek-v4.1-flash"
 MODEL_CEVIRI = "deepseek-v4.1-flash"
 MODEL_SEMBOL_ATAMA = "deepseek-v4.1-flash"
 MODEL_KOSUL = "deepseek-v4.1-flash"
+
+# Çeviri parçalarını birleştiren adımın etiketi ve tarihi (CeviriBilgisi.model/tarih).
+CEVIRI_MODEL_ETIKETI = "claude-code+evren"
+CEVIRI_TARIHI = dt.date(2026, 11, 2)
 
 LLM_ADRESI = "https://evren-llmapi.ssyz.org.tr"
 LLM_ANAHTAR_DEGISKENI = "EVREN_LLM_API_KEY"
