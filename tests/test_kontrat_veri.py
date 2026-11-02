@@ -61,3 +61,12 @@ def test_sembol_atamasi(maddeler):
 def test_sozluk_maddeler_tutarli(maddeler):
     sorunlar = sozluk_maddeler_tutarliligi(sozlugu_yukle(), maddeler)
     assert sorunlar == [], "\n".join(sorunlar)
+
+
+def test_zeyrek_gercek_kok_bulur():
+    """Birim testleri kokler'i sahteler; gerçek analizör burada sınanır (eksik NLTK verisi)."""
+    if not (Ayarlar().data_dir / "nltk_data").is_dir():
+        pytest.skip("NLTK verisi yok: scripts/nltk_kur.py")
+    from ruya.text.turkce import kokler
+
+    assert "namaz" in kokler("namazı")

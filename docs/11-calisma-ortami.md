@@ -71,6 +71,7 @@ Hugging Face modelleri gerekirse `<repo>/.cache/hf` altına iner (git'e girmez).
 
 - **Kurulum:** `uv sync` (temel paketler). Arayüz ve indeks için ağır paketler isteğe bağlı: `uv sync --extra hepsi`.
 - **Testler:** `uv run pytest`. Birim testleri verisizdir. Kontrat testleri (`-m veri`) `data/` altındaki gerçek veriyi denetler; veri yoksa kendiliğinden atlanır.
+- **Kök bulma verisi:** `uv run python scripts/nltk_kur.py` bir kez çalıştırılır; NLTK verisi `data/nltk_data/` altına iner. Yoksa kök eşleme çalışmaz.
 - **İşler betik olarak çalışır:** örneğin `uv run python scripts/download_sources.py`. Hafta hafta eklenen ayrıştırma, zenginleştirme ve değerlendirme komutları da aynı biçimde çalışır ([08](08-yol-haritasi-takvim.md)).
 - **Notebook'lar ince tutulur.** VS Code'da `.venv` çekirdeğiyle açılır. Mantık `src/ruya/` paketinde durur; notebook fonksiyon çağırır, sonuçları gösterir ve elle puanlama gibi inceleme işlerinde kullanılır. Çıktılar commit'ten önce temizlenir: `nbstripout` git filtresi (`.gitattributes`; her klonda bir kez `uv run nbstripout --install`), ayrıca `tests/test_notebooklar.py`.
 - **Arayüz:** Gradio yerelde açılır (`localhost`). `share=True` kullanılmaz: bu ayar herkese açık bir link üretir ve linki bulan herkes senin API anahtarınla sorgu çalıştırabilir.

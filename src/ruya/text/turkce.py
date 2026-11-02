@@ -6,8 +6,13 @@ oysa doğrusu "ı"; ``"İ".lower()`` ise "i̇" (i + birleşen nokta) verir.
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 from typing import Any
+
+from ruya.config import ayarlar
+
+_log = logging.getLogger(__name__)
 
 # Türkçe büyük harflerin küçük karşılıkları. ``str.lower()`` bunları yanlış çevirir.
 _KUCUK_HARF_TABLOSU = str.maketrans({"I": "ı", "İ": "i"})
@@ -36,7 +41,11 @@ def _cozumleyici() -> Any:
 
     zeyrek ağır bir analizör yüklediği için içe aktarma işlevin içinde yapılır (docs/12).
     """
+    import nltk
     import zeyrek
+
+    # zeyrek cümle bölücüsü için NLTK punkt verisi ister: scripts/nltk_kur.py
+    nltk.data.path.insert(0, str(ayarlar().data_dir / "nltk_data"))
 
     return zeyrek.MorphAnalyzer()
 
@@ -49,7 +58,9 @@ def kokler(kelime: str) -> list[str]:
     """
     try:
         analizler = _cozumleyici().analyze(kelime)
-    except Exception:  # zeyrek alfa; her hata eşlemede "kök yok" demektir
+    except Exception as hata:  # zeyrek alfa; her hata eşlemede "kök yok" demektir
+        # Kelime rüya metninin parçası olabilir; loga yalnızca hata türü yazılır.
+        _log.warning("Kök bulunamadı: %s", type(hata).__name__)
         return []
 
     girdi = kucuk_harf(kelime)
