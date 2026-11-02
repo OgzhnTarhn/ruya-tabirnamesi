@@ -27,7 +27,7 @@ def bag():
 
 @pytest.fixture
 def sahte_adimlar(monkeypatch):
-    cagrilar = {}
+    cagrilar = {"eslenmeyen": set()}
 
     def sahte_extract(girdi, istemci):
         semboller = [Sembol(yalin=k, ham_ifade=k) for k in girdi.metin.split()]
@@ -36,7 +36,13 @@ def sahte_adimlar(monkeypatch):
     def sahte_map(semboller, varyantlar, vektor):
         cagrilar["esleme"] = [s.yalin for s in semboller]
         return [
-            Eslesme(sembol=s, symbol_id=s.yalin, yontem="birebir", guven=1.0) for s in semboller
+            Eslesme(
+                sembol=s,
+                symbol_id=None if s.yalin in cagrilar["eslenmeyen"] else s.yalin,
+                yontem="yok" if s.yalin in cagrilar["eslenmeyen"] else "birebir",
+                guven=0.0 if s.yalin in cagrilar["eslenmeyen"] else 1.0,
+            )
+            for s in semboller
         ]
 
     def sahte_retrieve(eslesmeler, depo, baglam, gelenekler, n):
@@ -44,7 +50,8 @@ def sahte_adimlar(monkeypatch):
         return {e.symbol_id: [] for e in eslesmeler}
 
     def sahte_synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci):
-        return Yorum(bolumler=[], bulunamayanlar=list(getirilenler), uyari=UYARI_METNI), KULLANIM
+        bulunamayanlar = [sid for sid in getirilenler if sid is not None]
+        return Yorum(bolumler=[], bulunamayanlar=bulunamayanlar, uyari=UYARI_METNI), KULLANIM
 
     monkeypatch.setattr(extract, "extract", sahte_extract)
     monkeypatch.setattr(esleme, "map_symbols", sahte_map)
@@ -62,10 +69,12 @@ def test_dort_adim_sirayla_izlenir(bag, sahte_adimlar):
     assert sahte_adimlar["n"] == 1
 
 
-def test_fazla_sembol_atlanir(bag, sahte_adimlar):
-    kayit = run.yorumla(RuyaGirdisi(metin="deniz yilan kus ev"), bag)
-    assert sahte_adimlar["esleme"] == ["deniz", "yilan"]
-    assert kayit.atlanan_semboller == ["kus", "ev"]
+def test_eslenmeyen_sembol_siniri_kullanmaz(bag, sahte_adimlar):
+    sahte_adimlar["eslenmeyen"] = {"a"}
+    kayit = run.yorumla(RuyaGirdisi(metin="a b c d"), bag)
+    assert sahte_adimlar["esleme"] == ["a", "b", "c", "d"]
+    assert [e.sembol.yalin for e in kayit.eslesmeler] == ["a", "b", "c"]
+    assert kayit.atlanan_semboller == ["d"]
 
 
 def test_sembol_yoksa_erken_doner(bag, sahte_adimlar, monkeypatch):

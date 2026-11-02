@@ -21,7 +21,7 @@ from ruya.index.store import BellekDeposu, MaddeDeposu, VektorArayici
 from ruya.llm.client import LLMIstemcisi
 from ruya.pipeline import extract, retrieve, synthesize
 from ruya.pipeline import map as esleme
-from ruya.schemas import AdimOlcumu, Madde, RuyaGirdisi, SorguKaydi
+from ruya.schemas import AdimOlcumu, Eslesme, Madde, RuyaGirdisi, SorguKaydi
 
 T = TypeVar("T")
 
@@ -73,14 +73,26 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     if not semboller:
         kayit.mesaj = SEMBOL_YOK_MESAJI
         return kayit
-    sinir = bag.ayar.en_fazla_sembol
-    semboller, atlananlar = semboller[:sinir], semboller[sinir:]
-    kayit.atlanan_semboller = [s.yalin for s in atlananlar]
 
     # 2 · Eşleme
     eslesmeler, sure = _zamanla(esleme.map_symbols, semboller, bag.varyantlar, bag.vektor)
-    kayit.eslesmeler = eslesmeler
     kayit.olcumler.append(AdimOlcumu(adim="esleme", sure_sn=sure))
+
+    # Sınır eşlemeden sonra uygulanır: eşlenemeyen semboller sınırı kullanmaz.
+    sinir = bag.ayar.en_fazla_sembol
+    secilenler: list[Eslesme] = []
+    atlananlar: list[Eslesme] = []
+    eslenen = 0
+    for es in eslesmeler:
+        if es.symbol_id is not None:
+            eslenen += 1
+            if eslenen > sinir:
+                atlananlar.append(es)
+                continue
+        secilenler.append(es)
+    eslesmeler = secilenler
+    kayit.eslesmeler = eslesmeler
+    kayit.atlanan_semboller = [e.sembol.yalin for e in atlananlar]
 
     # 3 · Getirme
     getirilenler, sure = _zamanla(
