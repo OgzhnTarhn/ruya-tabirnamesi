@@ -11,11 +11,46 @@
 
 from __future__ import annotations
 
+from typing import Any
+
+from pydantic import ValidationError
+
+from ruya.config import MODEL_CIKARIM
+from ruya.hatalar import YanitBozuk
 from ruya.llm.client import LLMIstemcisi
+from ruya.llm.talimatlar import talimat_oku
 from ruya.schemas import CikarimSonucu, Kullanim, RuyaGirdisi
 
 TALIMAT = "cikarim_v1"
 
+EN_UZUN_CIKTI_TOKEN = 2000
+
+
+def _istek_kur(girdi: RuyaGirdisi) -> dict[str, Any]:
+    """OpenAI uyumlu sohbet gövdesi: sabit sistem talimatı başta, rüya metni sonda."""
+    return {
+        "model": MODEL_CIKARIM,
+        "max_tokens": EN_UZUN_CIKTI_TOKEN,
+        "messages": [
+            {"role": "system", "content": talimat_oku(TALIMAT)},
+            {"role": "user", "content": girdi.metin},
+        ],
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "cikarim",
+                "schema": CikarimSonucu.model_json_schema(),
+                "strict": True,
+            },
+        },
+    }
+
 
 def extract(girdi: RuyaGirdisi, istemci: LLMIstemcisi) -> tuple[CikarimSonucu, Kullanim]:
-    raise NotImplementedError("Hafta 4: pipeline/extract.py (docs/08)")
+    """Rüya metninden sembolleri çıkarır; sonucu ve çağrının kullanımını döndürür."""
+    yanit = istemci.mesaj(_istek_kur(girdi), ruya_icerir=True)
+    try:
+        cikarim = CikarimSonucu.model_validate(yanit.json())
+    except ValidationError as hata:
+        raise YanitBozuk(f"Çıkarım yanıtı şemaya uymuyor: {hata}") from hata
+    return cikarim, yanit.kullanim
