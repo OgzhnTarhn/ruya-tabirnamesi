@@ -400,7 +400,7 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | `entry_id` kararlılığı | Satır numarasına bağlı | Kaynak sabitleme + SHA256 denetimi |
 | Türkçe harfler | `"I".lower()` yanlış | Kendi `kucuk_harf()` fonksiyonumuz + testleri |
 | Diller arası vektör arama | Türkçe sorgu, Arapça metin | e5 çok dilli model, `query:`/`passage:` önekleri, D1 deneyi |
-| Hız ve ücretsiz dönem | Servis yoğunken tek istek 100 saniyeyi aşabiliyor; ücretsizlik 1 Aralık'ta bitiyor | Eşzamanlı toplu istekler, disk önbelleği (kaldığı yerden devam), bütün korpusun çevirisini Hafta 3 sonuna çekmek (R13, R14) |
+| Hız ve ücretsiz dönem | Servis yoğunken tek istek 100 saniyeyi aşabiliyor; ücretsizlik 1 Aralık'ta bitiyor | Eşzamanlı toplu istekler, disk önbelleği (kaldığı yerden devam); bütün korpusun çevirisi 2 Kasım'da bitti (R13, R14) |
 | Atıf güvencesi | Atıf API'si yok; model verilmemiş kaynağa atıf yapabilir | Kodda doğrulama; uydurma atıflar atılır ve sayılır |
 
 ---
@@ -423,7 +423,7 @@ Hafta 2'yi (ayrıştırıcılar) örnek alalım:
 | Tarih | Teknik iş | Taş |
 |---|---|---|
 | 2–8 Kasım | `ingest/miller.py`, `ingest/nablusi.py`, `text/turkce.py` | |
-| 9–15 Kasım | `enrich/assign_symbols.py`, `enrich/translate.py` (`toplu`), `symbols.json` (50 sembol), test seti; ücretsiz dönem bitmeden bütün korpusun çevirisi | K1 |
+| 9–15 Kasım | `enrich/assign_symbols.py`, `symbols.json` (50 sembol), test seti (korpus çevirisi 2 Kasım'da bitti) | K1 |
 | 16–22 Kasım | `extract.py`, `map.py`, `retrieve.py` | |
 | 23–29 Kasım | `synthesize.py` (atıf doğrulama), Gradio, `metrikler.py`, ilk ölçüm | K2 · v0.1 |
 | 30 Kasım–13 Aralık | Chroma + e5, vektör yedeği, reranker, Freud, D1–D3 | K3 · v0.2 |

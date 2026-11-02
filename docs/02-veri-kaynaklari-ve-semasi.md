@@ -89,11 +89,13 @@ Veri git'e **eklenmez**: `data/` `.gitignore`'da. Bunun üç nedeni var: lisans 
   "atif_notu": null,
   "konum": {"bab": "باب الحاء", "sayfa": "V01P142", "satir": 4310},
   "baslik_asli": "حية",
+  "sembol_ar": "حية",
+  "sembol_tr": "yılan",
   "ust_madde_id": null,
   "symbol_ids": ["yilan"],
   "metin_asli": "…",
   "metin_tr": "…",
-  "ceviri": {"yontem": "llm", "model": "deepseek-v4.1-flash", "tarih": "2026-11-05", "gozden_gecirildi": false},
+  "ceviri": {"yontem": "llm", "model": "claude-code+evren", "tarih": "2026-11-02", "gozden_gecirildi": false},
   "kosullar": [
     {"kosul": {"renk": "siyah"}, "yorum_tr": "…", "otorite": "Nablusi"}
   ],
@@ -145,14 +147,12 @@ Ayrıntılar için bkz. [06-degerlendirme.md](06-degerlendirme.md).
 
 ## 5. Çeviri stratejisi
 
-- **Ne çevrilecek:** Önce yalnızca 50 sembole ait maddeler çevrilecek, bunlar yaklaşık birkaç yüz paragraf. Tüm korpus Aşama 2'de çevrilecek.
-- **Nasıl:** `deepseek-v4.1-flash` ile, `LLMIstemcisi.toplu` üzerinden eşzamanlı isteklerle ([03](03-mimari.md), bölüm 5.2). Her yanıt disk önbelleğine yazıldığı için iş yarıda kesilirse kaldığı yerden devam eder.
+- **Ne çevrildi:** Dört kaynağın tamamı, 2 Kasım 2026'da bitti: Nablusi 5.782, Miller 2.256, İbn Sîrîn 1.544, Freud 1.219 satır. Freud yalnızca önsözler ve yedi ana bölümdür; içindekiler, kaynakça ve dizin çevrilmedi.
+- **Nasıl:** EVREN tek istekte çok yavaş olduğu için çeviri çevrimdışı ve parça parça yapıldı: önce Claude Code ajanları (Miller'in tamamı, Nablusi'nin çoğu, İbn Sîrîn'in ilk parçası), kullanım sınırı nedeniyle sonra orkestra ile EVREN agent'ları (`deepseek-v4.1-flash`, zaman zaman `mimo-v2.6-pro`). Çıktılar `data/interim/ceviri/<kaynak>/parca_NNNN.jsonl` altındadır; `enrich/ceviri_birlestir.py` bunları maddelere işler. Kalite parçadan parçaya değişebilir, bu yüzden `ceviri.model` karma etiket taşır (`claude-code+evren`) ve `gozden_gecirildi` varsayılan olarak `false` kalır.
+- **Uyarı:** İlk EVREN turunda agent'lar uzun paragrafları yarıda bırakıp `[metin burada kesiliyor]` yazarak gevşek denetimden geçti. Yarım satırlar uzunluk oranı denetimiyle bulunup yeniden çevrildi. Yeni toplu işlerde bu denetim sıkı tutulmalı.
 - **Çeviri yönergeleri:**
   - Anlamı koru, süsleme ekleme.
   - Ayet ve hadis alıntılarını işaretle.
   - Osmanlı tabir terminolojisini tutarlı kullan. Bunun için bir terim sözlüğü dosyası tutulacak (`docs/terimler.md`): رؤيا = rüya, تعبير = tabir, أضغاث أحلام = adgâs-ı ahlâm…
 - **Kalite kontrolü:** Her partiden rastgele 10 madde elle okunacak. Sorunlu maddeler `gozden_gecirildi: false` olarak kalacak.
-- **Süre ve kota (kaba tahmin, ölçülecek):**
-  - Bütün Nablusi korpusu yaklaşık 0,5 milyon girdi ve 0,7 milyon çıktı tokenı tutar; modelin düşünme tokenlarıyla birlikte birkaç milyon token. Günlük 15 milyon tokenlık kotaya sığar.
-  - EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bütün korpusun çevirisi bu tarihten önce bitirilmeli.
-  - Asıl sınır süre: istek başına onlarca saniye sürebiliyor. Gerçek token ve süre değerleri Hafta 1 denemesinde (H4) ölçülüp bu belgeye işlenecek.
+- **Gerçek kullanım:** EVREN tarafında yaklaşık 8 saat sürdü. Yeni bir kaynak eklenirse aynı yol izlenir; EVREN modelleri 1 Aralık 2026'ya kadar ücretsizdir.

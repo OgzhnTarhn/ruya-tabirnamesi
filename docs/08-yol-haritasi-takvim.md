@@ -78,8 +78,8 @@ gantt
 - [x] `config.py`: veri yolları (23 Ekim; 31 Ekim'de Colab/Drive yerine `data/`)
 - [ ] `notebooks/01_kaynaklari_indir.ipynb` ve `02_ayristir.ipynb`
 - [x] `schemas.py`: `Madde`, `SymbolKaydi` ve boru hattı veri sınıfları (23 Ekim)
-- [ ] `ingest/miller.py` ve birim testleri (~2.256 madde)
-- [ ] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
+- [x] `ingest/miller.py` ve birim testleri (2.256 madde)
+- [x] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
 - [ ] `text/turkce.py`: Türkçe küçük harf ve normalleştirme, testleri
 - [x] Kontrat testi: bütün kayıtlarda `lisans` dolu ve `entry_id` benzersiz (`tests/test_kontrat_veri.py`, veri gelince `-m veri`)
 
@@ -87,7 +87,7 @@ gantt
 
 - [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
-- [ ] `enrich/translate.py` ve `prompts/ceviri_v1.md` ile 50 sembolün maddelerini `LLMIstemcisi.toplu` ile çevir; yanıtlar disk önbelleğine yazıldığı için iş kesilirse kaldığı yerden devam eder.
+- [x] Korpus çevirisi öne alındı ve bitti (2 Kasım; [02](02-veri-kaynaklari-ve-semasi.md), bölüm 5). `enrich/ceviri_birlestir.py` çıktıları maddelere işler.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
 - [ ] `docs/kurallar.md` (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
 - [ ] `eval/dataset/ruyalar_v1.jsonl`: 20 rüya ve beklenen semboller (maddeler sonra eklenecek)
@@ -116,14 +116,14 @@ gantt
 
 ### Hafta 7 · 7–13 Aralık · Aşama 2: Reranker, Freud, deneyler → **v0.2**
 
-- [ ] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
+- [x] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
 - [ ] bge-reranker-v2-m3 entegrasyonu
 - [ ] Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları
 - [ ] Gelenek seçimi arayüzü (İG-03), ardından `v0.2` etiketi
 
 ### Hafta 8 · 14–20 Aralık · Aşama 3: İbn Sirin ve koşullar
 
-- [ ] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
+- [x] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
 - [ ] `enrich/conditions.py`: koşul ayrıştırma (`kosullar`, `yontem`, `kapsam`). 20 maddeyi elle kontrol et.
 - [ ] Bab ve HVDC kategorilerini `symbols.json` dosyasına ekle
 

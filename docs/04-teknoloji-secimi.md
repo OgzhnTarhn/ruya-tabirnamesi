@@ -65,7 +65,7 @@
 ## TK-04 · Model seçimi: `deepseek-v4.1-flash` (31 Ekim 2026)
 
 - **İlk öneri (21 Ekim):** Claude Opus 5.5, Aşama 4'te Sonnet 5.5 ve Haiku 5.5 ile karşılaştırma. TK-03 revizyonuyla geçersiz oldu.
-- **Karar:** Bütün işlerde (çıkarım, sentez, çeviri, sembol atama, koşullar) **`deepseek-v4.1-flash`**. Yedek model kullanılmaz; "dolu" yanıtında aynı model yeniden denenir.
+- **Karar:** Ürün içi LLM işlerinde (çıkarım, sentez, sembol atama, koşullar) **`deepseek-v4.1-flash`**. Korpus çevirisi çevrimdışı yapıldı ve bitti ([02](02-veri-kaynaklari-ve-semasi.md), bölüm 5). Yedek model kullanılmaz; "dolu" yanıtında aynı model yeniden denenir.
 - **Gerekçe:** 31 Ekim denemesinde geçitteki üç sohbet modelinden yalnızca bu yanıt verdi; şemaya uygun JSON döndürdü, sembolü doğru buldu, çevirisi iyiydi. Tek modelle başlamak sistemi sade tutar.
 - **Gözlenen sorun:** Örnek çevirinin sonuna anlamsız bir kelime ("ürün") eklemişti. Hafta 1'deki H3 puanlaması bunun ne sıklıkta olduğunu gösterecek.
 - **Uygulama notları:**

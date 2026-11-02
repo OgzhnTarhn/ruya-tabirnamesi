@@ -92,8 +92,8 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | Modül | Ana öğeler | Durum |
 |---|---|---|
 | `ingest/kaynaklar.py` | `KAYNAKLAR`: künye, lisans, URL, aşama. Tek doğru kaynak. | ✅ |
-| `ingest/nablusi.py`, `miller.py` | `ayristir(ham_dosya) -> Iterator[Madde]` | 🧩 Hafta 2 |
-| `ingest/freud.py`, `ibn_sirin.py` | aynı arayüz | 🧩 Hafta 7, 8 |
+| `ingest/nablusi.py`, `miller.py`, `freud.py`, `ibn_sirin.py` | `ayristir(ham_dosya) -> Iterator[Madde]` | ✅ |
+| `enrich/ceviri_birlestir.py` | `ceviri_oku`, `ceviriyi_uygula`: `data/interim/ceviri/` çıktılarını maddelere işler | ✅ |
 | `enrich/assign_symbols.py`, `translate.py` | `istekler(...) -> dict[custom_id, istek]` (`LLMIstemcisi.toplu` ile gönderilir), `sonuclari_uygula(maddeler, yanitlar)` | 🧩 Hafta 3 |
 | `enrich/conditions.py` | aynı arayüz | 🧩 Hafta 8 |
 | `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | 🧩 Hafta 3–4 |
@@ -139,7 +139,7 @@ flowchart LR
 
 | Sınıf | Nerede kullanılır | Önemli kurallar |
 |---|---|---|
-| `Madde` | `interim/*.jsonl`, `entries.jsonl` | `lisans` boş olamaz · `entry_id` = `<kaynak>:<yerel kimlik>` ve `kaynak` ile başlar · `ust_madde_id` aynı kaynaktan · `symbol_ids` ASCII küçük harf |
+| `Madde` | `interim/*.jsonl`, `entries.jsonl` | `lisans` boş olamaz · `entry_id` = `<kaynak>:<yerel kimlik>` ve `kaynak` ile başlar · `ust_madde_id` aynı kaynaktan · `symbol_ids` ASCII küçük harf · `sembol_ar`, `sembol_tr` çevirinin önerdiği ham sembol adıdır, sözlük kimliği değildir |
 | `SymbolKaydi` / `SozlukDosyasi` | `sozluk/symbols.json` | Anahtarlar `SYMBOL_ID_DESENI`'ne uyar · `gozden_gecirildi` varsayılan `False` |
 | `RuyaGirdisi` | Arayüz → boru hattı | `metin` 1–3.000 karakter · `gelenekler=None` hepsi demek |
 | `Sembol`, `CikarimSonucu` | Adım 1 | `olumsuz=True` semboller `gecerli_semboller`'e girmez · `ham_ifade` rüya metninin parçasıdır, loglanmaz |
