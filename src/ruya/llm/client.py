@@ -35,6 +35,8 @@ from ruya.schemas import Kullanim
 YENIDEN_DENEME_SAYISI = 4
 YENIDEN_DENENEN_DURUMLAR = frozenset({429, 502, 503, 504})
 EN_UZUN_RETRY_AFTER = 30.0  # üstünde günlük kota sayılır, yeniden denenmez
+ISLENIYOR_BEKLEME_SN = 20.0  # 409: geçit isteği hâlâ işliyor, bu kadar bekle
+ISLENIYOR_EN_FAZLA = 30  # 409 yoklamalarının üst sınırı (YENIDEN_DENEME_SAYISI'ndan bağımsız)
 
 
 def onbellek_anahtari(istek: dict[str, Any]) -> str:
@@ -144,7 +146,7 @@ class LLMIstemcisi:
         """HTTP istemcisini ilk çağrıda kurar (testler kendi istemcisini verir)."""
         with self._kilit:
             if self._http is None:
-                self._http = httpx.Client(timeout=httpx.Timeout(180.0, connect=10.0))
+                self._http = httpx.Client(timeout=httpx.Timeout(300.0, connect=10.0))
             return self._http
 
     def mesaj(self, istek: dict[str, Any], ruya_icerir: bool = False) -> LLMYaniti:
@@ -185,16 +187,36 @@ class LLMIstemcisi:
             "Idempotency-Key": str(uuid.uuid4()),
         }
         adres = f"{config.LLM_ADRESI}/v1/chat/completions"
-        for deneme in range(YENIDEN_DENEME_SAYISI):
+        deneme = 0
+        isleniyor = 0  # 409 yoklamalarının kendi sayacı
+        while deneme < YENIDEN_DENEME_SAYISI:
             son_deneme = deneme == YENIDEN_DENEME_SAYISI - 1
             try:
                 yanit = self._istemci().post(adres, json=istek, headers=basliklar)
+            except httpx.ReadTimeout as hata:
+                if isleniyor:
+                    # 409 sonrası okuma zaman aşımı: geçit isteği hâlâ işliyor sayılır.
+                    isleniyor += 1
+                    if isleniyor > ISLENIYOR_EN_FAZLA:
+                        raise LLMHatasi(
+                            f"EVREN isteği hâlâ işliyor (409): {type(hata).__name__}", durum=409
+                        ) from hata
+                    self.bekle(ISLENIYOR_BEKLEME_SN)
+                    continue
+                # Bağlantı kurulamadı, koptu ya da zaman aşımı. Idempotency-Key aynı kaldığı için
+                # geçit isteği iki kez çalıştırmaz; yeniden denemek güvenli.
+                if son_deneme:
+                    raise LLMHatasi(f"EVREN geçidine ulaşılamadı: {type(hata).__name__}") from hata
+                self.bekle(min(8.0, 0.5 * 2**deneme))
+                deneme += 1
+                continue
             except httpx.TransportError as hata:
                 # Bağlantı kurulamadı, koptu ya da zaman aşımı. Idempotency-Key aynı kaldığı için
                 # geçit isteği iki kez çalıştırmaz; yeniden denemek güvenli.
                 if son_deneme:
                     raise LLMHatasi(f"EVREN geçidine ulaşılamadı: {type(hata).__name__}") from hata
                 self.bekle(min(8.0, 0.5 * 2**deneme))
+                deneme += 1
                 continue
 
             if yanit.status_code == 200:
@@ -202,6 +224,16 @@ class LLMIstemcisi:
                     return yanit.json()
                 except ValueError as hata:
                     raise LLMHatasi("EVREN yanıtı JSON değil", durum=200) from hata
+
+            if yanit.status_code == 409:
+                # Özgün istek hâlâ işleniyor: aynı Idempotency-Key ile bekleyip yeniden gönder.
+                isleniyor += 1
+                if isleniyor > ISLENIYOR_EN_FAZLA:
+                    raise LLMHatasi(
+                        f"EVREN 409: {_hata_mesaji(yanit)}", durum=409
+                    )
+                self.bekle(ISLENIYOR_BEKLEME_SN)
+                continue
 
             if yanit.status_code not in YENIDEN_DENENEN_DURUMLAR:
                 raise LLMHatasi(
@@ -219,6 +251,7 @@ class LLMIstemcisi:
                     f"EVREN {yanit.status_code}: {_hata_mesaji(yanit)}", durum=yanit.status_code
                 )
             self.bekle(bekleme if bekleme is not None else min(8.0, 0.5 * 2**deneme))
+            deneme += 1
         raise AssertionError("ulaşılamaz")  # döngü her yolda döner ya da hata verir
 
     def _onbellege_yaz(self, yol: Path, govde: dict[str, Any]) -> None:

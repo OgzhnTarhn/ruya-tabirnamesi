@@ -195,6 +195,46 @@ def test_zaman_asimi_yeniden_denenir_sonra_hata(ayar):
     assert len(cagrilar) == 4
 
 
+def test_409_sonra_200_ayni_anahtarla_doner(ayar):
+    cagrilar, handler = kaydeden(
+        lambda sira, _: httpx.Response(409, json={"error": {"message": "işleniyor"}})
+        if sira == 1
+        else yanit()
+    )
+    beklemeler: list[float] = []
+    sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert sonuc.json() == {"a": 1}
+    assert len(cagrilar) == 2
+    assert beklemeler == [20.0]
+    assert cagrilar[0].headers["Idempotency-Key"] == cagrilar[1].headers["Idempotency-Key"]
+
+
+def test_409_sinir_asilinca_hata(ayar):
+    cagrilar, handler = kaydeden(
+        lambda _sira, _istek: httpx.Response(409, json={"error": {"message": "işleniyor"}})
+    )
+    with pytest.raises(LLMHatasi) as hata:
+        istemci(handler, ayar, []).mesaj(ISTEK)
+    assert hata.value.durum == 409
+    assert len(cagrilar) == 31
+
+
+def test_409_sonrasi_zaman_asimi_isleniyor_sayilir(ayar):
+    def donen(sira, istek):
+        if sira == 1:
+            return httpx.Response(409, json={"error": {"message": "işleniyor"}})
+        if sira == 2:
+            raise httpx.ReadTimeout("yavaş", request=istek)
+        return yanit()
+
+    cagrilar, handler = kaydeden(donen)
+    beklemeler: list[float] = []
+    sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert sonuc.json() == {"a": 1}
+    assert len(cagrilar) == 3
+    assert beklemeler == [20.0, 20.0]
+
+
 def test_400_tekrar_denenmez(ayar):
     cagrilar, handler = kaydeden(
         lambda _sira, _istek: httpx.Response(400, json={"error": {"message": "bozuk istek"}})
