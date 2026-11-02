@@ -229,9 +229,7 @@ class LLMIstemcisi:
                 # Özgün istek hâlâ işleniyor: aynı Idempotency-Key ile bekleyip yeniden gönder.
                 isleniyor += 1
                 if isleniyor > ISLENIYOR_EN_FAZLA:
-                    raise LLMHatasi(
-                        f"EVREN 409: {_hata_mesaji(yanit)}", durum=409
-                    )
+                    raise LLMHatasi(f"EVREN 409: {_hata_mesaji(yanit)}", durum=409)
                 self.bekle(ISLENIYOR_BEKLEME_SN)
                 continue
 

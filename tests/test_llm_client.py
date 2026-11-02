@@ -197,9 +197,9 @@ def test_zaman_asimi_yeniden_denenir_sonra_hata(ayar):
 
 def test_409_sonra_200_ayni_anahtarla_doner(ayar):
     cagrilar, handler = kaydeden(
-        lambda sira, _: httpx.Response(409, json={"error": {"message": "işleniyor"}})
-        if sira == 1
-        else yanit()
+        lambda sira, _: (
+            httpx.Response(409, json={"error": {"message": "işleniyor"}}) if sira == 1 else yanit()
+        )
     )
     beklemeler: list[float] = []
     sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
