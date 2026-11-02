@@ -66,7 +66,7 @@ class Ayarlar(BaseSettings):
     llm_cache: bool = True  # RUYA_LLM_CACHE=off ile kapatılır
     sorgu_onbellegi: bool = False  # RUYA_SORGU_ONBELLEGI=on: rüyalar da önbelleğe (docs/03, 5.2)
     gecmis: bool = False  # RUYA_GECMIS=on ise rüyalar gecmis/ altında saklanır
-    kaynak_basina_n: int = 2  # İG-22
+    kaynak_basina_n: int = 1  # İG-22; N=2 ile sentez 12 dakika sürüyordu
     en_fazla_sembol: int = 8  # docs/03, bölüm 5.4
 
     # --- Yerel veri: kalıcı (docs/11, bölüm 3) ------------------------------

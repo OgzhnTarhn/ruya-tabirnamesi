@@ -66,3 +66,7 @@ kod bloğu işareti yazma:
 - `bulunamayanlar`: kaynaklarda maddesi bulunmayan sembollerin adları. Hepsi bulunduysa
   boş liste ver.
 - Alanları eksik bırakma, JSON'u bozuk yazma, Türkçe karakterleri olduğu gibi kullan.
+
+## Kısalık
+
+Uzun uzun düşünme, doğrudan yaz. Her sembol için en fazla bir bölüm, her bölümde en fazla dört kısa cümle yaz. Toplam yanıt 1.500 karakteri geçmesin.

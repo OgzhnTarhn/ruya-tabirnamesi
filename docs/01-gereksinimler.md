@@ -29,7 +29,7 @@
 |---|---|---|
 | İG-20 | Çıkarılan her sembolü kanonik sembol indeksindeki bir `symbol_id`'ye eşler. Eş anlamlılar ve ekli biçimler de bu kimliğe eşlenir. | [M] |
 | İG-21 | İndekste bulunamayan semboller için anlamsal (vektör) aramayla en yakın sembolü önerir. | [S] Aşama 2 |
-| İG-22 | Her sembol için her kaynaktan en fazla N madde getirir (varsayılan N=2). Böylece büyük bir kaynak sonuçları domine edemez. | [M] |
+| İG-22 | Her sembol için her kaynaktan en fazla N madde getirir (varsayılan N=1; N=2 ile bir rüyanın sentezi EVREN'de 12 dakika sürdü, ölçüm 2 Kasım 2026). Böylece büyük bir kaynak sonuçları domine edemez. | [M] |
 | İG-23 | Kullanıcının bağlamına uyan koşullu maddeleri öne çıkarır. | [S] Aşama 3 |
 
 ### Yorum üretimi

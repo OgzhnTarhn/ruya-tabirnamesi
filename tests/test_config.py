@@ -59,7 +59,7 @@ def test_varsayilanlar_gizlilikten_yana(temiz_ortam):
     ayar = Ayarlar()
     assert ayar.gecmis is False
     assert ayar.sorgu_onbellegi is False
-    assert ayar.kaynak_basina_n == 2
+    assert ayar.kaynak_basina_n == 1
 
 
 def test_her_modelin_fiyati_var():

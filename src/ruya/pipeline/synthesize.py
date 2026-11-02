@@ -42,8 +42,8 @@ TALIMAT = "sentez_v1"
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 16000
 # Uzun maddeler isteği şişirip yavaşlatır; atıf doğrulama yine tam metne bakar.
-EN_UZUN_METIN_TR = 1000
-EN_UZUN_METIN_ASLI = 300
+EN_UZUN_METIN_TR = 600
+EN_UZUN_METIN_ASLI = 200
 
 
 # --- Model yanıtının ham biçimi ---------------------------------------------

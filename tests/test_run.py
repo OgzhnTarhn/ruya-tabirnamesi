@@ -59,7 +59,7 @@ def test_dort_adim_sirayla_izlenir(bag, sahte_adimlar):
     assert kayit.yorum.uyari == UYARI_METNI
     assert kayit.toplam_maliyet_usd == pytest.approx(0.004)
     assert kayit.olcumler[0].talimat == extract.TALIMAT
-    assert sahte_adimlar["n"] == 2
+    assert sahte_adimlar["n"] == 1
 
 
 def test_fazla_sembol_atlanir(bag, sahte_adimlar):
