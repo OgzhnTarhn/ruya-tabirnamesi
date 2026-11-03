@@ -178,6 +178,8 @@ class Sembol(_Sema):
     duygu: str | None = None  # korku, sevinç
     olumsuz: bool = False  # "yılan görmedim" → True; sonraki adımlara geçmez
     ham_ifade: str  # metinde geçtiği biçim; rüya metninin parçası, loglanmaz
+    # Yalnızca aramada (HyDE) kullanılır; kullanıcıya gösterilmez, modele kaynak diye verilmez.
+    hyde: str | None = None
 
 
 class CikarimSonucu(_Sema):
@@ -212,9 +214,18 @@ class Aday(_Sema):
     madde: Madde
     skor: float
     gerekceler: list[str] = Field(default_factory=list)  # "nitelik:siyah", "baslikli"
+    pasaj: str | None = None  # aramayı kazanan parça; sentez kırpılmış maddeyi değil bunu görür
 
 
-Getirilenler = dict[SymbolId, list[Aday]]
+# Anahtar: symbol_id, yoksa "serbest:<normalleştirilmiş ad>" (docs/13).
+Getirilenler = dict[str, list[Aday]]
+
+
+def getirme_anahtari(eslesme: Eslesme) -> str:
+    """Bir eşleşmenin Getirilenler sözlüğündeki anahtarı: symbol_id ya da 'serbest:<ad>'."""
+    if eslesme.symbol_id is not None:
+        return eslesme.symbol_id
+    return "serbest:" + eslesme.sembol.yalin
 
 
 class Atif(_Sema):

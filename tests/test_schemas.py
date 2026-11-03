@@ -17,6 +17,7 @@ from ruya.schemas import (
     SorguKaydi,
     SozlukDosyasi,
     TestOrnegi,
+    getirme_anahtari,
 )
 
 
@@ -129,3 +130,45 @@ def test_log_kaydinda_ruya_metni_yok(ornek_maddeler):
     assert "siyah" not in satir
     assert kayit.log_kaydi()["eslesmeler"][0]["symbol_id"] == "yilan"
     assert kayit.toplam_maliyet_usd == pytest.approx(0.01)
+
+
+def test_hyde_yalnizca_aramada_kullanilir():
+    sembol = Sembol(yalin="yılan", ham_ifade="yılan")
+    assert sembol.hyde is None
+    sembol = Sembol(
+        yalin="yılan",
+        ham_ifade="yılan",
+        hyde="Rüyada siyah yılan görmek, gizli ve güçlü bir düşmana işaret eder.",
+    )
+    assert sembol.hyde.startswith("Rüyada siyah yılan görmek")
+
+
+def test_aday_pasaji(ornek_maddeler):
+    aday = Aday(madde=Madde.model_validate(ornek_maddeler[0]), skor=1.0)
+    assert aday.pasaj is None
+    aday = Aday(
+        madde=Madde.model_validate(ornek_maddeler[0]),
+        skor=1.0,
+        pasaj="Nablusi · حية (yılan). Sokarsa ayıp bulur.",
+    )
+    assert aday.pasaj == "Nablusi · حية (yılan). Sokarsa ayıp bulur."
+
+
+def test_getirilenler_serbest_anahtar_alir(ornek_maddeler):
+    aday = Aday(madde=Madde.model_validate(ornek_maddeler[0]), skor=0.5)
+    kayit = SorguKaydi(
+        zaman=dt.datetime(2026, 11, 20, 21, 0),
+        girdi=RuyaGirdisi(metin="Rüyamda baba gördüm"),
+        getirilenler={"yilan": [aday], "serbest:baba": [aday]},
+    )
+    assert kayit.log_kaydi()["madde_sayilari"] == {"yilan": 1, "serbest:baba": 1}
+
+
+def test_getirme_anahtari():
+    sembol = Sembol(yalin="yılan", ham_ifade="yılan")
+    eslesme = Eslesme(sembol=sembol, symbol_id="yilan", yontem="birebir", guven=1.0)
+    assert getirme_anahtari(eslesme) == "yilan"
+
+    serbest = Sembol(yalin="baba", ham_ifade="baba")
+    eslesme = Eslesme(sembol=serbest, symbol_id=None, yontem="yok", guven=0.0)
+    assert getirme_anahtari(eslesme) == "serbest:baba"
