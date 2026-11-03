@@ -73,6 +73,11 @@ def test_her_modelin_fiyati_var():
     assert modeller <= set(config.FIYATLAR)
 
 
+def test_hibrit_getirme_sabitleri():
+    assert config.EMBEDDING_BOYUTU == 1024
+    assert 0 < config.GETIRME_ESIGI < 1
+
+
 def test_repo_yollari_repoyu_gosterir():
     assert (config.REPO_KOKU / "pyproject.toml").is_file()
     assert config.SOZLUK_DOSYASI.parent.name == "sozluk"

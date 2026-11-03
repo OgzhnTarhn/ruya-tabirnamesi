@@ -5,6 +5,7 @@ Disk önbelleği, yeniden deneme ve ölçüm burada toplanır (docs/03, bölüm 
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import json
 import os
@@ -37,6 +38,10 @@ YENIDEN_DENENEN_DURUMLAR = frozenset({429, 502, 503, 504})
 EN_UZUN_RETRY_AFTER = 30.0  # üstünde günlük kota sayılır, yeniden denenmez
 ISLENIYOR_BEKLEME_SN = 20.0  # 409: geçit isteği hâlâ işliyor, bu kadar bekle
 ISLENIYOR_EN_FAZLA = 30  # 409 yoklamalarının üst sınırı (YENIDEN_DENEME_SAYISI'ndan bağımsız)
+# Getirme uçları (embeddings, rerank, ocr) 500'de de yeniden denenir; sohbet yolunun
+# davranışı değişmesin diye ayrı bir küme (docs/13).
+GETIRME_YENIDEN_DENENEN_DURUMLAR = YENIDEN_DENENEN_DURUMLAR | {500}
+GOM_PARCASI = 64  # /v1/embeddings isteği başına en fazla metin (docs/13)
 
 
 def onbellek_anahtari(istek: dict[str, Any]) -> str:
@@ -163,13 +168,7 @@ class LLMIstemcisi:
             govde = json.loads(yol.read_text(encoding="utf-8"))
             return LLMYaniti(govde, _kullanim(govde, istek, disk_onbelleginden=True))
 
-        anahtar = os.environ.get(config.LLM_ANAHTAR_DEGISKENI, "").strip()
-        if not anahtar:
-            raise ApiAnahtariYok(
-                f"{config.LLM_ANAHTAR_DEGISKENI} tanımlı değil; anahtarı ortam değişkenine "
-                "ekleyin (docs/10, adım 1)."
-            )
-
+        anahtar = self._anahtar()
         govde = self._gonder(istek, anahtar)
         secim = (govde.get("choices") or [{}])[0]
         if secim.get("finish_reason") == "length":
@@ -180,13 +179,78 @@ class LLMIstemcisi:
             self._onbellege_yaz(yol, govde)
         return LLMYaniti(govde, _kullanim(govde, istek, disk_onbelleginden=False))
 
-    def _gonder(self, istek: dict[str, Any], anahtar: str) -> dict[str, Any]:
+    def _anahtar(self) -> str:
+        """Ortam değişkenindeki API anahtarını döndürür; yoksa ApiAnahtariYok verir."""
+        anahtar = os.environ.get(config.LLM_ANAHTAR_DEGISKENI, "").strip()
+        if not anahtar:
+            raise ApiAnahtariYok(
+                f"{config.LLM_ANAHTAR_DEGISKENI} tanımlı değil; anahtarı ortam değişkenine "
+                "ekleyin (docs/10, adım 1)."
+            )
+        return anahtar
+
+    def gom(self, metinler: list[str], ruya_icerir: bool = False) -> list[list[float]]:
+        """Metinleri vektöre çevirir; sonuç girdi sırasındadır, önbelleğe yazılmaz."""
+        if not metinler:
+            return []
+        anahtar = self._anahtar()
+        vektorler: list[list[float]] = []
+        for bas in range(0, len(metinler), GOM_PARCASI):
+            parca = metinler[bas : bas + GOM_PARCASI]
+            istek = {
+                "model": config.MODEL_EMBEDDING,
+                "input": parca,
+                "dimensions": config.EMBEDDING_BOYUTU,
+            }
+            govde = self._gonder(istek, anahtar, "/v1/embeddings", GETIRME_YENIDEN_DENENEN_DURUMLAR)
+            ogeler = govde.get("data") or []
+            sirali = sorted(ogeler, key=lambda oge: oge.get("index", 0))
+            vektorler.extend(list(oge.get("embedding") or []) for oge in sirali)
+        return vektorler
+
+    def yeniden_sirala(
+        self, sorgu: str, belgeler: list[str], ruya_icerir: bool = False
+    ) -> list[tuple[int, float]]:
+        """Belgeleri sorguya göre sıralar; (belge sırası, ilgi puanı) çiftleri döner."""
+        if not belgeler:
+            return []
+        anahtar = self._anahtar()
+        istek = {
+            "model": config.MODEL_RERANKER,
+            "query": sorgu,
+            "documents": belgeler,
+        }
+        govde = self._gonder(istek, anahtar, "/v1/rerank", GETIRME_YENIDEN_DENENEN_DURUMLAR)
+        sonuclar = [
+            (int(sonuc.get("index", 0)), float(sonuc.get("relevance_score") or 0.0))
+            for sonuc in govde.get("results") or []
+        ]
+        return sorted(sonuclar, key=lambda cift: cift[1], reverse=True)
+
+    def ocr(self, veri: bytes, mime: str) -> str:
+        """Görseldeki metni okur; görsel ve metin loglanmaz, önbelleğe yazılmaz."""
+        anahtar = self._anahtar()
+        b64 = base64.b64encode(veri).decode("ascii")
+        istek = {
+            "model": config.MODEL_OCR,
+            "image": f"data:{mime};base64,{b64}",
+        }
+        govde = self._gonder(istek, anahtar, "/v1/ocr", GETIRME_YENIDEN_DENENEN_DURUMLAR)
+        return str(govde.get("text") or "")
+
+    def _gonder(
+        self,
+        istek: dict[str, Any],
+        anahtar: str,
+        yol: str = "/v1/chat/completions",
+        durumlar: frozenset[int] = YENIDEN_DENENEN_DURUMLAR,
+    ) -> dict[str, Any]:
         """İsteği yeniden denemelerle gönderir; başarılı gövdeyi döndürür."""
         basliklar = {
             "Authorization": f"Bearer {anahtar}",
             "Idempotency-Key": str(uuid.uuid4()),
         }
-        adres = f"{config.LLM_ADRESI}/v1/chat/completions"
+        adres = f"{config.LLM_ADRESI}{yol}"
         deneme = 0
         isleniyor = 0  # 409 yoklamalarının kendi sayacı
         while deneme < YENIDEN_DENEME_SAYISI:
@@ -233,7 +297,7 @@ class LLMIstemcisi:
                 self.bekle(ISLENIYOR_BEKLEME_SN)
                 continue
 
-            if yanit.status_code not in YENIDEN_DENENEN_DURUMLAR:
+            if yanit.status_code not in durumlar:
                 raise LLMHatasi(
                     f"EVREN {yanit.status_code}: {_hata_mesaji(yanit)}", durum=yanit.status_code
                 )

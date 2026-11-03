@@ -34,6 +34,13 @@ MODEL_CEVIRI = "deepseek-v4.1-flash"
 MODEL_SEMBOL_ATAMA = "deepseek-v4.1-flash"
 MODEL_KOSUL = "deepseek-v4.1-flash"
 
+# --- Hibrit getirme: EVREN modelleri ve eşikler (docs/13, bölümler 3-4) ------
+MODEL_EMBEDDING = "qwen3-embedding-8b"
+MODEL_RERANKER = "qwen3-reranker-8b"
+MODEL_OCR = "deepseek-ocr-2"
+EMBEDDING_BOYUTU = 1024  # docs/13, bölüm 4: 1.024 boyut
+GETIRME_ESIGI = 0.15  # reranker eşiği; altı "bulunamadı" (docs/13, bölüm 3)
+
 # Çeviri parçalarını birleştiren adımın etiketi ve tarihi (CeviriBilgisi.model/tarih).
 CEVIRI_MODEL_ETIKETI = "claude-code+evren"
 CEVIRI_TARIHI = dt.date(2026, 11, 2)
