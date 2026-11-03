@@ -44,6 +44,11 @@ def _cozumleyici() -> Any:
     import nltk
     import zeyrek
 
+    # zeyrek çözümleme sırasında her belirsizlik için WARNING düzeyinde gürültülü log yazar;
+    # arama sırasında bu çıktı okunamaz hale gelir. Yalnızca hatalar görünür kalır.
+    logging.getLogger("zeyrek").setLevel(logging.ERROR)
+    logging.getLogger("zeyrek.rulebasedanalyzer").setLevel(logging.ERROR)
+
     # zeyrek cümle bölücüsü için NLTK punkt verisi ister: scripts/nltk_kur.py
     nltk.data.path.insert(0, str(ayarlar().data_dir / "nltk_data"))
 
@@ -77,3 +82,155 @@ def kokler(kelime: str) -> list[str]:
         kok_listesi.remove(girdi)
 
     return kok_listesi
+
+
+# Arama terimlerinden atılan Türkçe durak kelimeleri (docs/12, bölüm 5b).
+_DURAK_KELIMELER = frozenset(
+    {
+        "acaba",
+        "ama",
+        "ancak",
+        "artık",
+        "aslında",
+        "az",
+        "bana",
+        "bazen",
+        "bazı",
+        "belki",
+        "ben",
+        "benden",
+        "beni",
+        "benim",
+        "beri",
+        "beş",
+        "bile",
+        "bir",
+        "biraz",
+        "birçok",
+        "biri",
+        "birkaç",
+        "biz",
+        "bize",
+        "bizi",
+        "bizim",
+        "bu",
+        "buna",
+        "bunda",
+        "bundan",
+        "bunu",
+        "bunun",
+        "burada",
+        "çok",
+        "çünkü",
+        "da",
+        "daha",
+        "de",
+        "değil",
+        "diğer",
+        "diye",
+        "dolayı",
+        "en",
+        "gibi",
+        "hem",
+        "hepsi",
+        "her",
+        "hiç",
+        "için",
+        "ile",
+        "ise",
+        "kez",
+        "ki",
+        "kim",
+        "mı",
+        "mu",
+        "mü",
+        "nasıl",
+        "ne",
+        "neden",
+        "nerde",
+        "nerede",
+        "nereye",
+        "niçin",
+        "niye",
+        "o",
+        "olan",
+        "olarak",
+        "oldu",
+        "olmak",
+        "olmaz",
+        "olsun",
+        "on",
+        "ona",
+        "ondan",
+        "onu",
+        "onun",
+        "orada",
+        "oysa",
+        "öyle",
+        "sadece",
+        "sanki",
+        "şey",
+        "şeyi",
+        "şimdi",
+        "şu",
+        "şuna",
+        "şunda",
+        "şundan",
+        "şunu",
+        "şunun",
+        "tüm",
+        "ve",
+        "veya",
+        "ya",
+        "yani",
+        "yine",
+        "yoksa",
+        "zaten",
+    }
+)
+
+# Kök bulunamayan uzun kelimelerden alınan ön ek uzunluğu.
+_ON_EK_UZUNLUGU = 5
+
+
+@lru_cache(maxsize=None)  # noqa: UP033 - cache_clear() testlerde kullanılır
+def _terim_koku(kelime: str) -> str:
+    """Kelimenin arama terimini üretir: ilk kök, yoksa ilk beş karakter.
+
+    ``kokler`` modül düzeyinde çağrılır; testler onu sahtesiyle değiştirebilsin diye
+    ada işlev çağrısı sırasında bakılır. Sonuç önbelleğe alınır (docs/12, bölüm 5b).
+    """
+    kok_listesi = kokler(kelime)
+    if kok_listesi:
+        return kok_listesi[0]
+    if len(kelime) > _ON_EK_UZUNLUGU:
+        return kelime[:_ON_EK_UZUNLUGU]
+    return kelime
+
+
+def arama_terimleri(metin: str) -> list[str]:
+    """Metni arama terimlerine böler (docs/12, bölüm 5b).
+
+    Harf ve rakam dışı her karakter ayırıcıdır. Üç harften kısa kelimeler, saf rakamlar ve
+    Türkçe durak kelimeleri atılır; sıra ve tekrarlar korunur. Her terim önce köküne
+    indirgenir, kök yoksa ilk beş karakteri kullanılır: ``"yılanlar"`` → ``"yılan"``.
+    """
+    terimler: list[str] = []
+    for parca in metin.split():
+        kelime = ""
+        for karakter in parca:
+            if karakter.isalnum():
+                kelime += karakter
+                continue
+            _terim_ekle(terimler, kelime)
+            kelime = ""
+        _terim_ekle(terimler, kelime)
+    return terimler
+
+
+def _terim_ekle(terimler: list[str], kelime: str) -> None:
+    """Tek bir kelimeyi kurallara göre süzüp terim listesine ekler."""
+    kelime = kucuk_harf(kelime)
+    if len(kelime) < 3 or kelime.isdigit() or kelime in _DURAK_KELIMELER:
+        return
+    terimler.append(_terim_koku(kelime))
