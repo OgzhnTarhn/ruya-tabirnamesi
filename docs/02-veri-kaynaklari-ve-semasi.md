@@ -141,6 +141,10 @@ Alan kuralları:
 - **İlk sürüm 50 sembol olacak.** Liste, test setindeki rüyalarda en sık geçen sembollerden seçilecek. Bir LLM önerecek, sen gözden geçirip onaylayacaksın. `gozden_gecirildi: true` olmayan sembol MVP'de kullanılmaz.
 - Bab kategorileri Elbir & Uludüz 2019'daki 53 babdan sadeleştirilecek. HVDC kategorileri Hall & Van de Castle'ın 10 kategorisinden alınacak.
 
+### 4.2b Hibrit getirme alanları (3 Kasım)
+
+`Madde` değişmez. `Sembol.hyde: str | None` (yalnızca arama için varsayımsal madde) ve `Aday.pasaj: str | None` (aramayı kazanan parça) eklenir. Ayrıntı: [13](13-hibrit-getirme.md).
+
 ### 4.3 Test seti şeması
 
 Ayrıntılar için bkz. [06-degerlendirme.md](06-degerlendirme.md).

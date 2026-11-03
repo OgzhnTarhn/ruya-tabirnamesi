@@ -107,6 +107,17 @@ gantt
 - [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
 - [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
 
+### Öne alınan: hibrit getirme (3 Kasım, kullanıcı kararı)
+
+Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
+
+- [ ] EVREN embedding, reranker ve OCR istemcisi
+- [ ] Bağlamlı parçalar, Türkçe BM25, numpy vektör deposu ve indeks kurma betiği
+- [ ] HyDE (`cikarim_v2`), RRF, reranker ve eşik ile hibrit getirme
+- [ ] Sözlüğü ~150 sembole genişletme
+- [ ] Kurallı koşul çıkarımı ve bağlam eşleşmesi
+- [ ] Arayüzde OCR girişi, gelenek seçimi, arama gerekçeleri
+
 ### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
 
 - [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (`toplu`, kota kontrolüyle). ⚠️ EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bu iş Hafta 3'ün sonuna, ücretsiz döneme çekilmeli (R13, [09](09-riskler-ve-acik-sorular.md)).

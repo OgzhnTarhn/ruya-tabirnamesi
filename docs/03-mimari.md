@@ -72,7 +72,7 @@ flowchart TB
   1. Nitelik eşleşmesi. Örneğin "siyah yılan" için içinde "siyah" geçen madde öne çıkar. Karşılaştırma `metin_tr` üzerinde, normalleştirilmiş ve köke indirilmiş kelimelerle yapılır. Bu yüzden çevirinin kelime seçimine bağlıdır: çeviri "kara yılan" demişse eşleşme kaçar. [terimler.md](terimler.md) sık nitelikler için tek karşılık belirleyerek bunu azaltır. Asıl çözüm Aşama 3'te yapılandırılmış `kosullar` alanıdır (`{"renk": "siyah"}`).
   2. Bağlam koşulu eşleşmesi (Aşama 3).
   3. Başlıklı madde, alt paragraftan önce gelir.
-- **Aşama 2 eki:** Bir sembolün maddesi N'den fazlaysa, rüya cümlesine göre bge-reranker ile yeniden sıralama yapılır.
+- **Hibrit getirme (3 Kasım):** İndeks varsa sözlük, BM25, vektör ve HyDE listeleri RRF ile birleşir, EVREN reranker sıralar ve eşik uygular. Tasarım: [13-hibrit-getirme.md](13-hibrit-getirme.md). İndeks yoksa yukarıdaki sözlük yolu çalışır.
 
 ### Adım 4 · Sentez (`pipeline/synthesize.py`)
 
@@ -218,4 +218,3 @@ Veri repodaki `data/` klasöründe durur ve git'e girmez (bkz. [11](11-calisma-o
 | Ayrı bir vektör veritabanı sunucusu (Qdrant vb.) | ~10 bin kayıt için gereksiz | Korpus 100 bini geçerse |
 | Ajan (agent) yapısı | Adımlar baştan belli. Ajan maliyet ve belirsizlik ekler. | Gerek yok |
 | Kullanıcı hesabı ve sunucu | Proje kişisel | Proje paylaşılırsa (o zaman KVKK ve lisanslar yeniden ele alınır) |
-| Hibrit BM25 araması | Sembol kimliğiyle eşleme bu ihtiyacı büyük ölçüde karşılıyor | Aşama 3'te ölçüm gerekli gösterirse |

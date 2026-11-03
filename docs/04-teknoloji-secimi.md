@@ -17,7 +17,7 @@
 | LLM modeli | `deepseek-v4.1-flash` (bütün işler) | ✅ 31 Ekim kararı |
 | Embedding | `intfloat/multilingual-e5-large` ya da EVREN'deki `qwen3-embedding-8b` | 🕓 Aşama 2'de ölçülecek |
 | Vektör deposu | Chroma (yerel, gömülü) | ✅ |
-| Reranker | `BAAI/bge-reranker-v2-m3` | 🕓 Aşama 2 |
+| Reranker | EVREN `qwen3-reranker-8b` ([13](13-hibrit-getirme.md), 3 Kasım; önceki seçim `bge-reranker-v2-m3`) | ✅ |
 | Türkçe morfoloji | zeyrek | ✅ |
 | Veri doğrulama | Pydantic v2 | ✅ |
 | Arayüz | Gradio (yerelde, `share` kapalı) | ✅ |

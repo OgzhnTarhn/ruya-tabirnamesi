@@ -210,6 +210,22 @@ flowchart LR
 3. **Doğrulama:** `uv run pytest tests/test_sozluk.py`, ardından commit. Bir varyantın iki sembolde birden geçmesi `varyant_tablosu` tarafından hata olarak yakalanır.
 4. **Tutarlılık:** Zenginleştirmeden sonra `sozluk_maddeler_tutarliligi` sözlükte olmayan `symbol_id`'leri ve hiç maddesi olmayan onaylı sembolleri listeler.
 
+## 5b. Hibrit getirme birimleri
+
+Tasarım: [13](13-hibrit-getirme.md).
+
+| Modül | Arayüz |
+|---|---|
+| `llm/client.py` | `gom(metinler, ruya_icerir)`, `yeniden_sirala(sorgu, belgeler, ruya_icerir)`, `ocr(veri, mime)`; önbelleğe yazmazlar |
+| `text/turkce.py` | `arama_terimleri(metin) -> list[str]` |
+| `index/parcalar.py` | `Parca`, `parcala(maddeler) -> list[Parca]` |
+| `index/bm25.py` | `Bm25Indeksi`: `kur`, `ara(terimler, k)`, `kaydet`, `yukle` |
+| `index/build_vectors.py` | `VektorDeposu` (numpy), `hibrit_indeks_kur(...)`, `HibritIndeks.yukle(klasor)`; `en_yakin_semboller` |
+| `pipeline/hibrit.py` | `getirme_sorgusu`, `rrf`, `hibrit_getir(...) -> Getirilenler` |
+| `enrich/kosul_kurallari.py` | `kosullari_cikar(metin_tr) -> list[Kosul]`; `enrich/conditions.py` yerine |
+
+`Getirilenler` anahtarı `symbol_id` ya da `serbest:<ad>`; ortak işlev `schemas.getirme_anahtari(eslesme)`.
+
 ## 6. Talimat (prompt) sürümleme
 
 - Talimatlar `prompts/<is>_v<n>.md` dosyalarında durur; kod `talimat_oku("<is>_v<n>")` ile okur.
