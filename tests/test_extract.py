@@ -110,6 +110,30 @@ def test_json_sonucu_cikarim_sonucuna_donusur():
     assert cikarim.semboller[0].ham_ifade == "siyah bir yılan"
 
 
+def test_hyde_alani_sembol_hyde_alanina_donusur():
+    govde = {
+        "semboller": [
+            {
+                "yalin": "yılan",
+                "nitelikler": ["siyah"],
+                "eylem": "gördü",
+                "duygu": "korku",
+                "olumsuz": False,
+                "ham_ifade": "siyah bir yılan",
+                "hyde": "Rüyada siyah yılan görmek, gizli bir düşmana işaret eder.",
+            }
+        ],
+        "ruya_turu_ipucu": None,
+        "hassas_icerik": False,
+    }
+
+    _, cikarim, _ = _calistir(govde)
+
+    assert cikarim.semboller[0].hyde == (
+        "Rüyada siyah yılan görmek, gizli bir düşmana işaret eder."
+    )
+
+
 def test_kullanim_yanittan_aynen_doner():
     istemci, _, kullanim = _calistir()
 
