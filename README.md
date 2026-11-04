@@ -2,8 +2,8 @@
 
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
-> **Durum:** Planlama ve mimari iskelet tamam (23 Ekim 2026). Veri sözleşmeleri, modül arayüzleri ve mimari testleri hazır; adımların gövdeleri takvimdeki haftalarda yazılacak.
-> **Sonraki adım:** Hesaplar ve ilk push ([10](docs/10-kurulum-rehberi.md)), ardından Hafta 1'deki veri ve çeviri denemesi ([takvim](docs/08-yol-haritasi-takvim.md), [deney notu](docs/deneyler/01-veri-ve-ceviri.md)).
+> **Durum (4 Kasım 2026):** Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme ve arayüz çalışıyor. Sözlük 143 sembol. Ölçüm: [olcumler](docs/olcumler.md). Hibrit getirmenin kazancı henüz ölçülmedi.
+> **Bilinen sorun:** Bir rüya canlı denemede 13–14 dakika sürdü; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
 
 ## Belgeler
 
@@ -22,6 +22,7 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 | 10 | [Kurulum rehberi](docs/10-kurulum-rehberi.md) | API anahtarı, uv, kaynakları indirme |
 | 11 | [Çalışma ortamı](docs/11-calisma-ortami.md) | Kod, çalıştırma ve veri bilgisayarda; veri `data/` altında, git'e girmez |
 | 12 | [Kod yapısı ve sözleşmeler](docs/12-kod-yapisi-ve-sozlesmeler.md) | Katmanlar, modül imzaları, veri ürünleri, adlandırma, geliştirme döngüsü |
+| 13 | [Hibrit getirme](docs/13-hibrit-getirme.md) | BM25, vektör, HyDE, RRF, reranker; araştırma ve kararlar |
 | — | [Kaynaklar](docs/KAYNAKLAR.md) | Künyeler, lisanslar, atıf metinleri |
 | — | [Terimler](docs/terimler.md) | Çeviride kullanılan tabir terimleri |
 | — | [Kurallar](docs/kurallar.md) | Okuma notların (şablon, Hafta 3) |
@@ -35,15 +36,15 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 ```
 Rüya metni
   → 1. Sembol çıkarımı   (DeepSeek · JSON şeması)
-  → 2. Eşleme            (sembol indeksi + zeyrek · yoksa vektör yedeği)
-  → 3. Getirme           (symbol_id · kaynak başına N madde · bağlam koşulları)
+  → 2. Eşleme            (sözlük + zeyrek · yoksa serbest arama)
+  → 3. Hibrit getirme    (sözlük + BM25 + vektör + HyDE → RRF → reranker ve eşik · bağlam koşulları)
   → 4. Sentez            (DeepSeek · numaralı kaynaklar + kodda atıf doğrulama)
   → Kaynaklı, gelenek etiketli Türkçe yorum + uyarı
 ```
 
 **Ortam:** Her şey bilgisayarda (VS Code + Git + uv) · veri `data/` altında, git'e girmez
 
-**Teknolojiler:** Python ≥3.11 · EVREN LLM geçidi (`deepseek-v4.1-flash`, httpx) · Chroma · multilingual-e5-large · zeyrek · Gradio · pytest · ruff · nbstripout
+**Teknolojiler:** Python ≥3.11 · EVREN LLM geçidi (`deepseek-v4.1-flash`, `qwen3-embedding-8b`, `qwen3-reranker-8b`, `deepseek-ocr-2`, httpx) · numpy · kendi BM25'imiz · zeyrek · Gradio · pytest · ruff · nbstripout
 
 ## Repo düzeni
 
@@ -65,7 +66,17 @@ uv run pytest
 uv run ruff check . ; uv run ruff format .
 ```
 
-Kurulum ve çalıştırma: [10](docs/10-kurulum-rehberi.md), [11](docs/11-calisma-ortami.md).
+Veriyle çalıştırma (anahtar ve `data/` gerekir):
+
+```powershell
+uv run python scripts/nltk_kur.py            # kök bulma verisi, bir kez
+uv run python scripts/maddeleri_kur.py       # data/processed/entries.jsonl
+uv run python scripts/hibrit_indeks_kur.py   # data/index/hibrit, yaklaşık 11 dakika
+uv run python scripts/ruya_dene.py "Rüyamda yılan gördüm"
+uv run python scripts/arayuz_ac.py           # yalnız localhost
+```
+
+Kurulum ve çalıştırma: [10](docs/10-kurulum-rehberi.md), [11](docs/11-calisma-ortami.md). Hibrit getirmenin tasarımı: [13](docs/13-hibrit-getirme.md).
 
 ## Lisans notu
 
