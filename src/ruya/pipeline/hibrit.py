@@ -50,10 +50,6 @@ class _Indeks(Protocol):
 
     def vektor_ara(self, sorgu: object, k: int = 10) -> list[tuple[Parca, float]]: ...
 
-    def en_yakin_semboller_vektorle(
-        self, sorgu: object, k: int = 3
-    ) -> list[tuple[str, float]]: ...
-
 
 class _Istemci(Protocol):
     """LLM istemcisinin gömme ve yeniden sıralama yöntemleri."""
@@ -63,29 +59,6 @@ class _Istemci(Protocol):
     def yeniden_sirala(
         self, sorgu: str, belgeler: list[str], ruya_icerir: bool = False
     ) -> list[tuple[int, float]]: ...
-
-
-class HibritVektorArayici:
-    """Hibrit indeksin sembol vektörlerini kullanan ``VektorArayici`` yedeği.
-
-    Sözlükte bulunamayan ifadeyi gömer ve indekste en yakın sembolleri arar. Gömme
-    geçidi hata verirse boş liste döner; uyarıya rüya metni yazılmaz (İOG-07).
-    """
-
-    def __init__(self, indeks: _Indeks, istemci: _Istemci) -> None:
-        self._indeks = indeks
-        self._istemci = istemci
-
-    def en_yakin_semboller(self, ifade: str, k: int = 3) -> list[tuple[str, float]]:
-        """İfadeye en yakın semboller ``(symbol_id, benzerlik)`` olarak, benzerliği yüksekten."""
-        try:
-            vektorler = self._istemci.gom([ifade], ruya_icerir=True)
-        except LLMHatasi as hata:
-            _log.warning("Gömme alınamadı, vektör yedeği atlanıyor: %s", type(hata).__name__)
-            return []
-        if not vektorler:
-            return []
-        return self._indeks.en_yakin_semboller_vektorle(vektorler[0], k)
 
 
 def rrf(listeler: list[list[str]], k: int = RRF_K) -> dict[str, float]:
