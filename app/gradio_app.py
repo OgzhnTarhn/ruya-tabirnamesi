@@ -11,6 +11,7 @@ linki bulan herkes senin API anahtarınla sorgu çalıştırabilir.
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 from ruya.etik import REDDEDILDI_MESAJI, SEMBOL_YOK_MESAJI, UYARI_METNI
@@ -123,6 +124,7 @@ def hata_ayiklama(kayit: SorguKaydi) -> dict[str, Any]:
             "entry_id": aday.madde.entry_id,
             "skor": aday.skor,
             "gerekceler": aday.gerekceler,
+            "pasaj": aday.pasaj,
         }
         for symbol_id, adaylar in kayit.getirilenler.items()
         for aday in adaylar
@@ -155,6 +157,40 @@ def hata_mesaji(hata: BaseException) -> str:
         if isinstance(hata, sinif):
             return mesaj
     return "Beklenmeyen bir hata oluştu. Lütfen yeniden deneyin."
+
+
+# Uzantı → MIME; OCR servisi görselin türünü buradan öğrenir.
+GORSEL_MIME: dict[str, str] = {
+    ".png": "image/png",
+    ".jpg": "image/jpeg",
+    ".jpeg": "image/jpeg",
+    ".webp": "image/webp",
+}
+
+DESTEKLENMEYEN_GORSEL_MESAJI = (
+    "Bu dosya türü okunamıyor. Lütfen PNG, JPG ya da WEBP bir fotoğraf yükleyin."
+)
+
+
+def gorselden_ruya(yol: str | None, istemci: Any) -> str:
+    """Bir fotoğraftaki rüya metnini OCR ile okur (İG-40).
+
+    Görsel ve okunan metin **loglanmaz**; görsel yalnızca EVREN servisine gönderilir.
+    Hata durumunda kullanıcıya gösterilecek Türkçe mesaj döner.
+    """
+    if not yol:
+        return ""
+    mime = GORSEL_MIME.get(Path(yol).suffix.lower())
+    if mime is None:
+        return DESTEKLENMEYEN_GORSEL_MESAJI
+    try:
+        veri = Path(yol).read_bytes()
+        metin = istemci.ocr(veri, mime)
+    except RuyaHatasi as hata:
+        return hata_mesaji(hata)
+    except OSError:
+        return "Fotoğraf okunamadı. Lütfen dosyayı yeniden yükleyin."
+    return (metin or "").strip()[:3000]
 
 
 # --- Arayüz -----------------------------------------------------------------
@@ -198,6 +234,8 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
 
     - Rüya kutusu (en fazla 3.000 karakter), isteğe bağlı bağlam alanları, gelenek seçimi
       ve "Yorumla" düğmesi.
+    - Rüya kutusunun altında "Rüya defterinden oku (fotoğraf)" akordeonu: fotoğraftaki metni
+      OCR ile okuyup rüya kutusuna yazar (İG-40). Görsel saklanmaz, loglanmaz.
     - "Yorum" sekmesi: yanıt, tıklanınca aslı ve çevirisi açılan atıflar, altta uyarı metni.
     - "Hata ayıklama" sekmesi: çıkarılan semboller, eşlemeler (yöntem, güven), getirilen
       maddeler ve skorları, adım süreleri, token ve maliyet. Hepsi SorguKaydi'ndan okunur.
@@ -245,6 +283,10 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
             return "Bir atıf seçin."
         return atif_ayrintilari(kayit, entry_id, bag.depo)
 
+    def _gorselden_oku(dosya: str | None) -> str:
+        """Fotoğraftan okunan metni rüya kutusuna yazar; görsel ve metin loglanmaz."""
+        return gorselden_ruya(dosya, bag.istemci)
+
     with gr.Blocks(title="Rüya Tabirnamesi") as demo:
         kayit_durumu = gr.State(None)
 
@@ -256,6 +298,12 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
                 lines=6,
                 max_length=3000,
             )
+            with gr.Accordion("Rüya defterinden oku (fotoğraf)", open=False):
+                foto = gr.Image(type="filepath", label="Rüya defteri fotoğrafı")
+                oku = gr.Button("Metni oku")
+                gr.Markdown(
+                    "Fotoğraf yalnızca EVREN servisine gönderilir, saklanmaz."
+                )
             with gr.Accordion("Bağlam (isteğe bağlı)", open=False):
                 cinsiyet = gr.Dropdown(["kadin", "erkek"], label="Cinsiyet", value=None)
                 medeni_hal = gr.Dropdown(["evli", "bekar"], label="Medeni hâl", value=None)
@@ -286,6 +334,7 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
             inputs=[metin, cinsiyet, medeni_hal, mevsim, gurbette, gelenekler],
             outputs=[yanit, kayit_durumu, atif_secimi, ayiklama],
         )
+        oku.click(_gorselden_oku, inputs=[foto], outputs=[metin])
         atif_secimi.change(
             _atif_goster,
             inputs=[kayit_durumu, atif_secimi],
