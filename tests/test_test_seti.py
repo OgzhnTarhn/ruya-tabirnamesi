@@ -1,6 +1,6 @@
 """Test seti (eval/dataset/ruyalar_v1.jsonl) sözleşmesi: şema, kimlikler ve kapsam.
 
-Test seti Aşama 1'de 20 rüyadan oluşur (docs/06, bölüm 1). Bu dosya veriyi değil,
+Test seti şimdilik 45 rüyadan oluşur (docs/06, bölüm 1). Bu dosya veriyi değil,
 verinin biçimini ve kapsamını denetler: her satır `ruya.schemas.TestOrnegi` olmalı,
 kimlikler sıralı olmalı, semboller sözlükte bulunmalı ve set bazı davranışları
 (bulunamayan sembol, olumsuzlama, bağlam koşulu) mutlaka örneklemeli.
@@ -17,7 +17,7 @@ KOK = Path(__file__).resolve().parents[1]
 TEST_SETI = KOK / "eval" / "dataset" / "ruyalar_v1.jsonl"
 SOZLUK_DOSYASI = KOK / "sozluk" / "symbols.json"
 
-BEKLENEN_SAYI = 20
+BEKLENEN_SAYI = 45
 EN_AZ_SEMBOL = 15
 
 
