@@ -10,7 +10,6 @@ import pytest
 from ruya.text import turkce
 
 
-@pytest.fixture
 @pytest.fixture(autouse=True)
 def _onbellegi_temizle():
     """Başka testlerin gerçek kokler ile doldurduğu önbellek buraya sızmasın."""
@@ -19,6 +18,7 @@ def _onbellegi_temizle():
     turkce._terim_koku.cache_clear()
 
 
+@pytest.fixture
 def sahte_kokler(monkeypatch):
     """Sözlükten kök döndüren sahte ``kokler``; kaç kez çağrıldığını da sayar."""
 
