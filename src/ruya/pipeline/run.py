@@ -8,22 +8,27 @@ sahteleriyle değiştirilebilir. Dış dünyaya (API, depo, sözlük) erişim ya
 from __future__ import annotations
 
 import datetime as dt
+import logging
 import time
 from collections.abc import Callable
 from dataclasses import dataclass, field
+from functools import partial
 from typing import TypeVar
 
 from ruya.config import Ayarlar, ayarlar
 from ruya.dosya import jsonl_oku
 from ruya.etik import SEMBOL_YOK_MESAJI
 from ruya.index.build_symbols import sozlugu_yukle, varyant_tablosu
+from ruya.index.build_vectors import HibritIndeks
 from ruya.index.store import BellekDeposu, MaddeDeposu, VektorArayici
 from ruya.llm.client import LLMIstemcisi
-from ruya.pipeline import extract, retrieve, synthesize
+from ruya.pipeline import extract, hibrit, retrieve, synthesize
 from ruya.pipeline import map as esleme
 from ruya.schemas import AdimOlcumu, Eslesme, Madde, RuyaGirdisi, SorguKaydi
 
 T = TypeVar("T")
+
+_log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -34,6 +39,7 @@ class Bagimliliklar:
     varyantlar: dict[str, str]  # index.build_symbols.varyant_tablosu
     depo: MaddeDeposu
     vektor: VektorArayici | None = None  # Aşama 2
+    hibrit: HibritIndeks | None = None  # Aşama 3: varsa getirme hibrit yapılır
     ayar: Ayarlar = field(default_factory=ayarlar)
 
 
@@ -45,12 +51,23 @@ def varsayilan_bagimliliklar(ayar: Ayarlar | None = None) -> Bagimliliklar:
     ayar = ayar or ayarlar()
     sozluk = sozlugu_yukle()
     maddeler = list(jsonl_oku(ayar.maddeler_dosyasi, Madde))
+    hibrit_indeks = _hibrit_indeks_yukle(ayar, maddeler)
     return Bagimliliklar(
         istemci=LLMIstemcisi(ayar),
         varyantlar=varyant_tablosu(sozluk),
         depo=BellekDeposu(maddeler),
+        hibrit=hibrit_indeks,
         ayar=ayar,
     )
+
+
+def _hibrit_indeks_yukle(ayar: Ayarlar, maddeler: list[Madde]) -> HibritIndeks | None:
+    """Hibrit indeksi okur; indeks yoksa ya da başka bir madde kümesine aitse None döner."""
+    try:
+        return HibritIndeks.yukle(ayar.veri("index", "hibrit"), maddeler)
+    except (FileNotFoundError, ValueError) as hata:
+        _log.warning("Hibrit indeks yüklenemedi, getirme sözlük/vektör ile yapılacak: %s", hata)
+        return None
 
 
 def _zamanla(islev: Callable[..., T], *argumanlar: object) -> tuple[T, float]:
@@ -95,14 +112,28 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     kayit.atlanan_semboller = [e.sembol.yalin for e in atlananlar]
 
     # 3 · Getirme
-    getirilenler, sure = _zamanla(
-        retrieve.retrieve,
-        eslesmeler,
-        bag.depo,
-        girdi.baglam,
-        girdi.gelenekler,
-        bag.ayar.kaynak_basina_n,
-    )
+    if bag.hibrit is not None:
+        getirilenler, sure = _zamanla(
+            partial(
+                hibrit.hibrit_getir,
+                eslesmeler,
+                bag.depo,
+                bag.hibrit,
+                bag.istemci,
+                baglam=girdi.baglam,
+                gelenekler=girdi.gelenekler,
+                n=bag.ayar.kaynak_basina_n,
+            )
+        )
+    else:
+        getirilenler, sure = _zamanla(
+            retrieve.retrieve,
+            eslesmeler,
+            bag.depo,
+            girdi.baglam,
+            girdi.gelenekler,
+            bag.ayar.kaynak_basina_n,
+        )
     kayit.getirilenler = getirilenler
     kayit.olcumler.append(AdimOlcumu(adim="getirme", sure_sn=sure))
 

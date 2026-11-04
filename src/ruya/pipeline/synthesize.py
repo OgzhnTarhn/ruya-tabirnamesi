@@ -35,6 +35,7 @@ from ruya.schemas import (
     Madde,
     Yorum,
     YorumBolumu,
+    getirme_anahtari,
 )
 
 TALIMAT = "sentez_v2"
@@ -149,6 +150,16 @@ def _maddeler(getirilenler: Getirilenler) -> dict[str, Madde]:
     return maddeler
 
 
+def _pasajlar(getirilenler: Getirilenler) -> dict[str, str]:
+    """entry_id → aramayı kazanan parça; parçası olmayan maddeler sözlükte yer almaz."""
+    pasajlar: dict[str, str] = {}
+    for adaylar in getirilenler.values():
+        for aday in adaylar:
+            if aday.pasaj:
+                pasajlar.setdefault(aday.madde.entry_id, aday.pasaj)
+    return pasajlar
+
+
 def _baglam_metni(baglam: Baglam | None) -> str:
     if baglam is None:
         return "Bağlam verilmedi."
@@ -158,16 +169,13 @@ def _baglam_metni(baglam: Baglam | None) -> str:
 
 def _maddesi_olanlar(eslesmeler: list[Eslesme], getirilenler: Getirilenler) -> list[Eslesme]:
     """Maddesi olan semboller; maddesi olmayanlar istekte listelenmez (İG-31)."""
-    return [
-        eslesme
-        for eslesme in eslesmeler
-        if eslesme.symbol_id is not None and getirilenler.get(eslesme.symbol_id)
-    ]
+    return [eslesme for eslesme in eslesmeler if getirilenler.get(getirme_anahtari(eslesme))]
 
 
 def _kullanici_mesaji(
     eslesmeler: list[Eslesme],
     maddeler: dict[str, Madde],
+    pasajlar: dict[str, str],
     baglam: Baglam | None,
 ) -> str:
     """Semboller, bağlam ve numaralı kaynaklar; rüya metni bu adıma gelmez."""
@@ -189,7 +197,10 @@ def _kullanici_mesaji(
     satirlar.append("Kaynaklar:")
     for numara, madde in enumerate(maddeler.values(), start=1):
         satirlar.append(f"[K{numara}] {madde.entry_id} · {_baslik(madde)}")
-        if madde.metin_tr:
+        pasaj = pasajlar.get(madde.entry_id)
+        if pasaj:
+            satirlar.append(pasaj)
+        elif madde.metin_tr:
             satirlar.append(madde.metin_tr[:EN_UZUN_METIN_TR])
         satirlar.append(madde.metin_asli[:EN_UZUN_METIN_ASLI])
         satirlar.append("")
@@ -199,6 +210,7 @@ def _kullanici_mesaji(
 def _istek_kur(
     eslesmeler: list[Eslesme],
     maddeler: dict[str, Madde],
+    pasajlar: dict[str, str],
     baglam: Baglam | None,
 ) -> dict[str, Any]:
     """OpenAI uyumlu sohbet gövdesi: sabit sistem talimatı başta, kaynaklar sonda."""
@@ -209,7 +221,7 @@ def _istek_kur(
             {"role": "system", "content": talimat_oku(TALIMAT)},
             {
                 "role": "user",
-                "content": _kullanici_mesaji(eslesmeler, maddeler, baglam),
+                "content": _kullanici_mesaji(eslesmeler, maddeler, pasajlar, baglam),
             },
         ],
         "response_format": {
@@ -238,7 +250,7 @@ def _bulunamayanlar(
             sonuc.append(ad)
     for eslesme in eslesmeler:
         ad = eslesme.sembol.yalin
-        maddesi_yok = eslesme.symbol_id is None or not getirilenler.get(eslesme.symbol_id)
+        maddesi_yok = not getirilenler.get(getirme_anahtari(eslesme))
         if maddesi_yok and ad not in sonuc:
             sonuc.append(ad)
     return sonuc
@@ -263,7 +275,9 @@ def synthesize(
         )
         return yorum, Kullanim(model=MODEL_SENTEZ)
     yanit = istemci.mesaj(
-        _istek_kur(_maddesi_olanlar(eslesmeler, getirilenler), maddeler, baglam),
+        _istek_kur(
+            _maddesi_olanlar(eslesmeler, getirilenler), maddeler, _pasajlar(getirilenler), baglam
+        ),
         ruya_icerir=True,
     )
     ham = _yanit_dogrula(yanit.json())

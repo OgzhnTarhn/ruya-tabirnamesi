@@ -92,6 +92,21 @@ BASLIKSIZ = _madde(
 
 ALINTI = "siyah yılan daha güçlü bir düşmandır"
 
+# 600 karakterlik sınırın çok üstünde bir madde: alıntı yalnızca kuyrukta geçer.
+UZUN_ALINTI = "siyah yılan güçlü bir düşmandır"
+UZUN = _madde(
+    "nablusi:004312",
+    "nablusi",
+    yazar="Abdülganî en-Nablusî",
+    baslik_asli="حية",
+    sembol_tr="yılan",
+    metin_tr="Yılan rüyada düşmanla yorumlanır. " * 40 + UZUN_ALINTI + ".",
+    metin_asli="حية يدل على عدو",
+)
+
+# Hibrit getirmenin kazandığı parça; maddenin kırpılmış başı yerine bu görülür.
+PASAJ = "Aramayı kazanan parça: yılan sokarsa ayıp bulur."
+
 
 # --- atiflari_dogrula -------------------------------------------------------
 
@@ -348,6 +363,72 @@ def test_adaylar_numarali_kaynak_olarak_verilir():
     assert NABLUSI.metin_tr in kullanici
     assert NABLUSI.metin_asli in kullanici
     assert MILLER.metin_asli in kullanici
+
+
+def test_pasaj_varsa_metin_tr_yerine_pasaj_gonderilir():
+    getirilenler = {
+        "yilan": [Aday(madde=NABLUSI, skor=2.0, gerekceler=["nitelik:siyah"], pasaj=PASAJ)]
+    }
+    istemci, _, _ = _calistir(getirilenler=getirilenler)
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert PASAJ in kullanici
+    assert NABLUSI.metin_tr not in kullanici
+    assert NABLUSI.metin_asli in kullanici
+
+
+def test_pasaj_yoksa_metin_tr_kirpilarak_gonderilir():
+    getirilenler = {"yilan": [Aday(madde=UZUN, skor=2.0)]}
+    istemci, _, _ = _calistir(getirilenler=getirilenler)
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert UZUN.metin_tr[: sentez.EN_UZUN_METIN_TR] in kullanici
+    assert UZUN.metin_tr not in kullanici
+    assert UZUN_ALINTI not in kullanici
+
+
+def test_pasaj_varken_atif_dogrulama_tam_maddeye_bakar():
+    govde = {
+        "bolumler": [
+            {
+                "metin": "Nablusi'ye göre siyah yılan güçlü bir düşmandır.",
+                "kaynaklar": [{"entry_id": "nablusi:004312", "alinti": UZUN_ALINTI}],
+            }
+        ],
+        "bulunamayanlar": [],
+    }
+    getirilenler = {"yilan": [Aday(madde=UZUN, skor=2.0, pasaj=PASAJ)]}
+    istemci, yorum, _ = _calistir(govde, getirilenler=getirilenler)
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert PASAJ in kullanici
+    assert UZUN_ALINTI not in kullanici
+    assert yorum.bolumler[0].atiflar == [
+        Atif(entry_id="nablusi:004312", baslik="Abdülganî en-Nablusî · حية", alinti=UZUN_ALINTI)
+    ]
+
+
+def test_serbest_sembol_maddesi_varsa_listelenir_ve_bulunamayanlarda_yoktur():
+    serbest = _eslesme("yılan", symbol_id=None, yontem="yok")
+    istemci, yorum, _ = _calistir(
+        eslesmeler=[serbest],
+        getirilenler={"serbest:yılan": [Aday(madde=NABLUSI, skor=2.0)]},
+    )
+
+    satirlar = _sembol_satirlari(_mesajlar(_istek(istemci))["user"])
+    assert satirlar == ["- yılan"]
+    assert "yılan" not in yorum.bulunamayanlar
+
+
+def test_serbest_sembol_maddesi_yoksa_bulunamayanlara_eklenir():
+    serbest = _eslesme("yılan", symbol_id=None, yontem="yok")
+    istemci, yorum, _ = _calistir(
+        eslesmeler=[serbest],
+        getirilenler={"serbest:yılan": []},
+    )
+
+    assert istemci.cagrilar == []
+    assert "yılan" in yorum.bulunamayanlar
 
 
 # --- synthesize: sonuç ------------------------------------------------------
