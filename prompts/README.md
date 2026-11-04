@@ -17,9 +17,7 @@ LLM'e verilen sabit talimatlar burada, sürümlü olarak durur. Kod bunları
 
 | Dosya | Kullanan modül | Hafta | Dayanak |
 |---|---|---|---|
-| `ceviri_v1.md` | `enrich/translate.py` | 3 | docs/02 bölüm 5, docs/terimler.md |
-| `sembol_atama_v1.md` | `enrich/assign_symbols.py` | 3 | docs/02 bölüm 2 |
-| `cikarim_v1.md` | `pipeline/extract.py` | 4 | docs/03 Adım 1, İG-10–14 |
-| `sentez_v1.md` | `pipeline/synthesize.py` | 5 | docs/05 bölüm 3, docs/07 |
-| `kosul_v1.md` | `enrich/conditions.py` | 8 | docs/05 Katman 3–4 |
-| `sentez_v2.md` | `pipeline/synthesize.py` | 11 | uzlaşı/ayrışma çıktısı |
+| `cikarim_v1.md` | (eski sürüm) | 4 | docs/03 Adım 1, İG-10–14 |
+| `cikarim_v2.md` | `pipeline/extract.py` | 4 | docs/13 (HyDE), docs/03 Adım 1 |
+| `sentez_v1.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07 |
+| `sentez_v2.md` | `pipeline/synthesize.py` | 5 | docs/05 bölüm 3, docs/07, docs/olcumler.md |
