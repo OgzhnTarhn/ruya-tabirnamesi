@@ -3,7 +3,7 @@
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
 > **Durum (4 Kasım 2026):** Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme ve arayüz çalışıyor. Sözlük 143 sembol. Ölçüm: [olcumler](docs/olcumler.md). Hibrit getirmenin kazancı henüz ölçülmedi.
-> **Bilinen sorun:** Bir rüya canlı denemede 13–14 dakika sürdü; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
+> **Bilinen sorun:** Bir rüya üç canlı denemede 7–14 dakika sürdü; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
 
 ## Belgeler
 

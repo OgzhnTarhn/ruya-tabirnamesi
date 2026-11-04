@@ -149,7 +149,7 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 ### Hafta 10 · 28 Aralık – 3 Ocak · Tampon (yılbaşı)
 
 - [ ] Geride kalan işler
-- [ ] Test setini 40–50 rüyaya genişlet, özel testleri ekle
+- [x] Test setini 40–50 rüyaya genişlet, özel testleri ekle (45 sentetik rüya; gözden geçirmen bekliyor)
 
 ### Hafta 11 · 4–10 Ocak · Aşama 3: Uzlaşı/ayrışma çıktısı → **v0.3**
 
