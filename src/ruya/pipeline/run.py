@@ -52,10 +52,16 @@ def varsayilan_bagimliliklar(ayar: Ayarlar | None = None) -> Bagimliliklar:
     sozluk = sozlugu_yukle()
     maddeler = list(jsonl_oku(ayar.maddeler_dosyasi, Madde))
     hibrit_indeks = _hibrit_indeks_yukle(ayar, maddeler)
+    istemci = LLMIstemcisi(ayar)
     return Bagimliliklar(
-        istemci=LLMIstemcisi(ayar),
+        istemci=istemci,
         varyantlar=varyant_tablosu(sozluk),
         depo=BellekDeposu(maddeler),
+        vektor=(
+            hibrit.HibritVektorArayici(hibrit_indeks, istemci)
+            if hibrit_indeks is not None
+            else None
+        ),
         hibrit=hibrit_indeks,
         ayar=ayar,
     )
