@@ -86,7 +86,7 @@ gantt
 ### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
 
 - [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
-- [ ] `enrich/assign_symbols.py`: alt paragraflara sembol atama (yalnızca 50 sembolün babları)
+- [x] Sembol atama: LLM'siz, varyant eşlemesiyle `enrich/sembol_ata.py` (`assign_symbols.py` kaldırıldı)
 - [x] Korpus çevirisi öne alındı ve bitti (2 Kasım; [02](02-veri-kaynaklari-ve-semasi.md), bölüm 5). `enrich/ceviri_birlestir.py` çıktıları maddelere işler.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
 - [ ] `docs/kurallar.md` (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar
@@ -104,45 +104,47 @@ gantt
 - [x] `pipeline/synthesize.py` ve `prompts/sentez_v1.md`: numaralı kaynaklar, JSON çıktısı ve `atiflari_dogrula`
 - [x] `pipeline/run.py` ve `SorguKaydi`
 - [x] `app/gradio_app.py` (2 Kasım; `05_arayuz.ipynb` yerine `scripts/arayuz_ac.py`): rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
-- [ ] `eval/run_eval.py`, `06_degerlendirme.ipynb`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
+- [x] `degerlendirme/calistir.py`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
 - [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
 
 ### Öne alınan: hibrit getirme (3 Kasım, kullanıcı kararı)
 
 Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
-- [ ] EVREN embedding, reranker ve OCR istemcisi
-- [ ] Bağlamlı parçalar, Türkçe BM25, numpy vektör deposu ve indeks kurma betiği
-- [ ] HyDE (`cikarim_v2`), RRF, reranker ve eşik ile hibrit getirme
-- [ ] Sözlüğü ~150 sembole genişletme
-- [ ] Kurallı koşul çıkarımı ve bağlam eşleşmesi
-- [ ] Arayüzde OCR girişi, gelenek seçimi, arama gerekçeleri
+- [x] EVREN embedding, reranker ve OCR istemcisi
+- [x] Bağlamlı parçalar, Türkçe BM25, numpy vektör deposu ve indeks kurma betiği
+- [x] HyDE (`cikarim_v2`), RRF, reranker ve eşik ile hibrit getirme
+- [x] Sözlüğü ~150 sembole genişletme (143 sembol; kullanıcı onayı bekliyor)
+- [x] Kurallı koşul çıkarımı ve bağlam eşleşmesi (1.025 madde; kurallar dar, elle kontrol edilmedi)
+- [x] Arayüzde OCR girişi, gelenek seçimi, arama gerekçeleri
 
 ### Hafta 6 · 30 Kasım – 6 Aralık · Aşama 2: Tüm korpus ve vektör yedeği
 
-- [ ] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (`toplu`, kota kontrolüyle). ⚠️ EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bu iş Hafta 3'ün sonuna, ücretsiz döneme çekilmeli (R13, [09](09-riskler-ve-acik-sorular.md)).
-- [ ] `symbols.json` dosyasını ~150 sembole genişlet
-- [ ] `index/build_vectors.py` ve `04_indeks.ipynb`: Chroma ve embedding modeli; indeks `data/index/chroma` altında
-- [ ] Eşlemeye vektör yedeğini ekle, eşik değerini test setiyle ayarla
+- [x] Nablusi ve Miller'ın tamamı için sembol atama ve çeviri (2–4 Kasım'da bitti). ⚠️ EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; bu iş Hafta 3'ün sonuna, ücretsiz döneme çekilmeli (R13, [09](09-riskler-ve-acik-sorular.md)).
+- [x] `symbols.json` dosyasını ~150 sembole genişlet (143)
+- [x] `index/build_vectors.py`: Chroma yerine numpy, EVREN embedding; indeks `data/index/hibrit` altında
+- [x] ~~Eşlemeye vektör yedeğini ekle~~ (4 Kasım: denendi, kapatıldı; gerekçe [13](13-hibrit-getirme.md))
 
 ### Hafta 7 · 7–13 Aralık · Aşama 2: Reranker, Freud, deneyler → **v0.2**
 
 - [x] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
-- [ ] bge-reranker-v2-m3 entegrasyonu
+- [x] Reranker entegrasyonu (`qwen3-reranker-8b`)
 - [ ] Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları
-- [ ] Gelenek seçimi arayüzü (İG-03), ardından `v0.2` etiketi
+- [x] Gelenek seçimi arayüzü (İG-03)
+- [ ] `v0.2` etiketi
 
 ### Hafta 8 · 14–20 Aralık · Aşama 3: İbn Sirin ve koşullar
 
 - [x] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
-- [ ] `enrich/conditions.py`: koşul ayrıştırma (`kosullar`, `yontem`, `kapsam`). 20 maddeyi elle kontrol et.
+- [x] `enrich/kosul_kurallari.py`: yalnız `kosullar`, kural tabanlı
+- [ ] `yontem` ve `kapsam` alanları; 20 maddeyi elle kontrol et
 - [ ] Bab ve HVDC kategorilerini `symbols.json` dosyasına ekle
 
 ### Hafta 9 · 21–27 Aralık · Aşama 3: Bağlam ve rüya türü
 
-- [ ] Arayüze bağlam formu (İG-02)
-- [ ] Getirmede bağlam koşulu eşleşmesi (İG-23)
-- [ ] Çıkarımda rüya türü ipucu ve hassas içerik bayrağı (İG-14, güvenlik ağı)
+- [x] Arayüze bağlam formu (İG-02)
+- [x] Getirmede bağlam koşulu eşleşmesi (İG-23)
+- [x] Çıkarımda rüya türü ipucu ve hassas içerik bayrağı (İG-14, güvenlik ağı)
 
 ### Hafta 10 · 28 Aralık – 3 Ocak · Tampon (yılbaşı)
 
