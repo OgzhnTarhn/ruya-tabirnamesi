@@ -94,11 +94,11 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `ingest/kaynaklar.py` | `KAYNAKLAR`: künye, lisans, URL, aşama. Tek doğru kaynak. | ✅ |
 | `ingest/nablusi.py`, `miller.py`, `freud.py`, `ibn_sirin.py` | `ayristir(ham_dosya) -> Iterator[Madde]` | ✅ |
 | `enrich/ceviri_birlestir.py` | `ceviri_oku`, `ceviriyi_uygula`: `data/interim/ceviri/` çıktılarını maddelere işler | ✅ |
-| `enrich/assign_symbols.py`, `translate.py` | `istekler(...) -> dict[custom_id, istek]` (`LLMIstemcisi.toplu` ile gönderilir), `sonuclari_uygula(maddeler, yanitlar)` | 🧩 Hafta 3 |
-| `enrich/conditions.py` | aynı arayüz | 🧩 Hafta 8 |
+| `enrich/sembol_ata.py` | `sembol_ata(maddeler, varyantlar)`: LLM'siz sembol atama | ✅ |
+| `enrich/kosul_kurallari.py` | `kosullari_cikar`, `maddelere_uygula`: kural tabanlı koşullar | ✅ |
 | `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | ✅ |
 | `index/store.py` | `MaddeDeposu`, `VektorArayici` (Protocol) ✅, `BellekDeposu` | ✅ |
-| `index/build_vectors.py`, `yedek.py` | `vektor_indeksi_kur`, `ChromaVektorArayici`, `indeksi_yedekle/geri_yukle` | 🧩 Hafta 6 |
+| `index/parcalar.py`, `bm25.py`, `build_vectors.py` | Bölüm 5b | ✅ |
 
 ### Sorgu (çevrimiçi)
 
@@ -181,10 +181,9 @@ Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(.
 | `data/raw/<kaynak>.txt` | `scripts/download_sources.py` | `ingest/*` | `data/` | ham |
 | `data/raw/KAYNAK_OZETLERI.json` | `download_sources.py` | sen (değişiklik kontrolü) | `data/` | URL, lisans, bayt, SHA256 |
 | `data/interim/<kaynak>.jsonl` | `ingest/<kaynak>.py` | `enrich/*` | `data/` | `Madde` (çeviri ve koşul alanları boş) |
-| `data/interim/sembol_onerileri.json` | `enrich/assign_symbols.py` | sen (gözden geçirme) | `data/` | serbest |
 | `data/processed/entries.jsonl` | `scripts/maddeleri_kur.py` (ayrıştırma + çeviri), sonra `enrich/*` | `index/*`, `pipeline/` | `data/` | `Madde` |
 | `sozluk/symbols.json` | **sen** (elle onay) | `index/build_symbols.py` | **git** | `SozlukDosyasi` |
-| `data/index/chroma/` | `index/build_vectors.py` | `index/*` | `data/` | Chroma |
+| `data/index/hibrit/` | `scripts/hibrit_indeks_kur.py` | `index/build_vectors.py` | `data/` | parçalar, BM25, numpy vektörler, manifest |
 | `data/cache/llm/<sha256>.json` | `llm/client.py` | `llm/client.py` | `data/` | SDK yanıtı + kullanım · rüya içeren istekler yalnızca `RUYA_SORGU_ONBELLEGI=on` iken (03, bölüm 5.2) |
 | `data/logs/sorgular.jsonl` | `kayit.sorgu_logla` | sen | `data/` | `SorguKaydi.log_kaydi()` |
 | `data/gecmis/<yıl-ay>.jsonl` | `kayit.gecmise_yaz` | sen | `data/` (isteğe bağlı) | `SorguKaydi` |
@@ -222,7 +221,7 @@ Tasarım: [13](13-hibrit-getirme.md).
 | `index/bm25.py` | `Bm25Indeksi`: `kur`, `ara(terimler, k)`, `kaydet`, `yukle` |
 | `index/build_vectors.py` | `VektorDeposu` (numpy), `hibrit_indeks_kur(...)`, `HibritIndeks.yukle(klasor)`; `en_yakin_semboller` |
 | `pipeline/hibrit.py` | `getirme_sorgusu`, `rrf`, `hibrit_getir(...) -> Getirilenler` |
-| `enrich/kosul_kurallari.py` | `kosullari_cikar(metin_tr) -> list[Kosul]`; `enrich/conditions.py` yerine |
+| `enrich/kosul_kurallari.py` | `kosullari_cikar(metin_tr) -> list[Kosul]`, `maddelere_uygula(maddeler)` |
 
 `Getirilenler` anahtarı `symbol_id` ya da `serbest:<ad>`; ortak işlev `schemas.getirme_anahtari(eslesme)`.
 

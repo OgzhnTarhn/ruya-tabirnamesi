@@ -24,12 +24,12 @@ flowchart TB
         INT --> ENR[enrich/<br/>sembol atama · çeviri · koşullar<br/>DeepSeek · eşzamanlı istekler]
         ENR --> ENT[data/processed/entries.jsonl]
         ENT --> SYM[index/build_symbols<br/>sozluk/symbols.json · git]
-        ENT --> VEC[index/build_vectors<br/>Chroma + embedding]
+        ENT --> VEC[index/build_vectors<br/>BM25 + numpy vektörler]
     end
 
     subgraph CEVRIMICI["Çevrimiçi: Sorgu (her rüya)"]
         UI[Gradio arayüzü · localhost] --> P1[1. Sembol çıkarımı<br/>DeepSeek · JSON şeması]
-        P1 --> P2[2. Eşleme<br/>symbols.json + zeyrek<br/>yoksa vektör yedeği]
+        P1 --> P2[2. Eşleme<br/>symbols.json + zeyrek<br/>yoksa serbest arama]
         P2 --> P3[3. Getirme<br/>symbol_id ile · kaynak başı top-N<br/>bağlam filtresi]
         P3 --> P4[4. Sentez<br/>DeepSeek · numaralı kaynaklar<br/>+ kodda atıf doğrulama]
         P4 --> UI
@@ -59,7 +59,7 @@ flowchart TB
   1. Normalleştirme: Türkçeye uygun küçük harfe çevirme (I→ı, İ→i) ve boşluk ile noktalama temizliği.
   2. `symbols.json` içinde doğrudan arama: ad ya da varyant eşleşmesi.
   3. Bulunamazsa zeyrek ile kök bulup yeniden arama.
-  4. Yine bulunamazsa vektör yedeği (Aşama 2): en yakın 3 sembolün ad ve tanım vektörlerinden en iyisi seçilir. Benzerlik eşiğin altındaysa `symbol_id=None` döner.
+  4. Yine bulunamazsa `symbol_id=None` döner ve ifade serbest aramayla getirilir. Vektör yedeği denendi, kapatıldı ([13](13-hibrit-getirme.md)).
 - Birebir ve kök eşleşmesi olmayan çok kelimeli ifadelerde sözcükler soldan sağa tek tek denenir ("güvercin sürüsü" → `guvercin`); yöntem `"parca"`, güven 0,8.
 - `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "vektor" | "yok"`. Hata ayıklama ekranında gösterilir.
 
@@ -137,9 +137,9 @@ C:\ruya-tabirnamesi\
 │   ├── text/turkce.py        # Türkçe küçük harf, normalleştirme, zeyrek sarmalayıcı
 │   ├── llm/                  # client.py (önbellek, maliyet, hata), talimatlar.py
 │   ├── ingest/               # kaynaklar.py (künye ve lisans), nablusi.py, miller.py, ibn_sirin.py, freud.py
-│   ├── enrich/               # assign_symbols.py, translate.py, conditions.py
-│   ├── index/                # build_symbols.py, store.py, build_vectors.py, yedek.py
-│   ├── pipeline/             # extract.py, map.py, retrieve.py, synthesize.py, run.py
+│   ├── enrich/               # ceviri_birlestir.py, sembol_ata.py, kosul_kurallari.py
+│   ├── index/                # build_symbols.py, store.py, parcalar.py, bm25.py, build_vectors.py
+│   ├── pipeline/             # extract.py, map.py, retrieve.py, hibrit.py, synthesize.py, run.py
 │   └── degerlendirme/        # metrikler.py, calistir.py
 ├── app/
 │   └── gradio_app.py         # arayüz; notebooks/05_arayuz.ipynb içinden açılır

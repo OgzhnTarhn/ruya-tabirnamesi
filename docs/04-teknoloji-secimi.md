@@ -74,6 +74,8 @@
 
 ## TK-05 · Embedding modeli
 
+> **Güncelleme (3 Kasım 2026):** Kullanılan model EVREN `qwen3-embedding-8b`; aşağıdaki karşılaştırma ilk seçimin gerekçesidir ([13](13-hibrit-getirme.md)).
+
 - **Bağlam:** Arama Türkçe sorgularla, Arapça, İngilizce ve Türkçe metinler üzerinde yapılacak. Bu yüzden diller arası (cross-lingual) arama gerekiyor.
 - **Seçenekler:**
 
@@ -90,6 +92,8 @@
 - **Not:** Vektör arama yalnızca yedek yol olduğundan bu karar projenin kalbi değil. Yine de öğrenme açısından değerli bir deney.
 
 ## TK-06 · Vektör deposu: Chroma
+
+> **Güncelleme (3 Kasım 2026):** Chroma kullanılmıyor; yaklaşık 12 bin parça için numpy kosinüs araması yeterli ([13](13-hibrit-getirme.md)).
 
 - **Seçenekler:** Chroma, Qdrant (yerel mod), LanceDB, FAISS, pgvector
 - **Karar:** Chroma, kalıcı istemci modunda (`PersistentClient`)

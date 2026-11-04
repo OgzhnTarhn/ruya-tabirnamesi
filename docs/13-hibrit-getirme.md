@@ -37,7 +37,7 @@ Sembol (yalın, nitelik, eylem, hyde)
 - **Pasaj:** Sentez, kırpılmış madde başı yerine aramayı kazanan parçayı görür (`Aday.pasaj`).
 - **HyDE:** `Sembol.hyde` tabirname üslubunda en çok iki cümledir ve `cikarim_v2` yanıtının içinde gelir, yani ek LLM çağrısı açmaz. **Yalnızca aramada kullanılır; kullanıcıya gösterilmez, modele kaynak diye verilmez.**
 - **Sözlükte olmayan sembol:** Artık hibrit aramaya girer. `Getirilenler` anahtarı `symbol_id`, yoksa `serbest:<normalleştirilmiş ad>`.
-- **"Bulunamadı":** Reranker eşiği (`GETIRME_ESIGI`, config) korur. Denemede ilgili madde 0,45, ilgisiz 0,003, "uzay gemisi" ↔ "gemi" 0,10 aldı; eşik 0,15. Üç örnekten alınmış başlangıç değeridir.
+- **"Bulunamadı":** Reranker eşiği (`GETIRME_ESIGI`, config) korur. Denemede ilgili madde 0,45, ilgisiz 0,003, "uzay gemisi" ↔ "gemi" 0,10 aldı; eşik 0,15. Üç örnekten alınmış başlangıç değeridir. Sonraki canlı denemede baba, bahçe, kütüphane ve uçak 0,3–0,7 aldı; uzay gemisi 0,14 ve bilgisayar 0,10 ile elendi. Uçtan uca denemede "uzay gemisine bindim" eylemli sorguyla `gemi` maddelerini eşikten geçirdi; yorum "uzay gemisi için ayrı madde yok" diyerek gemi maddelerini aktardı, bilgisayar bulunamadı sayıldı. Pay dar, eşik test setiyle ayarlanmadı.
 - **Freud:** `gelenekler` boşsa hibrit aramaya girmez; kullanıcı `psikanalitik` seçerse girer (Freud yöntem katmanıdır, sembol sözlüğü değildir).
 - **Yedek:** İndeks yoksa ya da embedding/reranker çağrısı hata verirse sistem sözlük yoluna döner ve bunu `Aday.gerekceler` ile loga yazar.
 
@@ -53,6 +53,10 @@ Sembol (yalın, nitelik, eylem, hyde)
 | OCR | EVREN `deepseek-ocr-2`, `POST /v1/ocr` | Rüya defteri fotoğrafı ve taranmış belge girişi | Görsel geçide gider; önbelleğe yazılmaz |
 
 Koşullu yorum için `kosullar`, 18 token/sn hızda 10.801 maddelik LLM geçişi gün sürdüğünden önce kurallarla çıkarılır ("kadın görürse", "evli ise", "kışın"); bağlam eşleşirse aday öne geçer. Kural kaçırırsa zarar yok: madde yine sıralamada kalır.
+
+Kurallar yalnız rüya sahibini anlatan kalıpları arar; rüyada görülen figür koşul sayılmaz. İlk, geniş sürüm "bir kadına iftira eder" gibi cümleleri de yakalayıp maddelerin %23'ünü işaretliyordu. Daraltılınca 1.025 madde (%9,5) kaldı. Örneklerle bakıldı, kesinlik ölçülmedi. Bağlam alanı başına puan tektir: eşleşen koşul +0,1, yalnız farklı koşul varsa −0,1.
+
+**Sembol vektör yedeği kapalı.** Sembol adlarını gömüp ifadeye en yakınını seçmek denendi. "yılan" 0,82 ile `akrep`e, 0,60 ile `yilan`a yakın çıktı; "kocaman yılan" da 0,80 ile `akrep`e gitti, "aslanım" ise 0,80 ile doğru `aslan`a. Aynı skorda doğru ve yanlış eşleme olduğundan hiçbir eşik işe yaramıyor. Eşlenemeyen ifade serbest aramayla (BM25, parça vektörleri, reranker) getirilir. `HibritIndeks.en_yakin_semboller_vektorle` ve `semboller.npy` duruyor ama boru hattında kullanılmıyor.
 
 ## 5. Bilinçli olarak yapılmayan
 
