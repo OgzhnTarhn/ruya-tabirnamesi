@@ -192,16 +192,21 @@ def _kosul_skoru(madde: Madde, baglam: Baglam | None) -> tuple[float, list[str]]
 
     skor = 0.0
     gerekceler: list[str] = []
-    for kosul in madde.kosullar or []:
-        for alan in _KOSUL_ALANLARI:
-            deger = getattr(baglam, alan)
-            if deger is None or alan not in kosul.kosul:
-                continue
-            if kosul.kosul[alan] == deger:
-                skor += KOSUL_PUANI
-                gerekceler.append(f"kosul:{alan}")
-            else:
-                skor -= KOSUL_PUANI
+    for alan in _KOSUL_ALANLARI:
+        deger = getattr(baglam, alan)
+        if deger is None:
+            continue
+        # Alan başına tek katkı: eşleşen bir koşul varsa artı, yoksa farklı bir koşul eksi.
+        degerler = [
+            kosul.kosul[alan]
+            for kosul in madde.kosullar or []
+            if alan in kosul.kosul
+        ]
+        if deger in degerler:
+            skor += KOSUL_PUANI
+            gerekceler.append(f"kosul:{alan}")
+        elif degerler:
+            skor -= KOSUL_PUANI
     return skor, gerekceler
 
 

@@ -4,12 +4,12 @@ Sahte indeks, sahte LLM istemcisi ve BellekDeposu ile ağa çıkmadan çalışı
 """
 
 import pytest
-from ruya.pipeline.hibrit import getirme_sorgusu, hibrit_getir, rrf
 
 from ruya.config import GETIRME_ESIGI
 from ruya.hatalar import LLMHatasi
 from ruya.index.parcalar import Parca
 from ruya.index.store import BellekDeposu
+from ruya.pipeline.hibrit import getirme_sorgusu, hibrit_getir, rrf
 from ruya.schemas import Baglam, Eslesme, Kosul, Madde, Sembol
 from ruya.text.turkce import arama_terimleri
 
@@ -567,6 +567,58 @@ def test_baglam_kosulu_farkli_deger_skoru_dusurur():
         "nablusi:000002",
         "nablusi:000001",
     ]
+
+
+def _tek_kosullu_aday(kosullar: list[Kosul], baglam: Baglam, puan: float = 0.45):
+    """Tek maddeli, tek parçalı senaryo: dönen tek adayı verir."""
+    madde = _madde("nablusi:000001", "nablusi", ["yilan"], kosullar=kosullar)
+    parca = _parca("nablusi:000001")
+    depo = BellekDeposu([madde])
+    indeks = SahteIndeks({"nablusi:000001": [parca]})
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: puan})
+
+    sonuc = hibrit_getir([_eslesme("yilan")], depo, indeks, istemci, baglam=baglam)
+
+    assert len(sonuc["yilan"]) == 1
+    return sonuc["yilan"][0]
+
+
+def test_ayni_cinsiyet_kosulu_iki_kez_sayilmaz():
+    aday = _tek_kosullu_aday(
+        [
+            Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadın görürse …"),
+            Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadına gelince …"),
+        ],
+        Baglam(cinsiyet="kadin"),
+    )
+
+    assert aday.skor == pytest.approx(0.55)
+    assert aday.gerekceler.count("kosul:cinsiyet") == 1
+
+
+def test_kadin_ve_erkek_kosulu_her_iki_cinsiyete_de_artirir():
+    kosullar = [
+        Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadın görürse …"),
+        Kosul(kosul={"cinsiyet": "erkek"}, yorum_tr="Erkek görürse …"),
+    ]
+
+    kadin = _tek_kosullu_aday(kosullar, Baglam(cinsiyet="kadin"))
+    erkek = _tek_kosullu_aday(kosullar, Baglam(cinsiyet="erkek"))
+
+    assert kadin.skor == pytest.approx(0.55)
+    assert erkek.skor == pytest.approx(0.55)
+    assert "kosul:cinsiyet" in kadin.gerekceler
+    assert "kosul:cinsiyet" in erkek.gerekceler
+
+
+def test_yalniz_erkek_kosulu_kadinda_skoru_dusurur():
+    aday = _tek_kosullu_aday(
+        [Kosul(kosul={"cinsiyet": "erkek"}, yorum_tr="Erkek görürse …")],
+        Baglam(cinsiyet="kadin"),
+    )
+
+    assert aday.skor == pytest.approx(0.35)
+    assert "kosul:cinsiyet" not in aday.gerekceler
 
 
 # --- hibrit_getir: hata yolları ---------------------------------------------
