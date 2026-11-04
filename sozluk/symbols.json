@@ -1,4 +1,22 @@
 {
+  "abdest": {
+    "ad_tr": "abdest",
+    "varyantlar_tr": [],
+    "ar": [
+      "وضوء"
+    ],
+    "en": [
+      "Ablution"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "namaz",
+      "dua",
+      "su"
+    ],
+    "gozden_gecirildi": true
+  },
   "agac": {
     "ad_tr": "ağaç",
     "ar": [
@@ -20,6 +38,44 @@
       "ağaçlar"
     ]
   },
+  "aglamak": {
+    "ad_tr": "ağlamak",
+    "varyantlar_tr": [
+      "ağlama"
+    ],
+    "ar": [
+      "بكاء"
+    ],
+    "en": [
+      "Crying",
+      "Weeping"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "cenaze",
+      "olum",
+      "korku"
+    ],
+    "gozden_gecirildi": true
+  },
+  "akrep": {
+    "ad_tr": "akrep",
+    "varyantlar_tr": [],
+    "ar": [
+      "عقرب"
+    ],
+    "en": [
+      "Scorpion"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "yilan",
+      "orumcek"
+    ],
+    "gozden_gecirildi": true
+  },
   "altin": {
     "ad_tr": "altın",
     "ar": [
@@ -40,6 +96,85 @@
     "varyantlar_tr": [
       "tibr (işlenmemiş altın)"
     ]
+  },
+  "anahtar": {
+    "ad_tr": "anahtar",
+    "varyantlar_tr": [
+      "anahtarlar"
+    ],
+    "ar": [
+      "مفتاح",
+      "مفاتيح"
+    ],
+    "en": [
+      "Key"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kilit",
+      "kapi"
+    ],
+    "gozden_gecirildi": true
+  },
+  "anne": {
+    "ad_tr": "anne",
+    "varyantlar_tr": [],
+    "ar": [
+      "أم"
+    ],
+    "en": [
+      "Mother"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "baba"
+    ],
+    "gozden_gecirildi": true
+  },
+  "ari": {
+    "ad_tr": "arı",
+    "varyantlar_tr": [
+      "arılar"
+    ],
+    "ar": [
+      "نحل",
+      "النحل"
+    ],
+    "en": [
+      "Bees"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "bal",
+      "cekirge"
+    ],
+    "gozden_gecirildi": true
+  },
+  "asker": {
+    "ad_tr": "asker",
+    "varyantlar_tr": [
+      "asker, ordu",
+      "askerler"
+    ],
+    "ar": [
+      "عسكر",
+      "جند",
+      "جندي"
+    ],
+    "en": [
+      "Soldiers"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "savas",
+      "kilic",
+      "sultan"
+    ],
+    "gozden_gecirildi": true
   },
   "aslan": {
     "ad_tr": "aslan",
@@ -146,6 +281,64 @@
       "iki ayak"
     ]
   },
+  "baba": {
+    "ad_tr": "baba",
+    "varyantlar_tr": [],
+    "ar": [
+      "أب"
+    ],
+    "en": [
+      "Father"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "anne",
+      "ogul"
+    ],
+    "gozden_gecirildi": true
+  },
+  "bahce": {
+    "ad_tr": "bahçe",
+    "varyantlar_tr": [
+      "bahçe (ravza)"
+    ],
+    "ar": [
+      "بستان",
+      "البستان",
+      "الروضة",
+      "روض"
+    ],
+    "en": [
+      "Garden",
+      "Orchard"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "agac",
+      "meyve",
+      "su"
+    ],
+    "gozden_gecirildi": true
+  },
+  "bal": {
+    "ad_tr": "bal",
+    "varyantlar_tr": [],
+    "ar": [
+      "عسل"
+    ],
+    "en": [
+      "Honey"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ari",
+      "meyve"
+    ],
+    "gozden_gecirildi": true
+  },
   "balik": {
     "ad_tr": "balık",
     "ar": [
@@ -207,6 +400,138 @@
       "çocuklar"
     ]
   },
+  "bicak": {
+    "ad_tr": "bıçak",
+    "varyantlar_tr": [
+      "çekme bıçak"
+    ],
+    "ar": [
+      "سكين",
+      "السكين",
+      "شفرة"
+    ],
+    "en": [
+      "Knife",
+      "Draw-knife"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kilic",
+      "demir"
+    ],
+    "gozden_gecirildi": true
+  },
+  "boyun": {
+    "ad_tr": "boyun",
+    "varyantlar_tr": [
+      "boyun damarı"
+    ],
+    "ar": [
+      "عنق",
+      "رقبة",
+      "ودج"
+    ],
+    "en": [
+      "Neck"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "bas",
+      "sirt"
+    ],
+    "gozden_gecirildi": true
+  },
+  "bugday": {
+    "ad_tr": "buğday",
+    "varyantlar_tr": [],
+    "ar": [
+      "حنطة"
+    ],
+    "en": [
+      "Wheat"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ekin",
+      "ekmek",
+      "toprak"
+    ],
+    "gozden_gecirildi": true
+  },
+  "bulut": {
+    "ad_tr": "bulut",
+    "varyantlar_tr": [
+      "bulutlar"
+    ],
+    "ar": [
+      "سحاب",
+      "غيم",
+      "غمام"
+    ],
+    "en": [
+      "Clouds",
+      "Cloud"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "yagmur",
+      "gokyuzu",
+      "simsek"
+    ],
+    "gozden_gecirildi": true
+  },
+  "burun": {
+    "ad_tr": "burun",
+    "varyantlar_tr": [
+      "burunlar",
+      "burun ucu"
+    ],
+    "ar": [
+      "أنف",
+      "خرطوم",
+      "الأنف",
+      "أرنبة"
+    ],
+    "en": [
+      "Nose",
+      "Snouts"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "goz",
+      "kulak",
+      "yuz"
+    ],
+    "gozden_gecirildi": true
+  },
+  "cadir": {
+    "ad_tr": "çadır",
+    "varyantlar_tr": [
+      "çadır (sürâdık)",
+      "fustat (büyük çadır)"
+    ],
+    "ar": [
+      "خيمة",
+      "فسطاط",
+      "خباء",
+      "سرادق"
+    ],
+    "en": [
+      "Tent"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ev",
+      "yol"
+    ],
+    "gozden_gecirildi": true
+  },
   "cehennem": {
     "ad_tr": "cehennem",
     "ar": [
@@ -224,6 +549,25 @@
       "ates"
     ],
     "varyantlar_tr": []
+  },
+  "cekirge": {
+    "ad_tr": "çekirge",
+    "varyantlar_tr": [],
+    "ar": [
+      "جراد",
+      "الجراد"
+    ],
+    "en": [
+      "Grasshopper",
+      "Locust"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "karinca",
+      "ari"
+    ],
+    "gozden_gecirildi": true
   },
   "cenaze": {
     "ad_tr": "cenaze",
@@ -268,6 +612,48 @@
       "cennete girmek"
     ]
   },
+  "ceylan": {
+    "ad_tr": "ceylan",
+    "varyantlar_tr": [
+      "maha (beyaz ceylan)"
+    ],
+    "ar": [
+      "ظبية",
+      "ظبي",
+      "غزال",
+      "مها"
+    ],
+    "en": [
+      "Gazelle"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "dag",
+      "koyun"
+    ],
+    "gozden_gecirildi": true
+  },
+  "cin": {
+    "ad_tr": "cin",
+    "varyantlar_tr": [],
+    "ar": [
+      "جن",
+      "الجن"
+    ],
+    "en": [
+      "Jinn",
+      "Spirit"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "seytan",
+      "melek",
+      "korku"
+    ],
+    "gozden_gecirildi": true
+  },
   "dag": {
     "ad_tr": "dağ",
     "ar": [
@@ -287,6 +673,48 @@
     ],
     "varyantlar_tr": []
   },
+  "degirmen": {
+    "ad_tr": "değirmen",
+    "varyantlar_tr": [
+      "yel değirmeni",
+      "kahve değirmeni"
+    ],
+    "ar": [
+      "رحى",
+      "طاحون",
+      "الرحى"
+    ],
+    "en": [
+      "Mill",
+      "Windmill",
+      "Coffee Mill"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "bugday",
+      "ekin",
+      "tas"
+    ],
+    "gozden_gecirildi": true
+  },
+  "demir": {
+    "ad_tr": "demir",
+    "varyantlar_tr": [],
+    "ar": [
+      "حديد"
+    ],
+    "en": [
+      "Iron"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "altin",
+      "kilic"
+    ],
+    "gozden_gecirildi": true
+  },
   "deniz": {
     "ad_tr": "deniz",
     "ar": [
@@ -305,6 +733,24 @@
       "balik"
     ],
     "varyantlar_tr": []
+  },
+  "deri": {
+    "ad_tr": "deri",
+    "varyantlar_tr": [],
+    "ar": [
+      "جلد"
+    ],
+    "en": [
+      "Hide",
+      "Leather"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "et",
+      "sac"
+    ],
+    "gozden_gecirildi": true
   },
   "deve": {
     "ad_tr": "deve",
@@ -334,6 +780,24 @@
       "tek hörgüçlü deve"
     ]
   },
+  "dil": {
+    "ad_tr": "dil",
+    "varyantlar_tr": [],
+    "ar": [
+      "لسان",
+      "اللسان"
+    ],
+    "en": [
+      "Tongue"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kulak",
+      "burun"
+    ],
+    "gozden_gecirildi": true
+  },
   "dis": {
     "ad_tr": "diş",
     "ar": [
@@ -356,6 +820,46 @@
       "azı dişi",
       "insanın azı dişi"
     ]
+  },
+  "domuz": {
+    "ad_tr": "domuz",
+    "varyantlar_tr": [
+      "domuz yavrusu",
+      "domuz eti"
+    ],
+    "ar": [
+      "خنزير"
+    ],
+    "en": [
+      "Hogs",
+      "Pig",
+      "Pork"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "et",
+      "kopek"
+    ],
+    "gozden_gecirildi": true
+  },
+  "dua": {
+    "ad_tr": "dua",
+    "varyantlar_tr": [],
+    "ar": [
+      "دعاء"
+    ],
+    "en": [
+      "Prayer"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "namaz",
+      "ezan",
+      "kuran"
+    ],
+    "gozden_gecirildi": true
   },
   "dugun": {
     "ad_tr": "düğün",
@@ -385,6 +889,31 @@
       "evlilik bağı"
     ]
   },
+  "dukkan": {
+    "ad_tr": "dükkân",
+    "varyantlar_tr": [
+      "çini dükkânı",
+      "şekerleme dükkânı",
+      "rehinci dükkânı"
+    ],
+    "ar": [
+      "حانوت",
+      "الحانوت"
+    ],
+    "en": [
+      "Shop",
+      "Store",
+      "China Store",
+      "Confectionary"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "para",
+      "altin"
+    ],
+    "gozden_gecirildi": true
+  },
   "dusmek": {
     "ad_tr": "düşmek",
     "ar": [
@@ -410,6 +939,46 @@
       "suya düşmek",
       "dağdan düşme"
     ]
+  },
+  "duvar": {
+    "ad_tr": "duvar",
+    "varyantlar_tr": [
+      "duvarlar",
+      "ev duvarları"
+    ],
+    "ar": [
+      "حائط",
+      "الحائط",
+      "حيطان الدار"
+    ],
+    "en": [
+      "Walls"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ev",
+      "kapi"
+    ],
+    "gozden_gecirildi": true
+  },
+  "ekin": {
+    "ad_tr": "ekin",
+    "varyantlar_tr": [],
+    "ar": [
+      "زرع",
+      "حرث"
+    ],
+    "en": [
+      "Crop"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "bugday",
+      "toprak"
+    ],
+    "gozden_gecirildi": true
   },
   "ekmek": {
     "ad_tr": "ekmek",
@@ -486,6 +1055,53 @@
       "giysiler"
     ]
   },
+  "esek": {
+    "ad_tr": "eşek",
+    "varyantlar_tr": [
+      "eşek sahibi",
+      "dişi eşek"
+    ],
+    "ar": [
+      "حمار",
+      "الحمار",
+      "الحمارة"
+    ],
+    "en": [
+      "Ass",
+      "Donkey"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "at",
+      "katir"
+    ],
+    "gozden_gecirildi": true
+  },
+  "et": {
+    "ad_tr": "et",
+    "varyantlar_tr": [
+      "kurutulmuş et",
+      "dövülmüş et",
+      "etler"
+    ],
+    "ar": [
+      "لحم",
+      "قديد",
+      "مدقوق اللحم",
+      "اللحوم"
+    ],
+    "en": [
+      "Meat"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "deri",
+      "yemek"
+    ],
+    "gozden_gecirildi": true
+  },
   "ev": {
     "ad_tr": "ev",
     "ar": [
@@ -509,6 +1125,87 @@
     "varyantlar_tr": [
       "evler"
     ]
+  },
+  "ezan": {
+    "ad_tr": "ezan",
+    "varyantlar_tr": [],
+    "ar": [
+      "أذان"
+    ],
+    "en": [
+      "Call to prayer"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "mescit",
+      "namaz",
+      "dua"
+    ],
+    "gozden_gecirildi": true
+  },
+  "fare": {
+    "ad_tr": "fare",
+    "varyantlar_tr": [
+      "fareler"
+    ],
+    "ar": [
+      "فأرة"
+    ],
+    "en": [
+      "Mouse",
+      "Mice"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kedi",
+      "ev"
+    ],
+    "gozden_gecirildi": true
+  },
+  "fil": {
+    "ad_tr": "fil",
+    "varyantlar_tr": [],
+    "ar": [
+      "فيل"
+    ],
+    "en": [
+      "Elephant"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "deve",
+      "savas"
+    ],
+    "gozden_gecirildi": true
+  },
+  "gemi": {
+    "ad_tr": "gemi",
+    "varyantlar_tr": [
+      "deniz gemisi",
+      "savaş gemisi",
+      "posta gemisi"
+    ],
+    "ar": [
+      "سفينة",
+      "السفينة",
+      "مركب البحر"
+    ],
+    "en": [
+      "Ship",
+      "Man-of-war",
+      "Packet"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "deniz",
+      "su",
+      "yol"
+    ],
+    "gozden_gecirildi": true
   },
   "gokyuzu": {
     "ad_tr": "gökyüzü",
@@ -552,6 +1249,41 @@
       "göz kapağı"
     ]
   },
+  "gulmek": {
+    "ad_tr": "gülmek",
+    "varyantlar_tr": [
+      "gülme"
+    ],
+    "ar": [
+      "ضحك"
+    ],
+    "en": [
+      "Laughing"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "dugun"
+    ],
+    "gozden_gecirildi": true
+  },
+  "gumus": {
+    "ad_tr": "gümüş",
+    "varyantlar_tr": [],
+    "ar": [
+      "فضة"
+    ],
+    "en": [
+      "Silver"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "altin",
+      "para"
+    ],
+    "gozden_gecirildi": true
+  },
   "gunes": {
     "ad_tr": "güneş",
     "ar": [
@@ -592,6 +1324,44 @@
     "varyantlar_tr": [
       "verşân (bir tür güvercin)"
     ]
+  },
+  "hac": {
+    "ad_tr": "hac",
+    "varyantlar_tr": [],
+    "ar": [
+      "حج",
+      "الحج"
+    ],
+    "en": [
+      "Pilgrimage"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kabe",
+      "mescit",
+      "dua"
+    ],
+    "gozden_gecirildi": true
+  },
+  "hamam": {
+    "ad_tr": "hamam",
+    "varyantlar_tr": [
+      "türk hamamı"
+    ],
+    "ar": [
+      "حمام"
+    ],
+    "en": [
+      "Turkish Baths"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su",
+      "ev"
+    ],
+    "gozden_gecirildi": true
   },
   "hapis": {
     "ad_tr": "hapis",
@@ -645,6 +1415,157 @@
       "hastalıklar ve ağrılar"
     ]
   },
+  "horoz": {
+    "ad_tr": "horoz",
+    "varyantlar_tr": [],
+    "ar": [
+      "ديك",
+      "الديك"
+    ],
+    "en": [
+      "Rooster"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kus",
+      "ezan"
+    ],
+    "gozden_gecirildi": true
+  },
+  "hurma": {
+    "ad_tr": "hurma",
+    "varyantlar_tr": [
+      "taze hurma",
+      "ham hurma",
+      "acve hurması"
+    ],
+    "ar": [
+      "تمر",
+      "رطب",
+      "بلح",
+      "عجوة"
+    ],
+    "en": [
+      "Dates",
+      "Date"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "meyve",
+      "agac",
+      "bahce"
+    ],
+    "gozden_gecirildi": true
+  },
+  "inci": {
+    "ad_tr": "inci",
+    "varyantlar_tr": [
+      "inci (durre)"
+    ],
+    "ar": [
+      "لؤلؤ",
+      "درة"
+    ],
+    "en": [
+      "Pearls"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "deniz",
+      "altin"
+    ],
+    "gozden_gecirildi": true
+  },
+  "inek": {
+    "ad_tr": "inek",
+    "varyantlar_tr": [
+      "sığır",
+      "boğa",
+      "sığırlar",
+      "inekler"
+    ],
+    "ar": [
+      "بقر",
+      "ثور",
+      "البقرة",
+      "بقرة"
+    ],
+    "en": [
+      "Bull",
+      "Cattle",
+      "Cows"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "sut",
+      "et"
+    ],
+    "gozden_gecirildi": true
+  },
+  "ip": {
+    "ad_tr": "ip",
+    "varyantlar_tr": [],
+    "ar": [
+      "حبل",
+      "الحبل"
+    ],
+    "en": [
+      "Ropes"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kuyu"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kabe": {
+    "ad_tr": "Kâbe",
+    "varyantlar_tr": [],
+    "ar": [
+      "كعبة",
+      "الكعبة"
+    ],
+    "en": [
+      "Kaaba"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "hac",
+      "mescit",
+      "kuran"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kadeh": {
+    "ad_tr": "kadeh",
+    "varyantlar_tr": [
+      "büyük kadeh",
+      "şarap kadehi"
+    ],
+    "ar": [
+      "قدح",
+      "جام",
+      "كأس",
+      "باطية"
+    ],
+    "en": [
+      "Chalice",
+      "Goblet",
+      "Wine-glass"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su"
+    ],
+    "gozden_gecirildi": true
+  },
   "kadin": {
     "ad_tr": "kadın",
     "ar": [
@@ -671,6 +1592,23 @@
       "genç kadın",
       "dul kadın"
     ]
+  },
+  "kalp": {
+    "ad_tr": "kalp",
+    "varyantlar_tr": [],
+    "ar": [
+      "قلب"
+    ],
+    "en": [
+      "Heart"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kan",
+      "karin"
+    ],
+    "gozden_gecirildi": true
   },
   "kan": {
     "ad_tr": "kan",
@@ -712,6 +1650,153 @@
       "kapılar"
     ]
   },
+  "kar": {
+    "ad_tr": "kar",
+    "varyantlar_tr": [],
+    "ar": [
+      "ثلج",
+      "الثلج"
+    ],
+    "en": [
+      "Snow"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "yagmur",
+      "bulut",
+      "su"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kardes": {
+    "ad_tr": "kardeş",
+    "varyantlar_tr": [
+      "erkek kardeşler",
+      "üvey kız kardeş",
+      "kız kardeş"
+    ],
+    "ar": [
+      "أخ",
+      "أخت"
+    ],
+    "en": [
+      "Brothers",
+      "Step-sister"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "anne",
+      "baba"
+    ],
+    "gozden_gecirildi": true
+  },
+  "karga": {
+    "ad_tr": "karga",
+    "varyantlar_tr": [
+      "alaca karga",
+      "kırmızı gagalı karga",
+      "yavru karga",
+      "küçük karga",
+      "ekin kargası",
+      "alacalı karga"
+    ],
+    "ar": [
+      "غراب",
+      "الغراب",
+      "غراب أبقع",
+      "نعاب"
+    ],
+    "en": [
+      "Crow",
+      "Jackdaw",
+      "Rooks"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kus",
+      "kartal"
+    ],
+    "gozden_gecirildi": true
+  },
+  "karin": {
+    "ad_tr": "karın",
+    "varyantlar_tr": [],
+    "ar": [
+      "بطن",
+      "البطن"
+    ],
+    "en": [
+      "Abdomen",
+      "Belly"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "sirt",
+      "kalp"
+    ],
+    "gozden_gecirildi": true
+  },
+  "karinca": {
+    "ad_tr": "karınca",
+    "varyantlar_tr": [
+      "karınca (küçük karınca)",
+      "karıncalar"
+    ],
+    "ar": [
+      "نمل",
+      "ذر"
+    ],
+    "en": [
+      "Ants"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "cekirge",
+      "ari"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kartal": {
+    "ad_tr": "kartal",
+    "varyantlar_tr": [],
+    "ar": [
+      "عقاب",
+      "نسر"
+    ],
+    "en": [
+      "Eagles"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kus",
+      "karga"
+    ],
+    "gozden_gecirildi": true
+  },
+  "katir": {
+    "ad_tr": "katır",
+    "varyantlar_tr": [],
+    "ar": [
+      "بغل",
+      "البغل"
+    ],
+    "en": [
+      "Mule"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "at",
+      "esek"
+    ],
+    "gozden_gecirildi": true
+  },
   "kedi": {
     "ad_tr": "kedi",
     "ar": [
@@ -733,6 +1818,41 @@
       "yavru kedi"
     ]
   },
+  "kilic": {
+    "ad_tr": "kılıç",
+    "varyantlar_tr": [],
+    "ar": [
+      "سيف"
+    ],
+    "en": [
+      "Sword"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "savas",
+      "demir",
+      "bicak"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kilit": {
+    "ad_tr": "kilit",
+    "varyantlar_tr": [],
+    "ar": [
+      "قفل"
+    ],
+    "en": [
+      "Lock"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "anahtar",
+      "kapi"
+    ],
+    "gozden_gecirildi": true
+  },
   "kitap": {
     "ad_tr": "kitap",
     "ar": [
@@ -752,6 +1872,48 @@
     "varyantlar_tr": [
       "kitaplar"
     ]
+  },
+  "kiyamet": {
+    "ad_tr": "kıyamet",
+    "varyantlar_tr": [
+      "kıyamet günü"
+    ],
+    "ar": [
+      "قيامة",
+      "القيامة"
+    ],
+    "en": [
+      "Doomsday",
+      "Judgment Day"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "mezar",
+      "olum",
+      "cennet"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kiz": {
+    "ad_tr": "kız",
+    "varyantlar_tr": [
+      "kızlar",
+      "cilveli kız"
+    ],
+    "ar": [
+      "بنت"
+    ],
+    "en": [
+      "Girls",
+      "Minx"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kadin"
+    ],
+    "gozden_gecirildi": true
   },
   "kopek": {
     "ad_tr": "köpek",
@@ -773,6 +1935,63 @@
       "kuduz köpek",
       "yavru köpek"
     ]
+  },
+  "korku": {
+    "ad_tr": "korku",
+    "varyantlar_tr": [],
+    "ar": [
+      "خوف",
+      "فزع"
+    ],
+    "en": [
+      "Fears"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "olum",
+      "savas",
+      "yilan"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kosmak": {
+    "ad_tr": "koşmak",
+    "varyantlar_tr": [],
+    "ar": [
+      "جري"
+    ],
+    "en": [
+      "Running"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "at",
+      "yol"
+    ],
+    "gozden_gecirildi": true
+  },
+  "kova": {
+    "ad_tr": "kova",
+    "varyantlar_tr": [
+      "kömür kovası"
+    ],
+    "ar": [
+      "دلو",
+      "الدلو"
+    ],
+    "en": [
+      "Pail",
+      "Coal-hod"
+    ],
+    "bab_kategorisi": "ev",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su",
+      "kuyu"
+    ],
+    "gozden_gecirildi": true
   },
   "koyun": {
     "ad_tr": "koyun",
@@ -796,6 +2015,24 @@
       "koç",
       "dişi koyun"
     ]
+  },
+  "kulak": {
+    "ad_tr": "kulak",
+    "varyantlar_tr": [],
+    "ar": [
+      "أذن",
+      "الأذن"
+    ],
+    "en": [
+      "Ears"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "goz",
+      "burun"
+    ],
+    "gozden_gecirildi": true
   },
   "kuran": {
     "ad_tr": "Kur'an",
@@ -825,6 +2062,24 @@
       "kur'an sureleri",
       "kur'an hatmi"
     ]
+  },
+  "kurt": {
+    "ad_tr": "kurt",
+    "varyantlar_tr": [],
+    "ar": [
+      "ذئب"
+    ],
+    "en": [
+      "Wolf"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kopek",
+      "tilki",
+      "koyun"
+    ],
+    "gozden_gecirildi": true
   },
   "kus": {
     "ad_tr": "kuş",
@@ -863,6 +2118,48 @@
       "hâme (mezarlık kuşu)",
       "bugas (avlanmayan değersiz kuşlar)"
     ]
+  },
+  "kuyu": {
+    "ad_tr": "kuyu",
+    "varyantlar_tr": [
+      "kuyular"
+    ],
+    "ar": [
+      "بئر",
+      "جب",
+      "آبار"
+    ],
+    "en": [
+      "Well"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su",
+      "ip",
+      "kova"
+    ],
+    "gozden_gecirildi": true
+  },
+  "maymun": {
+    "ad_tr": "maymun",
+    "varyantlar_tr": [
+      "maymunlar"
+    ],
+    "ar": [
+      "قرد"
+    ],
+    "en": [
+      "Monkey",
+      "Apes"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "cin",
+      "seytan"
+    ],
+    "gozden_gecirildi": true
   },
   "melek": {
     "ad_tr": "melek",
@@ -913,6 +2210,73 @@
     ],
     "varyantlar_tr": []
   },
+  "mescit": {
+    "ad_tr": "mescit",
+    "varyantlar_tr": [
+      "cami"
+    ],
+    "ar": [
+      "مسجد"
+    ],
+    "en": [
+      "Mosque"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ezan",
+      "namaz",
+      "kabe"
+    ],
+    "gozden_gecirildi": true
+  },
+  "meyve": {
+    "ad_tr": "meyve",
+    "varyantlar_tr": [],
+    "ar": [
+      "ثمرة",
+      "فاكهة",
+      "ثمر"
+    ],
+    "en": [
+      "Fruit"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "agac",
+      "hurma",
+      "bahce"
+    ],
+    "gozden_gecirildi": true
+  },
+  "mezar": {
+    "ad_tr": "mezar",
+    "varyantlar_tr": [
+      "mezarlık",
+      "kabir",
+      "kabirler"
+    ],
+    "ar": [
+      "قبر",
+      "القبر",
+      "جبانة",
+      "مقبرة"
+    ],
+    "en": [
+      "Grave",
+      "Tomb",
+      "Cemetery"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "olum",
+      "cenaze",
+      "kiyamet"
+    ],
+    "gozden_gecirildi": true
+  },
   "namaz": {
     "ad_tr": "namaz",
     "ar": [
@@ -960,6 +2324,44 @@
       "ırmak"
     ]
   },
+  "ogul": {
+    "ad_tr": "oğul",
+    "varyantlar_tr": [],
+    "ar": [
+      "ولد"
+    ],
+    "en": [
+      "Son"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "baba",
+      "anne"
+    ],
+    "gozden_gecirildi": true
+  },
+  "oldurmek": {
+    "ad_tr": "öldürmek",
+    "varyantlar_tr": [
+      "kendini öldürmek"
+    ],
+    "ar": [
+      "قتل",
+      "قتل النفس"
+    ],
+    "en": [
+      "Killing"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "olum",
+      "olu",
+      "savas"
+    ],
+    "gozden_gecirildi": true
+  },
   "olu": {
     "ad_tr": "ölü",
     "ar": [
@@ -1002,6 +2404,44 @@
       "hastalik"
     ],
     "varyantlar_tr": []
+  },
+  "oruc": {
+    "ad_tr": "oruç",
+    "varyantlar_tr": [],
+    "ar": [
+      "صوم"
+    ],
+    "en": [
+      "Fasting"
+    ],
+    "bab_kategorisi": "din",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "namaz",
+      "dua",
+      "hurma"
+    ],
+    "gozden_gecirildi": true
+  },
+  "orumcek": {
+    "ad_tr": "örümcek",
+    "varyantlar_tr": [
+      "örümcek (rütaylâ)"
+    ],
+    "ar": [
+      "عنكبوت",
+      "رتيلا"
+    ],
+    "en": [
+      "Spider"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "akrep",
+      "sinek"
+    ],
+    "gozden_gecirildi": true
   },
   "para": {
     "ad_tr": "para",
@@ -1079,6 +2519,28 @@
       "ak saç (ağarma)"
     ]
   },
+  "sakal": {
+    "ad_tr": "sakal",
+    "varyantlar_tr": [
+      "yanak sakalı (azar)",
+      "alt dudak altı sakalı"
+    ],
+    "ar": [
+      "لحية",
+      "عذار الخد",
+      "عنفقة"
+    ],
+    "en": [
+      "Beard"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "sac",
+      "yuz"
+    ],
+    "gozden_gecirildi": true
+  },
   "savas": {
     "ad_tr": "savaş",
     "ar": [
@@ -1098,6 +2560,24 @@
       "olum"
     ],
     "varyantlar_tr": []
+  },
+  "serce": {
+    "ad_tr": "serçe",
+    "varyantlar_tr": [],
+    "ar": [
+      "عصفور",
+      "العصفور"
+    ],
+    "en": [
+      "Sparrow"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kus",
+      "karga"
+    ],
+    "gozden_gecirildi": true
   },
   "seytan": {
     "ad_tr": "şeytan",
@@ -1119,6 +2599,61 @@
     ],
     "varyantlar_tr": []
   },
+  "simsek": {
+    "ad_tr": "şimşek",
+    "varyantlar_tr": [],
+    "ar": [
+      "برق"
+    ],
+    "en": [
+      "Lightning"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "yagmur",
+      "bulut",
+      "gokyuzu"
+    ],
+    "gozden_gecirildi": true
+  },
+  "sinek": {
+    "ad_tr": "sinek",
+    "varyantlar_tr": [
+      "sinekler"
+    ],
+    "ar": [
+      "ذباب",
+      "الذباب"
+    ],
+    "en": [
+      "Flies"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ari",
+      "cekirge"
+    ],
+    "gozden_gecirildi": true
+  },
+  "sirt": {
+    "ad_tr": "sırt",
+    "varyantlar_tr": [],
+    "ar": [
+      "ظهر"
+    ],
+    "en": [
+      "Back"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "karin",
+      "boyun"
+    ],
+    "gozden_gecirildi": true
+  },
   "su": {
     "ad_tr": "su",
     "ar": [
@@ -1137,6 +2672,30 @@
       "yagmur"
     ],
     "varyantlar_tr": []
+  },
+  "sultan": {
+    "ad_tr": "sultan",
+    "varyantlar_tr": [
+      "hükümdar",
+      "kral"
+    ],
+    "ar": [
+      "سلطان",
+      "السلطان",
+      "ملك",
+      "الملك"
+    ],
+    "en": [
+      "Sovereign",
+      "King"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "asker",
+      "kilic"
+    ],
+    "gozden_gecirildi": true
   },
   "sut": {
     "ad_tr": "süt",
@@ -1179,6 +2738,48 @@
     ],
     "varyantlar_tr": []
   },
+  "tilki": {
+    "ad_tr": "tilki",
+    "varyantlar_tr": [],
+    "ar": [
+      "ثعلب"
+    ],
+    "en": [
+      "Fox"
+    ],
+    "bab_kategorisi": "hayvan",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kurt",
+      "kopek"
+    ],
+    "gozden_gecirildi": true
+  },
+  "toprak": {
+    "ad_tr": "toprak",
+    "varyantlar_tr": [
+      "yer (arz, toprak)"
+    ],
+    "ar": [
+      "تراب",
+      "التراب",
+      "طين",
+      "أرض"
+    ],
+    "en": [
+      "Dirt",
+      "Earth",
+      "Soil"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su",
+      "dag",
+      "tas"
+    ],
+    "gozden_gecirildi": true
+  },
   "ucmak": {
     "ad_tr": "uçmak",
     "ar": [
@@ -1199,6 +2800,25 @@
     ],
     "varyantlar_tr": []
   },
+  "vadi": {
+    "ad_tr": "vadi",
+    "varyantlar_tr": [],
+    "ar": [
+      "وادي",
+      "الوادي"
+    ],
+    "en": [
+      "Valley"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "dag",
+      "nehir",
+      "su"
+    ],
+    "gozden_gecirildi": true
+  },
   "yagmur": {
     "ad_tr": "yağmur",
     "ar": [
@@ -1217,6 +2837,57 @@
       "gokyuzu"
     ],
     "varyantlar_tr": []
+  },
+  "yara": {
+    "ad_tr": "yara",
+    "varyantlar_tr": [
+      "yaralar"
+    ],
+    "ar": [
+      "جراحة",
+      "جرح",
+      "قروح"
+    ],
+    "en": [
+      "Canker",
+      "Wound",
+      "Sores"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kan",
+      "hastalik"
+    ],
+    "gozden_gecirildi": true
+  },
+  "yemek": {
+    "ad_tr": "yemek",
+    "varyantlar_tr": [
+      "kızartılmış yiyecek",
+      "etle pişirilmiş yemek",
+      "yemek yemek",
+      "kıymalı yemek",
+      "yiyecek"
+    ],
+    "ar": [
+      "طعام",
+      "الطعام",
+      "الغذاء",
+      "مقلو"
+    ],
+    "en": [
+      "Eating",
+      "Hash"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "ekmek",
+      "et",
+      "su"
+    ],
+    "gozden_gecirildi": true
   },
   "yilan": {
     "ad_tr": "yılan",
@@ -1288,6 +2959,63 @@
       "ana yollar",
       "makadam yol"
     ]
+  },
+  "yumurta": {
+    "ad_tr": "yumurta",
+    "varyantlar_tr": [],
+    "ar": [
+      "بيض"
+    ],
+    "en": [
+      "Eggs"
+    ],
+    "bab_kategorisi": "yasam",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "kus",
+      "yemek"
+    ],
+    "gozden_gecirildi": true
+  },
+  "yuz": {
+    "ad_tr": "yüz",
+    "varyantlar_tr": [],
+    "ar": [
+      "وجه"
+    ],
+    "en": [
+      "Face"
+    ],
+    "bab_kategorisi": "beden",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "goz",
+      "burun",
+      "sac"
+    ],
+    "gozden_gecirildi": true
+  },
+  "yuzmek": {
+    "ad_tr": "yüzmek",
+    "varyantlar_tr": [
+      "yüzme",
+      "yüzmek (suda süzülmek)"
+    ],
+    "ar": [
+      "سباحة"
+    ],
+    "en": [
+      "Floating",
+      "Swimming"
+    ],
+    "bab_kategorisi": "doga",
+    "hvdc_kategorisi": null,
+    "ilgili": [
+      "su",
+      "deniz",
+      "nehir"
+    ],
+    "gozden_gecirildi": true
   },
   "yuzuk": {
     "ad_tr": "yüzük",

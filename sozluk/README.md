@@ -9,4 +9,6 @@ değişikliği commit geçmişinde görünür.
 - `gozden_gecirildi: true` olmayan sembol MVP'de kullanılmaz.
 - Her değişiklikten sonra `uv run pytest tests/test_sozluk.py` çalıştır.
 
+> **Not (4 Kasım 2026):** Sözlük 143 sembole çıkarıldı. Yeni 85 sembolü EVREN önerdi, Claude listeyi gözden geçirdi; kullanıcı henüz onaylamadı.
+
 > **Not (2 Kasım 2026):** İlk 58 sembolü EVREN önerdi, Claude denetledi ve `gozden_gecirildi: true` yaptı; proje sahibi işi devrettiği için kendi gözden geçirmesi henüz yapılmadı. Bu listeyi okuyup düzeltmek hâlâ açık bir iştir.
