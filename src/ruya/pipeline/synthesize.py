@@ -20,7 +20,7 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
-from ruya.config import MODEL_SENTEZ
+from ruya.config import MODEL_SENTEZ, SOHBET_EK_ALANLARI
 from ruya.etik import GUVENLIK_NOTU, UYARI_METNI
 from ruya.hatalar import YanitBozuk
 from ruya.llm.client import LLMIstemcisi
@@ -31,6 +31,7 @@ from ruya.schemas import (
     CikarimSonucu,
     Eslesme,
     Getirilenler,
+    Kosul,
     Kullanim,
     Madde,
     Yorum,
@@ -38,13 +39,17 @@ from ruya.schemas import (
     getirme_anahtari,
 )
 
-TALIMAT = "sentez_v2"
+TALIMAT = "sentez_v3"
 
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 16000
 # Uzun maddeler isteği şişirip yavaşlatır; atıf doğrulama yine tam metne bakar.
 EN_UZUN_METIN_TR = 600
 EN_UZUN_METIN_ASLI = 200
+# Bağlamla eşleştirilebilen koşul alanları (docs/05).
+KOSUL_ALANLARI = ("cinsiyet", "medeni_hal", "mevsim")
+# İstek şişmesin diye madde başına en fazla bu kadar koşul satırı verilir.
+EN_FAZLA_KOSUL = 3
 
 
 # --- Model yanıtının ham biçimi ---------------------------------------------
@@ -90,9 +95,12 @@ def _bosluklari_normalize(metin: str) -> str:
 
 
 def _baslik(madde: Madde) -> str:
-    """Atıf başlığı maddeden gelir: ``<yazar> · <başlık ya da sembol>``."""
-    ad = madde.baslik_asli or madde.sembol_tr or madde.entry_id
-    return f"{madde.yazar} · {ad}"
+    """Atıf başlığı maddeden gelir: ``<yazar> · <sembol ya da başlık>``.
+
+    İkisi de yoksa yalnızca yazar döner; ``entry_id`` başlığa hiç girmez.
+    """
+    ad = madde.sembol_tr or madde.baslik_asli
+    return f"{madde.yazar} · {ad}" if ad else madde.yazar
 
 
 def _alinti_dogrula(alinti: str, madde: Madde) -> str:
@@ -172,6 +180,41 @@ def _maddesi_olanlar(eslesmeler: list[Eslesme], getirilenler: Getirilenler) -> l
     return [eslesme for eslesme in eslesmeler if getirilenler.get(getirme_anahtari(eslesme))]
 
 
+def _ek_satirlar(madde: Madde, baglam: Baglam | None) -> list[str]:
+    """Kaynağın metinlerinden sonra gelen isteğe bağlı ``Koşul:`` ve ``Dayanak:`` satırları.
+
+    Bağlamda koşul alanlarından en az biri doluysa yalnızca o alanlara ait koşullar verilir,
+    değeri bağlama uyanlar önce gelir; bağlam yoksa ilk koşullar alınır. Madde başına en fazla
+    ``EN_FAZLA_KOSUL`` koşul satırı yazılır.
+    """
+    satirlar: list[str] = []
+    kosullar = madde.kosullar or []
+    baglam_alanlari = {
+        alan: getattr(baglam, alan)
+        for alan in KOSUL_ALANLARI
+        if baglam is not None and getattr(baglam, alan) is not None
+    }
+    if baglam_alanlari:
+        uyanlar: list[Kosul] = []
+        digerleri: list[Kosul] = []
+        for kosul in kosullar:
+            if not any(alan in kosul.kosul for alan in baglam_alanlari):
+                continue
+            if any(kosul.kosul.get(alan) == deger for alan, deger in baglam_alanlari.items()):
+                uyanlar.append(kosul)
+            else:
+                digerleri.append(kosul)
+        secilen = (uyanlar + digerleri)[:EN_FAZLA_KOSUL]
+    else:
+        secilen = kosullar[:EN_FAZLA_KOSUL]
+    for kosul in secilen:
+        alanlar = ", ".join(f"{alan}={deger}" for alan, deger in kosul.kosul.items())
+        satirlar.append(f'Koşul: {alanlar} · "{kosul.yorum_tr}"')
+    if madde.yontem:
+        satirlar.append("Dayanak: " + ", ".join(madde.yontem))
+    return satirlar
+
+
 def _kullanici_mesaji(
     eslesmeler: list[Eslesme],
     maddeler: dict[str, Madde],
@@ -203,6 +246,7 @@ def _kullanici_mesaji(
         elif madde.metin_tr:
             satirlar.append(madde.metin_tr[:EN_UZUN_METIN_TR])
         satirlar.append(madde.metin_asli[:EN_UZUN_METIN_ASLI])
+        satirlar.extend(_ek_satirlar(madde, baglam))
         satirlar.append("")
     return "\n".join(satirlar).rstrip()
 
@@ -215,6 +259,7 @@ def _istek_kur(
 ) -> dict[str, Any]:
     """OpenAI uyumlu sohbet gövdesi: sabit sistem talimatı başta, kaynaklar sonda."""
     return {
+        **SOHBET_EK_ALANLARI,
         "model": MODEL_SENTEZ,
         "max_tokens": EN_UZUN_CIKTI_TOKEN,
         "messages": [

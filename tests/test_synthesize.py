@@ -15,8 +15,10 @@ from ruya.pipeline import synthesize as sentez
 from ruya.schemas import (
     Aday,
     Atif,
+    Baglam,
     CikarimSonucu,
     Eslesme,
+    Kosul,
     Kullanim,
     Madde,
     Sembol,
@@ -35,6 +37,8 @@ def _madde(
     sembol_tr: str | None = None,
     metin_tr: str | None = None,
     metin_asli: str = "(asıl metin)",
+    kosullar: list[Kosul] | None = None,
+    yontem: list[str] | None = None,
 ) -> Madde:
     """Testte kullanılacak en küçük geçerli Madde."""
     return Madde(
@@ -51,6 +55,8 @@ def _madde(
         symbol_ids=["yilan"],
         metin_asli=metin_asli,
         metin_tr=metin_tr,
+        kosullar=kosullar,
+        yontem=yontem,
     )
 
 
@@ -138,7 +144,7 @@ def test_gecerli_atif_korunur():
     assert isinstance(bolumler[0], YorumBolumu)
     assert bolumler[0].metin == "Nablusi'ye göre siyah yılan güçlü bir düşmandır."
     assert bolumler[0].atiflar == [
-        Atif(entry_id="nablusi:004310", baslik="Abdülganî en-Nablusî · حية", alinti=ALINTI)
+        Atif(entry_id="nablusi:004310", baslik="Abdülganî en-Nablusî · yılan", alinti=ALINTI)
     ]
 
 
@@ -204,6 +210,26 @@ def test_baslik_asli_yoksa_sembol_tr_kullanilir():
     )
 
     assert bolumler[0].atiflar[0].baslik == "Gustavus Hindman Miller · yılan"
+
+
+def test_sembol_tr_baslik_asli_yerine_kullanilir():
+    bolumler = sentez.atiflari_dogrula(
+        _veri(_bolum("Cümle.", _kaynak("nablusi:004310", ALINTI))),
+        {"nablusi:004310": NABLUSI},
+    )
+
+    assert bolumler[0].atiflar[0].baslik == "Abdülganî en-Nablusî · yılan"
+
+
+def test_ikisi_de_yoksa_baslik_yalnizca_yazar_ve_entry_id_icermez():
+    adsiz = _madde("miller:018712", "miller", yazar="Gustavus Hindman Miller")
+    bolumler = sentez.atiflari_dogrula(
+        _veri(_bolum("Cümle.", _kaynak("miller:018712", "(asıl metin)"))),
+        {"miller:018712": adsiz},
+    )
+
+    assert bolumler[0].atiflar[0].baslik == "Gustavus Hindman Miller"
+    assert "miller:018712" not in bolumler[0].atiflar[0].baslik
 
 
 def test_baslik_bolumunun_atiflari_bos_kalir_ve_sira_korunur():
@@ -292,13 +318,14 @@ def _calistir(
     cikarim: CikarimSonucu | None = None,
     eslesmeler: list[Eslesme] | None = None,
     getirilenler: dict[str, list[Aday]] | None = None,
+    baglam: Baglam | None = None,
 ):
     istemci = SahteIstemci(govde)
     yorum, kullanim = sentez.synthesize(
         _cikarim() if cikarim is None else cikarim,
         [_eslesme("yılan")] if eslesmeler is None else eslesmeler,
         _getirilenler() if getirilenler is None else getirilenler,
-        None,
+        baglam,
         istemci,
     )
     return istemci, yorum, kullanim
@@ -325,7 +352,13 @@ def test_ruya_icerir_true_ile_gonderilir():
 def test_sistem_mesaji_sentez_talimati():
     istemci, _, _ = _calistir()
 
-    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v2")
+    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v3")
+
+
+def test_istekte_dusunme_adimi_kapatilir():
+    istemci, _, _ = _calistir()
+
+    assert _istek(istemci)["chat_template_kwargs"] == {"enable_thinking": False}
 
 
 def _sembol_satirlari(kullanici: str) -> list[str]:
@@ -387,6 +420,92 @@ def test_pasaj_yoksa_metin_tr_kirpilarak_gonderilir():
     assert UZUN_ALINTI not in kullanici
 
 
+def _kosullu_madde(kosullar: list[Kosul], yontem: list[str] | None = None) -> Madde:
+    return _madde(
+        "nablusi:004320",
+        "nablusi",
+        yazar="Abdülganî en-Nablusî",
+        sembol_tr="yılan",
+        metin_tr="Yılan rüyada düşmanla yorumlanır.",
+        metin_asli="حية يدل على عدو",
+        kosullar=kosullar,
+        yontem=yontem,
+    )
+
+
+def _kosul_satirlari(kullanici: str) -> list[str]:
+    return [s for s in kullanici.splitlines() if s.startswith(("Koşul:", "Dayanak:"))]
+
+
+def test_kosullar_ve_yontem_kaynak_metinlerinden_sonra_yazilir():
+    madde = _kosullu_madde(
+        [Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadın görürse evlenir.")],
+        yontem=["zit", "kok"],
+    )
+    istemci, _, _ = _calistir(getirilenler={"yilan": [Aday(madde=madde, skor=2.0)]})
+
+    satirlar = _mesajlar(_istek(istemci))["user"].splitlines()
+    kosul = satirlar.index('Koşul: cinsiyet=kadin · "Kadın görürse evlenir."')
+    dayanak = satirlar.index("Dayanak: zit, kok")
+    assert satirlar.index(madde.metin_asli) < kosul < dayanak
+
+
+def test_kosul_ve_yontem_yoksa_satir_yazilmaz():
+    istemci, _, _ = _calistir()
+
+    assert _kosul_satirlari(_mesajlar(_istek(istemci))["user"]) == []
+
+
+def test_baglam_yoksa_ilk_kosullar_alinir_ve_en_fazla_uc_yazilir():
+    kosullar = [Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr=f"Koşul {i}.") for i in range(5)]
+    madde = _kosullu_madde(kosullar)
+    istemci, _, _ = _calistir(getirilenler={"yilan": [Aday(madde=madde, skor=2.0)]})
+
+    satirlar = _kosul_satirlari(_mesajlar(_istek(istemci))["user"])
+    assert satirlar == [
+        'Koşul: cinsiyet=kadin · "Koşul 0."',
+        'Koşul: cinsiyet=kadin · "Koşul 1."',
+        'Koşul: cinsiyet=kadin · "Koşul 2."',
+    ]
+
+
+def test_baglam_varsa_yalnizca_baglam_alanlarina_ait_kosullar_ve_uyanlar_once():
+    kosullar = [
+        Kosul(kosul={"renk": "siyah"}, yorum_tr="Siyah için."),
+        Kosul(kosul={"cinsiyet": "erkek"}, yorum_tr="Erkek için."),
+        Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadın için."),
+    ]
+    madde = _kosullu_madde(kosullar)
+    istemci, _, _ = _calistir(
+        getirilenler={"yilan": [Aday(madde=madde, skor=2.0)]},
+        baglam=Baglam(cinsiyet="kadin"),
+    )
+
+    satirlar = _kosul_satirlari(_mesajlar(_istek(istemci))["user"])
+    assert satirlar == [
+        'Koşul: cinsiyet=kadin · "Kadın için."',
+        'Koşul: cinsiyet=erkek · "Erkek için."',
+    ]
+
+
+def test_baglamda_kosul_alani_yoksa_ilk_kosullar_alinir():
+    kosullar = [
+        Kosul(kosul={"renk": "siyah"}, yorum_tr="Siyah için."),
+        Kosul(kosul={"cinsiyet": "kadin"}, yorum_tr="Kadın için."),
+    ]
+    madde = _kosullu_madde(kosullar)
+    istemci, _, _ = _calistir(
+        getirilenler={"yilan": [Aday(madde=madde, skor=2.0)]},
+        baglam=Baglam(gurbette=True),
+    )
+
+    satirlar = _kosul_satirlari(_mesajlar(_istek(istemci))["user"])
+    assert satirlar == [
+        'Koşul: renk=siyah · "Siyah için."',
+        'Koşul: cinsiyet=kadin · "Kadın için."',
+    ]
+
+
 def test_pasaj_varken_atif_dogrulama_tam_maddeye_bakar():
     govde = {
         "bolumler": [
@@ -404,7 +523,7 @@ def test_pasaj_varken_atif_dogrulama_tam_maddeye_bakar():
     assert PASAJ in kullanici
     assert UZUN_ALINTI not in kullanici
     assert yorum.bolumler[0].atiflar == [
-        Atif(entry_id="nablusi:004312", baslik="Abdülganî en-Nablusî · حية", alinti=UZUN_ALINTI)
+        Atif(entry_id="nablusi:004312", baslik="Abdülganî en-Nablusî · yılan", alinti=UZUN_ALINTI)
     ]
 
 
@@ -443,7 +562,7 @@ def test_bolumler_ve_dogrulanmis_atiflar_doner():
     ]
     assert yorum.bolumler[0].atiflar == []
     assert yorum.bolumler[1].atiflar == [
-        Atif(entry_id="nablusi:004310", baslik="Abdülganî en-Nablusî · حية", alinti=ALINTI)
+        Atif(entry_id="nablusi:004310", baslik="Abdülganî en-Nablusî · yılan", alinti=ALINTI)
     ]
     assert yorum.metin == "".join(b.metin for b in yorum.bolumler)
 
