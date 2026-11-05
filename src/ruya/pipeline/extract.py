@@ -15,7 +15,7 @@ from typing import Any
 
 from pydantic import ValidationError
 
-from ruya.config import MODEL_CIKARIM
+from ruya.config import MODEL_CIKARIM, SOHBET_EK_ALANLARI
 from ruya.hatalar import YanitBozuk
 from ruya.llm.client import LLMIstemcisi
 from ruya.llm.talimatlar import talimat_oku
@@ -30,6 +30,7 @@ EN_UZUN_CIKTI_TOKEN = 8000
 def _istek_kur(girdi: RuyaGirdisi) -> dict[str, Any]:
     """OpenAI uyumlu sohbet gövdesi: sabit sistem talimatı başta, rüya metni sonda."""
     return {
+        **SOHBET_EK_ALANLARI,
         "model": MODEL_CIKARIM,
         "max_tokens": EN_UZUN_CIKTI_TOKEN,
         "messages": [

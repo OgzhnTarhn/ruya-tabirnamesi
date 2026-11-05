@@ -98,6 +98,12 @@ def test_response_format_json_semasi_ister():
     assert bicim["json_schema"]["strict"] is True
 
 
+def test_istekte_dusunme_adimi_kapatilir():
+    istemci, _, _ = _calistir()
+
+    assert _istek(istemci)["chat_template_kwargs"] == {"enable_thinking": False}
+
+
 # --- sonuç ------------------------------------------------------------------
 
 

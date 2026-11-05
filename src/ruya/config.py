@@ -48,6 +48,10 @@ CEVIRI_TARIHI = dt.date(2026, 11, 2)
 LLM_ADRESI = "https://evren-llmapi.ssyz.org.tr"
 LLM_ANAHTAR_DEGISKENI = "EVREN_LLM_API_KEY"
 
+# DeepSeek'in düşünme adımı kapatılır: kısa bir istek 77 s yerine 7 s sürdü;
+# yanıt zaten şemayla denetleniyor, atıflar kodda doğrulanıyor.
+SOHBET_EK_ALANLARI: dict = {"chat_template_kwargs": {"enable_thinking": False}}
+
 
 @dataclass(frozen=True)
 class Fiyat:
