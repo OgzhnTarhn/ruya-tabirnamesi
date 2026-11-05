@@ -10,7 +10,8 @@ Her kaynak için sırayla:
    bütün maddelere ``symbol_ids`` atanır (``sembol_ata``).
 5. Koşullu yorumlar kural tabanlı çıkarılır (``maddelere_uygula``, docs/13).
 6. Anlam türetme yolları etiketlenir (``yontemleri_uygula``, docs/05).
-7. Bütün maddeler ``Ayarlar().maddeler_dosyasi`` dosyasına yazılır.
+7. Hükümdara ya da bir yerin halkına yönelik maddeler işaretlenir (``kapsamlari_uygula``).
+8. Bütün maddeler ``Ayarlar().maddeler_dosyasi`` dosyasına yazılır.
 
 Çeviri kimlikleri maddelerle uyuşmazsa ``ceviriyi_uygula`` ``ValueError`` yükseltir ve
 betik durur. Bilgisayarda çalışır, veri gerektirir::
@@ -23,6 +24,7 @@ from __future__ import annotations
 from ruya.config import CEVIRI_MODEL_ETIKETI, CEVIRI_TARIHI, Ayarlar
 from ruya.dosya import jsonl_yaz
 from ruya.enrich.ceviri_birlestir import ceviri_oku, ceviriyi_uygula
+from ruya.enrich.kapsam_kurallari import maddelere_uygula as kapsamlari_uygula
 from ruya.enrich.kosul_kurallari import maddelere_uygula
 from ruya.enrich.sembol_ata import sembol_ata
 from ruya.enrich.yontem_kurallari import maddelere_uygula as yontemleri_uygula
@@ -58,6 +60,7 @@ def main() -> None:
     butun_maddeler = sembol_ata(butun_maddeler, varyant_tablosu(sozluk))
     butun_maddeler = maddelere_uygula(butun_maddeler)
     butun_maddeler = yontemleri_uygula(butun_maddeler)
+    butun_maddeler = kapsamlari_uygula(butun_maddeler)
 
     jsonl_yaz(butun_maddeler, ayarlar.maddeler_dosyasi)
 
@@ -73,6 +76,8 @@ def main() -> None:
 
     yontemli = sum(1 for m in butun_maddeler if m.yontem)
     print(f"yöntem etiketli: {yontemli} madde")
+    kapsamli = sum(1 for m in butun_maddeler if m.kapsam)
+    print(f"kapsam etiketli: {kapsamli} madde")
 
     sorunlar = sozluk_maddeler_tutarliligi(sozluk, butun_maddeler)
     if sorunlar:

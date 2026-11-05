@@ -49,7 +49,7 @@ Gerçek veride görülen koşul türleri:
 | `mevsim` | yaz / kış / … | Buz yazın nimet, kışın meşakkat (İbn Sirin tercümesi) |
 | `durum` | hasta / gurbette / mazlum / sapkın / zengin / fakir | "وإن رآه مظلوم انتصر" (mazlum görürse zafer bulur, Nablusi) |
 | `din` | Müslüman / Hristiyan / … | Kilise görmek (Ekinci, ikincil kaynak) |
-| `kapsam` | kişi / vilayet / padişah | Bazı tabirler kişiye değil topluma yöneliktir |
+| `kapsam` | kişi / vilayet / padişah | Bazı tabirler kişiye değil topluma yöneliktir. Dar kurallarla işaretlenir (`enrich/kapsam_kurallari.py`) ve sentezde `Kapsam:` satırı olarak verilir |
 
 **Nasıl uygulanacak:**
 

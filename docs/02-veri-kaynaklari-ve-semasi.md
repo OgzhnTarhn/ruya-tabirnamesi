@@ -115,6 +115,7 @@ Alan kuralları:
 - `atif_notu` alanı İbn Sirin kayıtlarında `"Nispeti sahih değil (OpenITI metadatası)"` değerini alır.
 - `ust_madde_id` alt paragrafları başlıklı maddelerine bağlar.
 - `kosullar`, `yontem` ve `kapsam` alanları Aşama 3'te doldurulur. O zamana kadar `null` kalır.
+- `kapsam` yalnızca `padisah` ya da `vilayet` yazılarak doldurulur ve maddenin en az bir cümlesini anlatır; `null` olan madde kişiye yönelik sayılır.
 - `lisans` hiçbir zaman boş olamaz. Şema boş bırakılırsa hata verir; kodlar [KAYNAKLAR.md](KAYNAKLAR.md), bölüm 5'te.
 - `yontem` bir etiket listesidir (`["zit"]` gibi; bkz. [terimler.md](terimler.md), bölüm 4).
 

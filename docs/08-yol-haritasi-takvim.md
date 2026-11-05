@@ -137,7 +137,7 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 - [x] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
 - [x] `enrich/kosul_kurallari.py` ve `yontem_kurallari.py`: `kosullar` ve `yontem`, kural tabanlı
-- [ ] `kapsam` alanı; 20 maddeyi elle kontrol et
+- [x] `enrich/kapsam_kurallari.py`: `kapsam`, kural tabanlı (116 madde; 20 maddenin elle kontrolü sende)
 - [ ] Bab ve HVDC kategorilerini `symbols.json` dosyasına ekle
 
 ### Hafta 9 · 21–27 Aralık · Aşama 3: Bağlam ve rüya türü

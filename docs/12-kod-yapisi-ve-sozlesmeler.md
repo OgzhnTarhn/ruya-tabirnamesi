@@ -95,7 +95,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `ingest/nablusi.py`, `miller.py`, `freud.py`, `ibn_sirin.py` | `ayristir(ham_dosya) -> Iterator[Madde]` | ✅ |
 | `enrich/ceviri_birlestir.py` | `ceviri_oku`, `ceviriyi_uygula`: `data/interim/ceviri/` çıktılarını maddelere işler | ✅ |
 | `enrich/sembol_ata.py` | `sembol_ata(maddeler, varyantlar)`: LLM'siz sembol atama | ✅ |
-| `enrich/kosul_kurallari.py`, `yontem_kurallari.py` | `kosullari_cikar`, `yontemleri_cikar`, `maddelere_uygula`: kural tabanlı koşul ve yöntem etiketleri | ✅ |
+| `enrich/kosul_kurallari.py`, `yontem_kurallari.py`, `kapsam_kurallari.py` | `kosullari_cikar`, `yontemleri_cikar`, `kapsami_cikar`, `maddelere_uygula`: kural tabanlı koşul, yöntem ve kapsam etiketleri | ✅ |
 | `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | ✅ |
 | `index/store.py` | `MaddeDeposu`, `BellekDeposu` | ✅ |
 | `index/parcalar.py`, `bm25.py`, `build_vectors.py` | Bölüm 5b | ✅ |
