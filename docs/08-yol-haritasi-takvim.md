@@ -136,8 +136,8 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 ### Hafta 8 · 14–20 Aralık · Aşama 3: İbn Sirin ve koşullar
 
 - [x] `ingest/ibn_sirin.py` ve "nispeti sahih değil" atıf notu
-- [x] `enrich/kosul_kurallari.py`: yalnız `kosullar`, kural tabanlı
-- [ ] `yontem` ve `kapsam` alanları; 20 maddeyi elle kontrol et
+- [x] `enrich/kosul_kurallari.py` ve `yontem_kurallari.py`: `kosullar` ve `yontem`, kural tabanlı
+- [ ] `kapsam` alanı; 20 maddeyi elle kontrol et
 - [ ] Bab ve HVDC kategorilerini `symbols.json` dosyasına ekle
 
 ### Hafta 9 · 21–27 Aralık · Aşama 3: Bağlam ve rüya türü
@@ -153,7 +153,7 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 ### Hafta 11 · 4–10 Ocak · Aşama 3: Uzlaşı/ayrışma çıktısı → **v0.3**
 
-- [ ] `prompts/sentez_v2.md`: koşullu yorum, "Uzlaşılan / Ayrışan / Diğer vecihler" çıktısı ve yöntem açıklamaları
+- [x] `prompts/sentez_v3.md`: koşullu yorum, "Uzlaşılan / Ayrışan" çıktısı ve dayanak açıklamaları ("Diğer vecihler" bölümü yok)
 - [ ] Tam ölçüm ve v1 ile karşılaştırma, ardından `v0.3` etiketi
 
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
