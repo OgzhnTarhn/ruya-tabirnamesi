@@ -69,7 +69,7 @@ Gerçek veride görülen koşul türleri:
 ### Katman 5 · İki eksenli sembol taksonomisi (Aşama 0'da basit, Aşama 3'te tam)
 
 - **Klasik eksen (`bab_kategorisi`):** Elbir & Uludüz 2019'daki 53 bab, yaklaşık 15 üst kategoriye sadeleştirilecek: kutsal varlıklar; gök cisimleri; su; ateş ve ışık; yeryüzü ve yapılar; ibadet; insan ve beden; aile; eşya; yiyecek; giyim; silah; ölüm; hayvanlar; meslekler.
-- **Modern eksen (`hvdc_kategorisi`):** Hall & Van de Castle'ın 10 kategorisi: karakterler, etkileşimler, duygular, aktiviteler, çabalama, şans ve talihsizlik, mekânlar ve nesneler, betimleyici öğeler, yiyecek, geçmişten öğeler.
+- **Modern eksen (`hvdc_kategorisi`):** Hall & Van de Castle'ın 10 kategorisi: karakterler, etkileşimler, duygular, aktiviteler, çabalama, şans ve talihsizlik, mekânlar ve nesneler, betimleyici öğeler, yiyecek, geçmişten öğeler. Hayvanlar "karakterler", beden parçaları "mekânlar ve nesneler" sayılır; alan adları `schemas.py` içindeki `BabKategorisi` ve `HvdcKategorisi` türlerindedir.
 - **Neden iki eksen:** Kullanıcıya "rüyanda en çok hayvan ve su sembolleri var" gibi bir özet gösterilebilir. Değerlendirmede de kategori bazında başarı ölçülebilir.
 
 ## 3. Sentez talimatının kuralları (`prompts/sentez_v1.md` için taslak)

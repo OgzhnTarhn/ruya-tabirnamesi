@@ -8,8 +8,8 @@
     "en": [
       "Ablution"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "namaz",
       "dua",
@@ -23,12 +23,12 @@
       "شجرة",
       "شجر"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Trees"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "dag",
       "yagmur",
@@ -50,8 +50,8 @@
       "Crying",
       "Weeping"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "duygular",
     "ilgili": [
       "cenaze",
       "olum",
@@ -68,8 +68,8 @@
     "en": [
       "Scorpion"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "yilan",
       "orumcek"
@@ -82,12 +82,12 @@
       "ذهب",
       "تبر"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "esya",
     "en": [
       "Gold"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "para",
       "yuzuk",
@@ -109,8 +109,8 @@
     "en": [
       "Key"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kilit",
       "kapi"
@@ -126,8 +126,8 @@
     "en": [
       "Mother"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "aile",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "baba"
     ],
@@ -145,8 +145,8 @@
     "en": [
       "Bees"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "bal",
       "cekirge"
@@ -167,8 +167,8 @@
     "en": [
       "Soldiers"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "meslekler",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "savas",
       "kilic",
@@ -183,12 +183,12 @@
       "أسد",
       "لبوة"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Lion"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "savas"
     ],
@@ -204,13 +204,13 @@
       "رمكة",
       "الحجرة"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Horse",
       "Mare"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "savas",
       "yol"
@@ -228,12 +228,12 @@
       "نار",
       "النار"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "ates_isik",
     "en": [
       "Fire"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "cehennem",
       "gunes",
@@ -247,12 +247,12 @@
       "قمر",
       "شهر"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "gok_cisimleri",
     "en": [
       "Moon"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "gunes",
       "gokyuzu",
@@ -267,12 +267,12 @@
       "قدم",
       "الرجلان"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Feet"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "el",
       "yol"
@@ -290,8 +290,8 @@
     "en": [
       "Father"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "aile",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "anne",
       "ogul"
@@ -313,8 +313,8 @@
       "Garden",
       "Orchard"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "agac",
       "meyve",
@@ -331,8 +331,8 @@
     "en": [
       "Honey"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "ari",
       "meyve"
@@ -345,12 +345,12 @@
       "سمك",
       "السمك"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Fish"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "deniz",
       "su"
@@ -362,12 +362,12 @@
     "ar": [
       "رأس"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Head"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "sac",
       "goz"
@@ -382,14 +382,14 @@
       "أولاد",
       "غلام"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "aile",
     "en": [
       "Baby",
       "Infants",
       "Children"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kadin",
       "ev"
@@ -414,8 +414,8 @@
       "Knife",
       "Draw-knife"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "silah",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kilic",
       "demir"
@@ -435,8 +435,8 @@
     "en": [
       "Neck"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "bas",
       "sirt"
@@ -452,8 +452,8 @@
     "en": [
       "Wheat"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "ekin",
       "ekmek",
@@ -475,8 +475,8 @@
       "Clouds",
       "Cloud"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "gok_cisimleri",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "yagmur",
       "gokyuzu",
@@ -500,8 +500,8 @@
       "Nose",
       "Snouts"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "goz",
       "kulak",
@@ -524,8 +524,8 @@
     "en": [
       "Tent"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ev",
       "yol"
@@ -537,12 +537,12 @@
     "ar": [
       "جهنم"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Hell"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "cennet",
       "seytan",
@@ -561,8 +561,8 @@
       "Grasshopper",
       "Locust"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "karinca",
       "ari"
@@ -575,14 +575,14 @@
       "جنازة",
       "نعش"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "olum",
     "en": [
       "Funeral",
       "Hearse",
       "Bier"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "olu",
       "olum"
@@ -596,13 +596,13 @@
       "الجنة",
       "دخول الجنة"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Heaven",
       "Paradise"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "cehennem",
       "melek",
@@ -626,8 +626,8 @@
     "en": [
       "Gazelle"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "dag",
       "koyun"
@@ -645,8 +645,8 @@
       "Jinn",
       "Spirit"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "kutsal_varliklar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "seytan",
       "melek",
@@ -660,12 +660,12 @@
       "جبل",
       "الجبل"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Mountain"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "tas",
       "yol",
@@ -689,8 +689,8 @@
       "Windmill",
       "Coffee Mill"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "bugday",
       "ekin",
@@ -707,8 +707,8 @@
     "en": [
       "Iron"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "altin",
       "kilic"
@@ -721,12 +721,12 @@
       "بحر",
       "البحر"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "su",
     "en": [
       "Sea"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "nehir",
@@ -744,8 +744,8 @@
       "Hide",
       "Leather"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "et",
       "sac"
@@ -760,13 +760,13 @@
       "الناقة",
       "الجمل"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Camels",
       "Dromedary"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "su",
       "sut"
@@ -790,8 +790,8 @@
     "en": [
       "Tongue"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kulak",
       "burun"
@@ -806,12 +806,12 @@
       "ضرس",
       "ضرس الإنسان"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Teeth"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "bas"
     ],
@@ -835,8 +835,8 @@
       "Pig",
       "Pork"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "et",
       "kopek"
@@ -852,8 +852,8 @@
     "en": [
       "Prayer"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "namaz",
       "ezan",
@@ -869,7 +869,7 @@
       "النكاح",
       "نكاح"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "aile",
     "en": [
       "Wedding",
       "Nuptial",
@@ -877,7 +877,7 @@
       "Wedlock"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "kadin",
       "ev",
@@ -906,8 +906,8 @@
       "China Store",
       "Confectionary"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "para",
       "altin"
@@ -922,12 +922,12 @@
       "كبو على الوجه",
       "وقوع في الماء"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Fall"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "sans_talihsizlik",
     "ilgili": [
       "dag",
       "su"
@@ -954,8 +954,8 @@
     "en": [
       "Walls"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ev",
       "kapi"
@@ -972,8 +972,8 @@
     "en": [
       "Crop"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "bugday",
       "toprak"
@@ -988,13 +988,13 @@
       "رقاق الخبز",
       "رغيف"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "yiyecek",
     "en": [
       "Bread",
       "Loaves"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "su",
       "para",
@@ -1013,12 +1013,12 @@
       "اليدان",
       "مفقع اليدين"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Hand"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ayak"
     ],
@@ -1036,14 +1036,14 @@
       "قميص",
       "الكساوي"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "giyim",
     "en": [
       "Shirt",
       "Apparel",
       "Clothes"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kadin",
       "para",
@@ -1070,8 +1070,8 @@
       "Ass",
       "Donkey"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "at",
       "katir"
@@ -1094,8 +1094,8 @@
     "en": [
       "Meat"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "deri",
       "yemek"
@@ -1110,13 +1110,13 @@
       "الدور",
       "البيوت"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Home",
       "House"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kapi",
       "merdiven",
@@ -1135,8 +1135,8 @@
     "en": [
       "Call to prayer"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "mescit",
       "namaz",
@@ -1156,8 +1156,8 @@
       "Mouse",
       "Mice"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kedi",
       "ev"
@@ -1173,8 +1173,8 @@
     "en": [
       "Elephant"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "deve",
       "savas"
@@ -1198,8 +1198,8 @@
       "Man-of-war",
       "Packet"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "deniz",
       "su",
@@ -1213,12 +1213,12 @@
       "السماء",
       "سماء"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "gok_cisimleri",
     "en": [
       "Sky"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "yildiz",
       "ay",
@@ -1235,12 +1235,12 @@
       "عين الإنسان",
       "جفن"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Eye"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "bas"
     ],
@@ -1260,8 +1260,8 @@
     "en": [
       "Laughing"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "duygular",
     "ilgili": [
       "dugun"
     ],
@@ -1276,8 +1276,8 @@
     "en": [
       "Silver"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "altin",
       "para"
@@ -1290,12 +1290,12 @@
       "الشمس",
       "شمس"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "gok_cisimleri",
     "en": [
       "Sun"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ay",
       "gokyuzu",
@@ -1310,13 +1310,13 @@
       "الحمامة",
       "الورشان"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Doves",
       "Pigeon"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kus",
       "ucmak"
@@ -1335,8 +1335,8 @@
     "en": [
       "Pilgrimage"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "kabe",
       "mescit",
@@ -1355,8 +1355,8 @@
     "en": [
       "Turkish Baths"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "ev"
@@ -1370,14 +1370,14 @@
       "سجن",
       "السجن"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Gaol",
       "Penitentiary",
       "Dungeon"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kapi",
       "ev"
@@ -1395,14 +1395,14 @@
       "حمى",
       "الأمراض والأوجاع"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Disease",
       "Illness",
       "Epidemic"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "sans_talihsizlik",
     "ilgili": [
       "olum",
       "olu",
@@ -1425,8 +1425,8 @@
     "en": [
       "Rooster"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kus",
       "ezan"
@@ -1450,8 +1450,8 @@
       "Dates",
       "Date"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "meyve",
       "agac",
@@ -1471,8 +1471,8 @@
     "en": [
       "Pearls"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "deniz",
       "altin"
@@ -1498,8 +1498,8 @@
       "Cattle",
       "Cows"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "sut",
       "et"
@@ -1516,8 +1516,8 @@
     "en": [
       "Ropes"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kuyu"
     ],
@@ -1533,8 +1533,8 @@
     "en": [
       "Kaaba"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "hac",
       "mescit",
@@ -1559,8 +1559,8 @@
       "Goblet",
       "Wine-glass"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su"
     ],
@@ -1574,13 +1574,13 @@
       "عجوز",
       "شابة"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Women",
       "Widow"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "bebek",
       "dugun",
@@ -1602,8 +1602,8 @@
     "en": [
       "Heart"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kan",
       "karin"
@@ -1615,12 +1615,12 @@
     "ar": [
       "دم"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Blood"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "olum",
       "savas",
@@ -1634,13 +1634,13 @@
       "باب",
       "أبواب"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Door",
       "Gate"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ev",
       "yol",
@@ -1660,8 +1660,8 @@
     "en": [
       "Snow"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "su",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "yagmur",
       "bulut",
@@ -1684,8 +1684,8 @@
       "Brothers",
       "Step-sister"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "aile",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "anne",
       "baba"
@@ -1713,8 +1713,8 @@
       "Jackdaw",
       "Rooks"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kus",
       "kartal"
@@ -1732,8 +1732,8 @@
       "Abdomen",
       "Belly"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "sirt",
       "kalp"
@@ -1753,8 +1753,8 @@
     "en": [
       "Ants"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "cekirge",
       "ari"
@@ -1771,8 +1771,8 @@
     "en": [
       "Eagles"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kus",
       "karga"
@@ -1789,8 +1789,8 @@
     "en": [
       "Mule"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "at",
       "esek"
@@ -1803,13 +1803,13 @@
       "سنور",
       "قط"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Cats",
       "Kitten"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kopek"
     ],
@@ -1827,8 +1827,8 @@
     "en": [
       "Sword"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "silah",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "savas",
       "demir",
@@ -1845,8 +1845,8 @@
     "en": [
       "Lock"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "anahtar",
       "kapi"
@@ -1858,12 +1858,12 @@
     "ar": [
       "كتاب"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "esya",
     "en": [
       "Books"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "kuran",
       "namaz",
@@ -1886,8 +1886,8 @@
       "Doomsday",
       "Judgment Day"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "kutsal_varliklar",
+    "hvdc_kategorisi": "sans_talihsizlik",
     "ilgili": [
       "mezar",
       "olum",
@@ -1908,8 +1908,8 @@
       "Girls",
       "Minx"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "aile",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kadin"
     ],
@@ -1920,14 +1920,14 @@
     "ar": [
       "كلب"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Dogs",
       "Mad Dog",
       "Pup"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kedi"
     ],
@@ -1946,8 +1946,8 @@
     "en": [
       "Fears"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "duygular",
     "ilgili": [
       "olum",
       "savas",
@@ -1964,8 +1964,8 @@
     "en": [
       "Running"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "at",
       "yol"
@@ -1985,8 +1985,8 @@
       "Pail",
       "Coal-hod"
     ],
-    "bab_kategorisi": "ev",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "esya",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "kuyu"
@@ -2001,13 +2001,13 @@
       "نعجة",
       "كبش"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Sheep",
       "Ram"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "sut"
     ],
@@ -2026,8 +2026,8 @@
     "en": [
       "Ears"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "goz",
       "burun"
@@ -2042,7 +2042,7 @@
       "آيات القرآن",
       "سور القرآن"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Quran",
       "Koran",
@@ -2050,7 +2050,7 @@
       "Quran verses"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "namaz",
       "peygamber",
@@ -2072,8 +2072,8 @@
     "en": [
       "Wolf"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kopek",
       "tilki",
@@ -2089,14 +2089,14 @@
       "طاوس",
       "الطاووس"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Birds",
       "Peacock",
       "Lark"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "guvercin",
       "ucmak"
@@ -2132,8 +2132,8 @@
     "en": [
       "Well"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "su",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "ip",
@@ -2153,8 +2153,8 @@
       "Monkey",
       "Apes"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "cin",
       "seytan"
@@ -2169,7 +2169,7 @@
       "ملك",
       "حفظة"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Angels",
       "Angel",
@@ -2177,7 +2177,7 @@
       "recording angels"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "cennet",
       "peygamber",
@@ -2196,13 +2196,13 @@
       "سلم",
       "درج"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Ladder",
       "Stairs"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ev",
       "gokyuzu",
@@ -2221,8 +2221,8 @@
     "en": [
       "Mosque"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ezan",
       "namaz",
@@ -2241,8 +2241,8 @@
     "en": [
       "Fruit"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "agac",
       "hurma",
@@ -2268,8 +2268,8 @@
       "Tomb",
       "Cemetery"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "olum",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "olum",
       "cenaze",
@@ -2285,7 +2285,7 @@
       "صلاة الجمعة",
       "سجود الصلاة"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "ibadet",
     "en": [
       "prayer",
       "prayers",
@@ -2293,7 +2293,7 @@
       "worship"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "kuran",
       "cennet"
@@ -2309,12 +2309,12 @@
     "ar": [
       "نهر"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "su",
     "en": [
       "River"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "deniz",
@@ -2333,8 +2333,8 @@
     "en": [
       "Son"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "aile",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "baba",
       "anne"
@@ -2353,8 +2353,8 @@
     "en": [
       "Killing"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "silah",
+    "hvdc_kategorisi": "etkilesimler",
     "ilgili": [
       "olum",
       "olu",
@@ -2370,12 +2370,12 @@
       "الأموات",
       "الصالحون من الأموات"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "olum",
     "en": [
       "Dead"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "olum",
       "cenaze"
@@ -2392,12 +2392,12 @@
       "الموت",
       "ملك الموت"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "olum",
     "en": [
       "Death"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "sans_talihsizlik",
     "ilgili": [
       "olu",
       "cenaze",
@@ -2414,8 +2414,8 @@
     "en": [
       "Fasting"
     ],
-    "bab_kategorisi": "din",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ibadet",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "namaz",
       "dua",
@@ -2435,8 +2435,8 @@
     "en": [
       "Spider"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "akrep",
       "sinek"
@@ -2451,13 +2451,13 @@
       "درهم",
       "دراهم"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "esya",
     "en": [
       "Money",
       "Coins"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "altin",
       "ekmek",
@@ -2477,14 +2477,14 @@
       "الأنبياء",
       "النبي صلى الله عليه وسلم"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Prophet",
       "Prophets",
       "Messenger of God"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kuran",
       "melek",
@@ -2503,12 +2503,12 @@
       "شيب",
       "جعد الشعر"
     ],
-    "bab_kategorisi": "beden",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Hair"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "bas"
     ],
@@ -2533,8 +2533,8 @@
     "en": [
       "Beard"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "sac",
       "yuz"
@@ -2548,13 +2548,13 @@
       "قتال",
       "قتال أهل البغي"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "silah",
     "en": [
       "Battle",
       "War"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "etkilesimler",
     "ilgili": [
       "kan",
       "olum"
@@ -2571,8 +2571,8 @@
     "en": [
       "Sparrow"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kus",
       "karga"
@@ -2585,13 +2585,13 @@
       "شيطان",
       "الشيطان"
     ],
-    "bab_kategorisi": "din",
+    "bab_kategorisi": "kutsal_varliklar",
     "en": [
       "Devil",
       "Satan"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "cehennem",
       "ates",
@@ -2608,8 +2608,8 @@
     "en": [
       "Lightning"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "ates_isik",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "yagmur",
       "bulut",
@@ -2629,8 +2629,8 @@
     "en": [
       "Flies"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "ari",
       "cekirge"
@@ -2646,8 +2646,8 @@
     "en": [
       "Back"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "karin",
       "boyun"
@@ -2660,12 +2660,12 @@
       "ماء",
       "الماء"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "su",
     "en": [
       "Water"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "deniz",
       "nehir",
@@ -2689,8 +2689,8 @@
       "Sovereign",
       "King"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "meslekler",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "asker",
       "kilic"
@@ -2704,12 +2704,12 @@
       "اللبن",
       "لبا"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "yiyecek",
     "en": [
       "Milk"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "su",
       "bebek",
@@ -2725,12 +2725,12 @@
       "حجر",
       "حجارة"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Stone"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "dag",
       "yol",
@@ -2747,8 +2747,8 @@
     "en": [
       "Fox"
     ],
-    "bab_kategorisi": "hayvan",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "hayvanlar",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "kurt",
       "kopek"
@@ -2771,8 +2771,8 @@
       "Earth",
       "Soil"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "dag",
@@ -2786,13 +2786,13 @@
       "طيران",
       "الطيران"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "insan_beden",
     "en": [
       "Flying",
       "Flight"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "gokyuzu",
       "kus",
@@ -2810,8 +2810,8 @@
     "en": [
       "Valley"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yeryuzu_yapilar",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "dag",
       "nehir",
@@ -2825,12 +2825,12 @@
       "مطر",
       "المطر"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "su",
     "en": [
       "Rain"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "su",
       "deniz",
@@ -2853,8 +2853,8 @@
       "Wound",
       "Sores"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "sans_talihsizlik",
     "ilgili": [
       "kan",
       "hastalik"
@@ -2880,8 +2880,8 @@
       "Eating",
       "Hash"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "ekmek",
       "et",
@@ -2895,7 +2895,7 @@
       "حية",
       "ثعبان"
     ],
-    "bab_kategorisi": "hayvan",
+    "bab_kategorisi": "hayvanlar",
     "en": [
       "Adder",
       "Viper",
@@ -2903,7 +2903,7 @@
       "Snakes"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "karakterler",
     "ilgili": [
       "su",
       "seytan"
@@ -2923,12 +2923,12 @@
       "النجوم",
       "الكواكب"
     ],
-    "bab_kategorisi": "doga",
+    "bab_kategorisi": "gok_cisimleri",
     "en": [
       "Stars"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "ay",
       "gokyuzu",
@@ -2944,13 +2944,13 @@
       "طريق",
       "الطرق الجادة"
     ],
-    "bab_kategorisi": "yasam",
+    "bab_kategorisi": "yeryuzu_yapilar",
     "en": [
       "Road",
       "Way"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "dag",
       "nehir"
@@ -2969,8 +2969,8 @@
     "en": [
       "Eggs"
     ],
-    "bab_kategorisi": "yasam",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "yiyecek",
+    "hvdc_kategorisi": "yiyecek",
     "ilgili": [
       "kus",
       "yemek"
@@ -2986,8 +2986,8 @@
     "en": [
       "Face"
     ],
-    "bab_kategorisi": "beden",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "insan_beden",
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "goz",
       "burun",
@@ -3008,8 +3008,8 @@
       "Floating",
       "Swimming"
     ],
-    "bab_kategorisi": "doga",
-    "hvdc_kategorisi": null,
+    "bab_kategorisi": "su",
+    "hvdc_kategorisi": "aktiviteler",
     "ilgili": [
       "su",
       "deniz",
@@ -3023,12 +3023,12 @@
       "خاتم",
       "الخاتم"
     ],
-    "bab_kategorisi": "ev",
+    "bab_kategorisi": "giyim",
     "en": [
       "Ring"
     ],
     "gozden_gecirildi": true,
-    "hvdc_kategorisi": null,
+    "hvdc_kategorisi": "mekan_nesne",
     "ilgili": [
       "altin",
       "el",

@@ -131,7 +131,7 @@ Alan kuralları:
     "ar": ["حية", "ثعبان", "أفعى"],
     "en": ["snake", "snakes", "serpent", "serpents"],
     "bab_kategorisi": "hayvanlar",
-    "hvdc_kategorisi": "hayvan",
+    "hvdc_kategorisi": "karakterler",
     "ilgili": ["ejderha", "solucan"],
     "gozden_gecirildi": true
   }

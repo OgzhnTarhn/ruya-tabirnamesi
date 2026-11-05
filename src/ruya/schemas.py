@@ -24,6 +24,36 @@ ENTRY_ID_DESENI = r"^[a-z0-9_]+:[a-z0-9_]+$"  # <kaynak>:<yerel kimlik>, ör. na
 Gelenek = Literal["islami_klasik", "bati_halk", "psikanalitik"]
 Dil = Literal["ar", "en", "de", "tr"]
 Kapsam = Literal["kisi", "vilayet", "padisah"]
+# Sembol kategorileri (docs/05, Katman 5).
+BabKategorisi = Literal[
+    "kutsal_varliklar",
+    "gok_cisimleri",
+    "su",
+    "ates_isik",
+    "yeryuzu_yapilar",
+    "ibadet",
+    "insan_beden",
+    "aile",
+    "esya",
+    "yiyecek",
+    "giyim",
+    "silah",
+    "olum",
+    "hayvanlar",
+    "meslekler",
+]
+HvdcKategorisi = Literal[
+    "karakterler",
+    "etkilesimler",
+    "duygular",
+    "aktiviteler",
+    "cabalama",
+    "sans_talihsizlik",
+    "mekan_nesne",
+    "betimleyici",
+    "yiyecek",
+    "gecmis",
+]
 RuyaTuru = Literal["rahmani", "seytani", "nefsani"]
 EslemeYontemi = Literal["birebir", "kok", "parca", "yok"]
 Adim = Literal["cikarim", "esleme", "getirme", "sentez"]
@@ -133,8 +163,8 @@ class SymbolKaydi(_Sema):
     varyantlar_tr: list[str] = Field(default_factory=list)
     ar: list[str] = Field(default_factory=list)
     en: list[str] = Field(default_factory=list)
-    bab_kategorisi: str | None = None
-    hvdc_kategorisi: str | None = None
+    bab_kategorisi: BabKategorisi | None = None
+    hvdc_kategorisi: HvdcKategorisi | None = None
     ilgili: list[SymbolId] = Field(default_factory=list)
     gozden_gecirildi: bool = False  # True olmayan sembol MVP'de kullanılmaz
 
