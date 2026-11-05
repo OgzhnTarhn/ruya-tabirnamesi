@@ -6,16 +6,12 @@ Sıra (docs/03, Adım 2):
 3. text.turkce.kokler ile kök bulup yeniden arama → yontem="kok"
 4. Çok kelimeli ifadeyi kelimelere bölüp her kelimeyi (birebir, sonra kök) arama
    → yontem="parca"
-5. (Aşama 2) VektorArayici; benzerlik ``esik`` altındaysa → yontem="yok"
 """
 
 from __future__ import annotations
 
-from ruya.index.store import VektorArayici
 from ruya.schemas import Eslesme, Sembol
 from ruya.text.turkce import kokler, normallestir
-
-VARSAYILAN_ESIK = 0.80  # Hafta 6'da test setiyle ayarlanacak
 
 KOK_GUVENI = 0.9
 
@@ -25,8 +21,6 @@ PARCA_GUVENI = 0.8
 def map_symbols(
     semboller: list[Sembol],
     varyantlar: dict[str, str],
-    vektor: VektorArayici | None = None,
-    esik: float = VARSAYILAN_ESIK,
 ) -> list[Eslesme]:
     """Her sembol için tam olarak bir Eslesme döndürür (eşleşmeyenler yontem="yok")."""
     eslesmeler: list[Eslesme] = []
@@ -72,15 +66,6 @@ def map_symbols(
                 )
             )
             continue
-
-        if vektor is not None:
-            sonuclar = vektor.en_yakin_semboller(anahtar)
-            if sonuclar and sonuclar[0][1] >= esik:
-                symbol_id, benzerlik = sonuclar[0]
-                eslesmeler.append(
-                    Eslesme(sembol=sembol, symbol_id=symbol_id, yontem="vektor", guven=benzerlik)
-                )
-                continue
 
         eslesmeler.append(Eslesme(sembol=sembol, symbol_id=None, yontem="yok", guven=0.0))
 

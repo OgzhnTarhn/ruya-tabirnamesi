@@ -9,7 +9,6 @@ dışarıdan verilir; indeks katmanı ``ruya.llm`` birimini içe aktarmaz (docs/
 - ``parcalar.jsonl``: bağlamlı parçalar (``Parca`` satırları)
 - ``vektorler.npy``: parça vektörleri, float32, satırlar birim uzunlukta
 - ``bm25.json``: bağlamlı metinden kurulan Okapi BM25 indeksi
-- ``semboller.json`` / ``semboller.npy``: sembol metinleri ve vektörleri
 - ``manifest.json``: parça sayısı, boyut, model adı ve giriş kimliği özeti
 
 Gömme uzun sürer; ilerleme her 20 yığında ``vektorler.tmp.npy`` dosyasına yazılır ve
@@ -28,7 +27,7 @@ import numpy as np
 
 from ruya.index.bm25 import Bm25Indeksi
 from ruya.index.parcalar import Parca, parcala
-from ruya.schemas import Madde, SymbolKaydi
+from ruya.schemas import Madde
 from ruya.text.turkce import arama_terimleri
 
 Gomucu = Callable[[list[str]], list[list[float]]]
@@ -42,8 +41,6 @@ PARCALAR_DOSYASI = "parcalar.jsonl"
 VEKTORLER_DOSYASI = "vektorler.npy"
 GECICI_VEKTORLER_DOSYASI = "vektorler.tmp.npy"
 BM25_DOSYASI = "bm25.json"
-SEMBOLLER_DOSYASI = "semboller.json"
-SEMBOL_VEKTORLERI_DOSYASI = "semboller.npy"
 MANIFEST_DOSYASI = "manifest.json"
 
 
@@ -73,7 +70,6 @@ class VektorDeposu:
 
 def hibrit_indeks_kur(
     maddeler: list[Madde],
-    sozluk: dict[str, SymbolKaydi],
     gomucu: Gomucu,
     klasor: str | Path,
     *,
@@ -81,7 +77,7 @@ def hibrit_indeks_kur(
     yigin: int = VARSAYILAN_YIGIN,
     terimler: Callable[[str], list[str]] = arama_terimleri,
 ) -> None:
-    """Parçaları, BM25 indeksini, sembol matrisini ve manifesti ``klasor`` altına yazar.
+    """Parçaları, BM25 indeksini ve manifesti ``klasor`` altına yazar.
 
     ``gomucu`` metin listesi alıp vektör listesi döndürür; ``yigin`` her çağrıdaki metin
     sayısıdır. ``terimler`` BM25 için metni terimlere böler (testlerde değiştirilebilir).
@@ -99,16 +95,6 @@ def hibrit_indeks_kur(
     bm25.kur(terimler(p.baglamli_metin) for p in parcalar)
     bm25.kaydet(klasor / BM25_DOSYASI)
 
-    sembol_kayitlari = [
-        {"symbol_id": symbol_id, "metin": _sembol_metni(kayit)}
-        for symbol_id, kayit in sozluk.items()
-    ]
-    sembol_vektorleri = _sembol_vektorleri(sembol_kayitlari, gomucu)
-    (klasor / SEMBOLLER_DOSYASI).write_text(
-        json.dumps(sembol_kayitlari, ensure_ascii=False), encoding="utf-8"
-    )
-    np.save(klasor / SEMBOL_VEKTORLERI_DOSYASI, sembol_vektorleri)
-
     manifest = {
         "parca_sayisi": len(parcalar),
         "boyut": int(vektorler.shape[1]) if vektorler.ndim == 2 else 0,
@@ -121,23 +107,19 @@ def hibrit_indeks_kur(
 
 
 class HibritIndeks:
-    """Diskteki hibrit indeks: parçalar, BM25, parça ve sembol vektörleri."""
+    """Diskteki hibrit indeks: parçalar, BM25 ve parça vektörleri."""
 
     def __init__(
         self,
         parcalar: list[Parca],
         vektorler: np.ndarray,
         bm25: Bm25Indeksi,
-        sembol_kayitlari: list[dict[str, str]],
-        sembol_vektorleri: np.ndarray,
         manifest: dict,
     ) -> None:
         self.parcalar = parcalar
         self.manifest = manifest
         self._vektor_deposu = VektorDeposu(vektorler)
         self._bm25 = bm25
-        self._sembol_kayitlari = sembol_kayitlari
-        self._sembol_deposu = VektorDeposu(sembol_vektorleri)
         self._giris_parcalari: dict[str, list[Parca]] = {}
         for parca in parcalar:
             self._giris_parcalari.setdefault(parca.entry_id, []).append(parca)
@@ -166,8 +148,6 @@ class HibritIndeks:
             parcalar=parcalar,
             vektorler=np.load(klasor / VEKTORLER_DOSYASI),
             bm25=Bm25Indeksi.yukle(klasor / BM25_DOSYASI),
-            sembol_kayitlari=json.loads((klasor / SEMBOLLER_DOSYASI).read_text(encoding="utf-8")),
-            sembol_vektorleri=np.load(klasor / SEMBOL_VEKTORLERI_DOSYASI),
             manifest=manifest,
         )
 
@@ -182,13 +162,6 @@ class HibritIndeks:
     def vektor_ara(self, sorgu: np.ndarray, k: int = 10) -> list[tuple[Parca, float]]:
         """Kosinüs benzerliğine göre en yakın parçalar, azalan sırada."""
         return [(self.parcalar[i], skor) for i, skor in self._vektor_deposu.ara(sorgu, k)]
-
-    def en_yakin_semboller_vektorle(self, sorgu: np.ndarray, k: int = 3) -> list[tuple[str, float]]:
-        """Sorgu vektörüne en yakın semboller ``(symbol_id, benzerlik)`` olarak."""
-        return [
-            (self._sembol_kayitlari[i]["symbol_id"], skor)
-            for i, skor in self._sembol_deposu.ara(sorgu, k)
-        ]
 
 
 def _parca_vektorleri(metinler: list[str], gomucu: Gomucu, klasor: Path, yigin: int) -> np.ndarray:
@@ -208,18 +181,6 @@ def _parca_vektorleri(metinler: list[str], gomucu: Gomucu, klasor: Path, yigin: 
     if gecici.is_file():
         gecici.unlink()
     return np.asarray(vektorler, dtype=np.float32)
-
-
-def _sembol_vektorleri(kayitlar: list[dict[str, str]], gomucu: Gomucu) -> np.ndarray:
-    """Sembol metinlerini gömer; sözlük boşsa boş matris döner."""
-    if not kayitlar:
-        return np.zeros((0, 0), dtype=np.float32)
-    return np.asarray(gomucu([kayit["metin"] for kayit in kayitlar]), dtype=np.float32)
-
-
-def _sembol_metni(kayit: SymbolKaydi) -> str:
-    """Sembolün gömülecek metni: ``"Yılan: yılanlar, engerek"``."""
-    return f"{kayit.ad_tr}: {', '.join(kayit.varyantlar_tr)}"
 
 
 def _kimlik_ozeti(entry_idler: list[str]) -> str:

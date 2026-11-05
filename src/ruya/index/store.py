@@ -1,6 +1,6 @@
-"""Madde deposu ve vektör arayıcı arayüzleri.
+"""Madde deposu arayüzü.
 
-Boru hattı somut sınıfları değil bu arayüzleri bilir; böylece MVP'de bellekteki depo,
+Boru hattı somut sınıfları değil bu arayüzü bilir; böylece MVP'de bellekteki depo,
 Aşama 2'de Chroma, testlerde sahte (fake) bir depo kullanılabilir.
 """
 
@@ -18,13 +18,6 @@ class MaddeDeposu(Protocol):
 
     def madde(self, entry_id: str) -> Madde:
         """Tek bir madde; atıf tıklanınca aslı ve çevirisi gösterilir (İG-41)."""
-        ...
-
-
-class VektorArayici(Protocol):
-    def en_yakin_semboller(self, ifade: str, k: int = 3) -> list[tuple[str, float]]:
-        """Sözlükte bulunamayan bir ifade için en yakın sembolleri (symbol_id, benzerlik)
-        olarak döndürür, benzerliği yüksekten düşüğe (İG-21, Aşama 2)."""
         ...
 
 

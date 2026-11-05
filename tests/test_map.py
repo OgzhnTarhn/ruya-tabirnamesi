@@ -15,18 +15,6 @@ def _sembol(yalin: str) -> Sembol:
     return Sembol(yalin=yalin, ham_ifade=yalin)
 
 
-class SahteVektor:
-    """VektorArayici sahtesi: sabit bir benzerlik listesi döndürür."""
-
-    def __init__(self, sonuclar: list[tuple[str, float]]) -> None:
-        self.sonuclar = sonuclar
-        self.cagrilar: list[str] = []
-
-    def en_yakin_semboller(self, ifade: str, k: int = 3) -> list[tuple[str, float]]:
-        self.cagrilar.append(ifade)
-        return self.sonuclar[:k]
-
-
 @pytest.fixture
 def kok_yok(monkeypatch):
     """Kök bulunamayan analizör sahtesi."""
@@ -75,52 +63,6 @@ def test_eslesme_yok(kok_yok):
     assert eslesme.symbol_id is None
     assert eslesme.yontem == "yok"
     assert eslesme.guven == 0.0
-
-
-def test_vektor_eslesmesi_esik_ustunde(kok_yok):
-    vektor = SahteVektor([("yilan", 0.92)])
-
-    eslesmeler = map_mod.map_symbols(
-        [_sembol("bilinmeyen")], {"yılan": "yilan"}, vektor=vektor, esik=0.80
-    )
-
-    assert len(eslesmeler) == 1
-    eslesme = eslesmeler[0]
-    assert eslesme.symbol_id == "yilan"
-    assert eslesme.yontem == "vektor"
-    assert eslesme.guven == 0.92
-
-
-def test_vektor_eslesmesi_esikte(kok_yok):
-    vektor = SahteVektor([("yilan", 0.80)])
-
-    eslesmeler = map_mod.map_symbols(
-        [_sembol("bilinmeyen")], {"yılan": "yilan"}, vektor=vektor, esik=0.80
-    )
-
-    assert eslesmeler[0].yontem == "vektor"
-    assert eslesmeler[0].guven == 0.80
-
-
-def test_vektor_eslesmesi_esik_altinda(kok_yok):
-    vektor = SahteVektor([("yilan", 0.79)])
-
-    eslesmeler = map_mod.map_symbols(
-        [_sembol("bilinmeyen")], {"yılan": "yilan"}, vektor=vektor, esik=0.80
-    )
-
-    assert len(eslesmeler) == 1
-    eslesme = eslesmeler[0]
-    assert eslesme.symbol_id is None
-    assert eslesme.yontem == "yok"
-    assert eslesme.guven == 0.0
-
-
-def test_vektor_yoksa_eslesme_yok(kok_yok):
-    eslesmeler = map_mod.map_symbols([_sembol("bilinmeyen")], {"yılan": "yilan"}, vektor=None)
-
-    assert eslesmeler[0].yontem == "yok"
-    assert eslesmeler[0].symbol_id is None
 
 
 def test_her_sembol_icin_bir_eslesme_ve_sira_korunur(monkeypatch):

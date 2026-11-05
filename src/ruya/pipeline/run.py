@@ -20,7 +20,7 @@ from ruya.dosya import jsonl_oku
 from ruya.etik import SEMBOL_YOK_MESAJI
 from ruya.index.build_symbols import sozlugu_yukle, varyant_tablosu
 from ruya.index.build_vectors import HibritIndeks
-from ruya.index.store import BellekDeposu, MaddeDeposu, VektorArayici
+from ruya.index.store import BellekDeposu, MaddeDeposu
 from ruya.llm.client import LLMIstemcisi
 from ruya.pipeline import extract, hibrit, retrieve, synthesize
 from ruya.pipeline import map as esleme
@@ -38,7 +38,6 @@ class Bagimliliklar:
     istemci: LLMIstemcisi
     varyantlar: dict[str, str]  # index.build_symbols.varyant_tablosu
     depo: MaddeDeposu
-    vektor: VektorArayici | None = None  # Aşama 2
     hibrit: HibritIndeks | None = None  # Aşama 3: varsa getirme hibrit yapılır
     ayar: Ayarlar = field(default_factory=ayarlar)
 
@@ -92,7 +91,7 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
         return kayit
 
     # 2 · Eşleme
-    eslesmeler, sure = _zamanla(esleme.map_symbols, semboller, bag.varyantlar, bag.vektor)
+    eslesmeler, sure = _zamanla(esleme.map_symbols, semboller, bag.varyantlar)
     kayit.olcumler.append(AdimOlcumu(adim="esleme", sure_sn=sure))
 
     # Sınır eşlemeden sonra uygulanır: eşlenemeyen semboller sınırı kullanmaz.

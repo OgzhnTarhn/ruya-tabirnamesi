@@ -14,7 +14,6 @@ import json
 
 from ruya.config import MODEL_EMBEDDING, ayarlar
 from ruya.dosya import jsonl_oku
-from ruya.index.build_symbols import sozlugu_yukle
 from ruya.index.build_vectors import MANIFEST_DOSYASI, hibrit_indeks_kur
 from ruya.llm.client import LLMIstemcisi
 from ruya.schemas import Madde
@@ -28,15 +27,10 @@ def main() -> None:
     maddeler = list(jsonl_oku(ayar.maddeler_dosyasi, Madde))
     print(f"madde: {len(maddeler)}", flush=True)
 
-    print("sözlük yükleniyor", flush=True)
-    sozluk = sozlugu_yukle()
-    print(f"sembol: {len(sozluk)}", flush=True)
-
     istemci = LLMIstemcisi(ayar)
     print(f"indeks kuruluyor: {klasor} (model: {MODEL_EMBEDDING})", flush=True)
     hibrit_indeks_kur(
         maddeler,
-        sozluk,
         gomucu=istemci.gom,
         model=MODEL_EMBEDDING,
         klasor=klasor,

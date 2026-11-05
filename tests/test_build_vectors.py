@@ -1,9 +1,9 @@
 """Hibrit vektör indeksi birim testleri (``ruya.index.build_vectors``, docs/13).
 
 ``VektorDeposu`` satırları normalize edilmiş numpy matrisi tutar; ``hibrit_indeks_kur``
-parçaları, BM25 indeksini, sembol matrisini ve manifesti bir klasöre yazar ve
-kesintiden sonra kaldığı yerden devam edebilir. Testler sahte gömücü (``gomucu``) ve
-``tmp_path`` kullanır; ağa çıkmaz.
+parçaları, BM25 indeksini ve manifesti bir klasöre yazar ve kesintiden sonra kaldığı
+yerden devam edebilir. Testler sahte gömücü (``gomucu``) ve ``tmp_path`` kullanır; ağa
+çıkmaz.
 """
 
 import hashlib
@@ -16,7 +16,7 @@ import pytest
 
 from ruya.index.build_vectors import HibritIndeks, VektorDeposu, hibrit_indeks_kur
 from ruya.index.parcalar import Parca
-from ruya.schemas import Madde, SymbolKaydi
+from ruya.schemas import Madde
 from ruya.text.turkce import arama_terimleri
 
 MODEL_ADI = "sahte/gomucu-1"
@@ -39,10 +39,6 @@ def _madde(entry_id: str, metin_tr: str) -> Madde:
         metin_asli="(asıl metin)",
         metin_tr=metin_tr,
     )
-
-
-def _sembol(ad: str, varyantlar: list[str]) -> SymbolKaydi:
-    return SymbolKaydi(ad_tr=ad, varyantlar_tr=varyantlar)
 
 
 def _vektorler(metinler: list[str], boyut: int = 4) -> list[list[float]]:
@@ -124,16 +120,13 @@ def test_hibrit_indeks_kur_butun_dosyalari_yazar(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     for ad in (
         "parcalar.jsonl",
         "vektorler.npy",
         "bm25.json",
-        "semboller.json",
-        "semboller.npy",
         "manifest.json",
     ):
         assert (tmp_path / ad).is_file(), f"{ad} yazılmadı"
@@ -141,9 +134,8 @@ def test_hibrit_indeks_kur_butun_dosyalari_yazar(tmp_path: Path):
 
 def test_vektorler_npy_float32_ve_parca_sayisi_kadar_satir(tmp_path: Path):
     maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     matris = np.load(tmp_path / "vektorler.npy")
     assert matris.dtype == np.float32
@@ -153,9 +145,8 @@ def test_vektorler_npy_float32_ve_parca_sayisi_kadar_satir(tmp_path: Path):
 
 def test_parcalar_jsonl_parca_nesnelerini_tasir(tmp_path: Path):
     maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     satirlar = [
         json.loads(s) for s in (tmp_path / "parcalar.jsonl").read_text("utf-8").splitlines() if s
@@ -172,10 +163,9 @@ def test_parcalar_jsonl_parca_nesnelerini_tasir(tmp_path: Path):
 
 def test_gomucu_baglamli_metni_alir(tmp_path: Path):
     maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
     gomucu = SahteGomucu()
 
-    hibrit_indeks_kur(maddeler, sozluk, gomucu, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, gomucu, tmp_path, model=MODEL_ADI)
 
     parcalar = HibritIndeks.yukle(tmp_path, maddeler).parca_listesi("nablusi:000001")
     assert len(parcalar) == 1
@@ -199,9 +189,8 @@ def test_bm25_terimleri_baglamli_metinden_hesaplanir(tmp_path: Path):
             metin_tr="yılan görmek güzeldir",
         )
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     indeks = HibritIndeks.yukle(tmp_path, maddeler)
     parcalar = indeks.parca_listesi("nablusi:000001")
@@ -221,9 +210,8 @@ def test_manifest_bilgileri(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     manifest = _manifest(tmp_path)
     assert manifest["parca_sayisi"] == 2
@@ -239,11 +227,10 @@ def test_kesintiden_sonra_yalniz_eksik_parcalar_gomulur(tmp_path: Path):
     # 25 parça, yığın 1 → 25 yığın. Gömücü 23. çağrıda patlar; ilerleme 20. yığından
     # sonra kaydedilmiş olmalı, ikinci koşu yalnızca kalan parçaları gömmeli.
     maddeler = [_madde(f"nablusi:{i:06d}", f"yılan görmek güzeldir {i}") for i in range(1, 26)]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
     basarisiz = SahteGomucu(hata_cagrisi=23)
 
     with pytest.raises(RuntimeError):
-        hibrit_indeks_kur(maddeler, sozluk, basarisiz, tmp_path, model=MODEL_ADI, yigin=1)
+        hibrit_indeks_kur(maddeler, basarisiz, tmp_path, model=MODEL_ADI, yigin=1)
 
     assert (tmp_path / "vektorler.tmp.npy").is_file()
     ilerleme = np.load(tmp_path / "vektorler.tmp.npy")
@@ -254,7 +241,7 @@ def test_kesintiden_sonra_yalniz_eksik_parcalar_gomulur(tmp_path: Path):
     assert len([m for m in ilk_kosum if m.startswith("Test Eseri")]) == 22
 
     tamamlayici = SahteGomucu()
-    hibrit_indeks_kur(maddeler, sozluk, tamamlayici, tmp_path, model=MODEL_ADI, yigin=1)
+    hibrit_indeks_kur(maddeler, tamamlayici, tmp_path, model=MODEL_ADI, yigin=1)
 
     ikinci_parcalar = [m for m in _girdilen_metinler(tamamlayici) if m.startswith("Test Eseri")]
     # Kaydedilen ilerleme 20 parça; yalnızca 21–25 yeniden gömülür.
@@ -275,10 +262,9 @@ def test_yigin_gomucuye_yigin_buyuklugunde_cagri_yapar(tmp_path: Path):
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
         _madde("nablusi:000003", "at görmek iyidir"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
     gomucu = SahteGomucu()
 
-    hibrit_indeks_kur(maddeler, sozluk, gomucu, tmp_path, model=MODEL_ADI, yigin=2)
+    hibrit_indeks_kur(maddeler, gomucu, tmp_path, model=MODEL_ADI, yigin=2)
 
     parca_cagrilari = [c for c in gomucu.cagrilar if c and c[0].startswith("Test Eseri")]
     assert [len(c) for c in parca_cagrilari] == [2, 1]
@@ -289,12 +275,11 @@ def test_terimler_islevi_bm25_terimlerini_uretir(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
 
     def terimler(metin: str) -> list[str]:
         return ["ozel"] if "yılan" in metin else []
 
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI, terimler=terimler)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI, terimler=terimler)
 
     indeks = HibritIndeks.yukle(tmp_path, maddeler)
     sonuc = indeks.bm25_ara(["ozel"], k=5)
@@ -311,8 +296,7 @@ def test_yukle_eksik_klasorde_file_not_found_verir(tmp_path: Path):
 
 def test_yukle_kimlik_ozeti_tutmazsa_value_error_verir(tmp_path: Path):
     maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     farkli_maddeler = [_madde("nablusi:000002", "yılan görmek güzeldir")]
     with pytest.raises(ValueError):
@@ -327,8 +311,7 @@ def test_bm25_ara_baglamli_metne_gore_getirir(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     indeks = HibritIndeks.yukle(tmp_path, maddeler)
     sonuc = indeks.bm25_ara(arama_terimleri("yılan"), k=5)
@@ -342,8 +325,7 @@ def test_vektor_ara_parcalari_skorla_siralar(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     indeks = HibritIndeks.yukle(tmp_path, maddeler)
     parcalar = indeks.parca_listesi("nablusi:000001")
@@ -361,8 +343,7 @@ def test_parca_listesi_girisin_parcalarini_verir(tmp_path: Path):
         _madde("nablusi:000001", "yılan görmek güzeldir"),
         _madde("nablusi:000002", "denizde yıkanmak hayırdır"),
     ]
-    sozluk = {"yilan": _sembol("Yılan", ["yılanlar"])}
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
+    hibrit_indeks_kur(maddeler, _vektorler, tmp_path, model=MODEL_ADI)
 
     indeks = HibritIndeks.yukle(tmp_path, maddeler)
 
@@ -370,66 +351,3 @@ def test_parca_listesi_girisin_parcalarini_verir(tmp_path: Path):
     assert [p.parca_id for p in parcalar] == ["nablusi:000001#0"]
     assert isinstance(parcalar[0], Parca)
     assert indeks.parca_listesi("nablusi:000009") == []
-
-
-# --- HibritIndeks: sembol matrisi --------------------------------------------
-
-
-def test_semboller_json_ve_npy_ad_varyant_metnini_tasir(tmp_path: Path):
-    maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {
-        "yilan": _sembol("Yılan", ["yılanlar", "engerek"]),
-        "deniz": _sembol("Deniz", []),
-    }
-
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
-
-    kayitlar = json.loads((tmp_path / "semboller.json").read_text(encoding="utf-8"))
-    assert [k["symbol_id"] for k in kayitlar] == ["yilan", "deniz"]
-    assert kayitlar[0]["metin"] == "Yılan: yılanlar, engerek"
-    assert kayitlar[1]["metin"] == "Deniz: "
-    matris = np.load(tmp_path / "semboller.npy")
-    assert matris.dtype == np.float32
-    assert matris.shape == (2, 4)
-
-
-def test_en_yakin_semboller_vektorle_k3_donuyor(tmp_path: Path):
-    maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {
-        "yilan": _sembol("Yılan", ["yılanlar", "engerek"]),
-        "deniz": _sembol("Deniz", []),
-        "at": _sembol("At", []),
-    }
-    gomucu = SahteGomucu()
-    hibrit_indeks_kur(maddeler, sozluk, gomucu, tmp_path, model=MODEL_ADI)
-
-    indeks = HibritIndeks.yukle(tmp_path, maddeler)
-    yilan_metni = "Yılan: yılanlar, engerek"
-    assert yilan_metni in _girdilen_metinler(gomucu)  # semboller de gömülür
-    sorgu = np.asarray(_vektorler([yilan_metni])[0])
-
-    sonuc = indeks.en_yakin_semboller_vektorle(sorgu, k=3)
-
-    assert len(sonuc) == 3
-    assert {ad for ad, _ in sonuc} == {"yilan", "deniz", "at"}
-    assert sonuc[0][0] == "yilan"
-    assert sonuc[0][1] == pytest.approx(1.0)
-    assert [skor for _, skor in sonuc] == sorted((s for _, s in sonuc), reverse=True)
-
-
-def test_en_yakin_semboller_vektorle_k_ile_sinirlanir(tmp_path: Path):
-    maddeler = [_madde("nablusi:000001", "yılan görmek güzeldir")]
-    sozluk = {
-        "yilan": _sembol("Yılan", ["yılanlar", "engerek"]),
-        "deniz": _sembol("Deniz", []),
-        "at": _sembol("At", []),
-    }
-    hibrit_indeks_kur(maddeler, sozluk, _vektorler, tmp_path, model=MODEL_ADI)
-
-    indeks = HibritIndeks.yukle(tmp_path, maddeler)
-    sorgu = np.asarray(_vektorler(["Yılan: yılanlar, engerek"])[0])
-
-    sonuc = indeks.en_yakin_semboller_vektorle(sorgu, k=2)
-
-    assert len(sonuc) == 2
-    assert sonuc[0][0] == "yilan"

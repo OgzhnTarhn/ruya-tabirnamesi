@@ -34,7 +34,7 @@ def sahte_adimlar(monkeypatch):
         semboller = [Sembol(yalin=k, ham_ifade=k) for k in girdi.metin.split()]
         return CikarimSonucu(semboller=semboller), KULLANIM
 
-    def sahte_map(semboller, varyantlar, vektor):
+    def sahte_map(semboller, varyantlar):
         cagrilar["esleme"] = [s.yalin for s in semboller]
         return [
             Eslesme(
