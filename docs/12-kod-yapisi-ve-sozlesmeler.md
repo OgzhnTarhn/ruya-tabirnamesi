@@ -97,7 +97,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `enrich/sembol_ata.py` | `sembol_ata(maddeler, varyantlar)`: LLM'siz sembol atama | ✅ |
 | `enrich/kosul_kurallari.py` | `kosullari_cikar`, `maddelere_uygula`: kural tabanlı koşullar | ✅ |
 | `index/build_symbols.py` | `sozlugu_yukle` ✅, `varyant_tablosu`, `sozluk_maddeler_tutarliligi` | ✅ |
-| `index/store.py` | `MaddeDeposu`, `VektorArayici` (Protocol) ✅, `BellekDeposu` | ✅ |
+| `index/store.py` | `MaddeDeposu`, `BellekDeposu` | ✅ |
 | `index/parcalar.py`, `bm25.py`, `build_vectors.py` | Bölüm 5b | ✅ |
 
 ### Sorgu (çevrimiçi)
@@ -164,13 +164,12 @@ class Bagimliliklar:
     istemci: LLMIstemcisi
     varyantlar: dict[str, str]       # normalleştirilmiş ad/varyant → symbol_id
     depo: MaddeDeposu                # Protocol: sembolun_maddeleri, madde
-    vektor: VektorArayici | None     # Aşama 2
+    hibrit: HibritIndeks | None      # indeks yoksa sözlük yolu
     ayar: Ayarlar
 ```
 
 - **Gerçek çalıştırmada:** `varsayilan_bagimliliklar()` sözlüğü repodan, maddeleri `data/`'dan okur, istemciyi kurar. Arayüz notebook'u ve değerlendirme bunu çağırır.
 - **Testlerde:** Sahte (fake) depo ve sahte istemci verilir; API çağrılmaz, para harcanmaz. `tests/test_run.py` bu yolla orkestrasyonu sınar.
-- **Aşama 2'de:** `BellekDeposu` yerine Chroma'lı bir depo, `vektor` alanına `ChromaVektorArayici` takılır. `pipeline/` kodu değişmez; çünkü somut sınıfları değil `store.py`'deki Protocol'leri bilir.
 
 Adım işlevleri `run.py`'den modül üzerinden çağrılır (`extract.extract(...)`). Böylece testte tek bir adım sahtesiyle değiştirilebilir.
 
@@ -219,7 +218,7 @@ Tasarım: [13](13-hibrit-getirme.md).
 | `text/turkce.py` | `arama_terimleri(metin) -> list[str]` |
 | `index/parcalar.py` | `Parca`, `parcala(maddeler) -> list[Parca]` |
 | `index/bm25.py` | `Bm25Indeksi`: `kur`, `ara(terimler, k)`, `kaydet`, `yukle` |
-| `index/build_vectors.py` | `VektorDeposu` (numpy), `hibrit_indeks_kur(...)`, `HibritIndeks.yukle(klasor)`; `en_yakin_semboller` |
+| `index/build_vectors.py` | `VektorDeposu` (numpy), `hibrit_indeks_kur(...)`, `HibritIndeks.yukle(klasor)` |
 | `pipeline/hibrit.py` | `getirme_sorgusu`, `rrf`, `hibrit_getir(...) -> Getirilenler` |
 | `enrich/kosul_kurallari.py` | `kosullari_cikar(metin_tr) -> list[Kosul]`, `maddelere_uygula(maddeler)` |
 

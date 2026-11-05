@@ -61,7 +61,7 @@ flowchart TB
   3. Bulunamazsa zeyrek ile kök bulup yeniden arama.
   4. Yine bulunamazsa `symbol_id=None` döner ve ifade serbest aramayla getirilir. Vektör yedeği denendi, kapatıldı ([13](13-hibrit-getirme.md)).
 - Birebir ve kök eşleşmesi olmayan çok kelimeli ifadelerde sözcükler soldan sağa tek tek denenir ("güvercin sürüsü" → `guvercin`); yöntem `"parca"`, güven 0,8.
-- `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "vektor" | "yok"`. Hata ayıklama ekranında gösterilir.
+- `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "yok"`. Hata ayıklama ekranında gösterilir.
 
 ### Adım 3 · Getirme (`pipeline/retrieve.py`)
 

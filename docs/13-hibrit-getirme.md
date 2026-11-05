@@ -56,7 +56,7 @@ Koşullu yorum için `kosullar`, 18 token/sn hızda 10.801 maddelik LLM geçişi
 
 Kurallar yalnız rüya sahibini anlatan kalıpları arar; rüyada görülen figür koşul sayılmaz. İlk, geniş sürüm "bir kadına iftira eder" gibi cümleleri de yakalayıp maddelerin %23'ünü işaretliyordu. Daraltılınca 1.025 madde (%9,5) kaldı. Örneklerle bakıldı, kesinlik ölçülmedi. Bağlam alanı başına puan tektir: eşleşen koşul +0,1, yalnız farklı koşul varsa −0,1.
 
-**Sembol vektör yedeği kapalı.** Sembol adlarını gömüp ifadeye en yakınını seçmek denendi. "yılan" 0,82 ile `akrep`e, 0,60 ile `yilan`a yakın çıktı; "kocaman yılan" da 0,80 ile `akrep`e gitti, "aslanım" ise 0,80 ile doğru `aslan`a. Aynı skorda doğru ve yanlış eşleme olduğundan hiçbir eşik işe yaramıyor. Eşlenemeyen ifade serbest aramayla (BM25, parça vektörleri, reranker) getirilir. `HibritIndeks.en_yakin_semboller_vektorle` ve `semboller.npy` duruyor ama boru hattında kullanılmıyor.
+**Sembol vektör yedeği kaldırıldı.** Sembol adlarını gömüp ifadeye en yakınını seçmek denendi. "yılan" 0,82 ile `akrep`e, 0,60 ile `yilan`a yakın çıktı; "kocaman yılan" da 0,80 ile `akrep`e gitti, "aslanım" ise 0,80 ile doğru `aslan`a. Aynı skorda doğru ve yanlış eşleme olduğundan hiçbir eşik işe yaramıyor. Eşlenemeyen ifade serbest aramayla (BM25, parça vektörleri, reranker) getirilir.
 
 ## 5. Bilinçli olarak yapılmayan
 
