@@ -317,6 +317,7 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
                 value=None,
             )
             dugme = gr.Button("Yorumla", variant="primary")
+            gr.Markdown("Yorum genellikle 1–4 dakika sürer.")
 
         with gr.Tabs():
             with gr.Tab("Yorum"):
