@@ -7,7 +7,7 @@ testler gerçek analizöre bağlı değildir.
 import pytest
 
 from ruya.pipeline import map as map_mod
-from ruya.schemas import Sembol
+from ruya.schemas import Eslesme, Sembol
 from ruya.text import turkce
 
 
@@ -163,3 +163,38 @@ def test_kokler_analizor_hata_verirse_bos_liste(monkeypatch):
     monkeypatch.setattr(turkce, "_cozumleyici", _patlat, raising=False)
 
     assert turkce.kokler("yılanlar") == []
+
+
+def _eslesme(yalin: str, symbol_id: str | None) -> Eslesme:
+    return Eslesme(
+        sembol=_sembol(yalin),
+        symbol_id=symbol_id,
+        yontem="birebir" if symbol_id else "yok",
+        guven=1.0 if symbol_id else 0.0,
+    )
+
+
+@pytest.mark.parametrize("yalin", ["kullanmak", "yapmak", "  Gitmek ", "görmek", "almak"])
+def test_eslesmeyen_genel_fiil_elenir(yalin: str):
+    assert map_mod.genel_fiilleri_ele([_eslesme(yalin, None)]) == []
+
+
+def test_sozluge_eslesen_fiil_kalir():
+    eslesmeler = [_eslesme("almak", "almak")]
+
+    assert map_mod.genel_fiilleri_ele(eslesmeler) == eslesmeler
+
+
+@pytest.mark.parametrize("yalin", ["binmek", "uçmak", "bilgisayar", "ev yapmak"])
+def test_anlam_tasiyan_eslesmeyen_sembol_kalir(yalin: str):
+    eslesmeler = [_eslesme(yalin, None)]
+
+    assert map_mod.genel_fiilleri_ele(eslesmeler) == eslesmeler
+
+
+def test_genel_fiil_elenince_sira_korunur():
+    eslesmeler = [_eslesme("gemi", "gemi"), _eslesme("kullanmak", None), _eslesme("binmek", None)]
+
+    sonuc = map_mod.genel_fiilleri_ele(eslesmeler)
+
+    assert [e.sembol.yalin for e in sonuc] == ["gemi", "binmek"]

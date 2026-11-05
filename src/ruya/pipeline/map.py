@@ -17,6 +17,50 @@ KOK_GUVENI = 0.9
 
 PARCA_GUVENI = 0.8
 
+# Tek başına bir imge taşımayan fiiller; "kullanmak" araması rastgele maddeler getiriyor
+# ("allık kullanmak"). Liste bilinçli olarak dardır: "binmek", "uçmak" gibi fiiller kalır.
+GENEL_FIILLER = frozenset(
+    {
+        "almak",
+        "anlamak",
+        "bakmak",
+        "başlamak",
+        "bilmek",
+        "bulmak",
+        "demek",
+        "durmak",
+        "düşünmek",
+        "etmek",
+        "gelmek",
+        "getirmek",
+        "gitmek",
+        "götürmek",
+        "görmek",
+        "hissetmek",
+        "istemek",
+        "izlemek",
+        "kalmak",
+        "koymak",
+        "kullanmak",
+        "olmak",
+        "sanmak",
+        "söylemek",
+        "tutmak",
+        "vermek",
+        "yapmak",
+    }
+)
+
+
+def genel_fiilleri_ele(eslesmeler: list[Eslesme]) -> list[Eslesme]:
+    """Sözlüğe eşleşmeyen genel fiilleri atar; sözlükte karşılığı olan fiiller kalır."""
+    return [
+        eslesme
+        for eslesme in eslesmeler
+        if eslesme.symbol_id is not None
+        or normallestir(eslesme.sembol.yalin) not in GENEL_FIILLER
+    ]
+
 
 def map_symbols(
     semboller: list[Sembol],

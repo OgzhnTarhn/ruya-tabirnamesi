@@ -136,3 +136,22 @@ def test_sembol_yoksa_erken_doner(bag, sahte_adimlar, monkeypatch):
     assert kayit.mesaj == SEMBOL_YOK_MESAJI
     assert kayit.yorum is None
     assert [o.adim for o in kayit.olcumler] == ["cikarim"]
+
+
+def test_eslesmeyen_genel_fiil_getirmeye_gitmez(bag, sahte_adimlar):
+    sahte_adimlar["eslenmeyen"] = {"kullanmak"}
+
+    kayit = run.yorumla(RuyaGirdisi(metin="deniz kullanmak"), bag)
+
+    assert [e.sembol.yalin for e in kayit.eslesmeler] == ["deniz"]
+    assert "kullanmak" not in kayit.yorum.bulunamayanlar
+
+
+def test_yalniz_genel_fiil_varsa_sembol_yok_mesaji_doner(bag, sahte_adimlar):
+    sahte_adimlar["eslenmeyen"] = {"kullanmak"}
+
+    kayit = run.yorumla(RuyaGirdisi(metin="kullanmak"), bag)
+
+    assert kayit.mesaj == SEMBOL_YOK_MESAJI
+    assert kayit.yorum is None
+    assert [o.adim for o in kayit.olcumler] == ["cikarim", "esleme"]

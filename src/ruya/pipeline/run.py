@@ -93,6 +93,10 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     # 2 · Eşleme
     eslesmeler, sure = _zamanla(esleme.map_symbols, semboller, bag.varyantlar)
     kayit.olcumler.append(AdimOlcumu(adim="esleme", sure_sn=sure))
+    eslesmeler = esleme.genel_fiilleri_ele(eslesmeler)
+    if not eslesmeler:
+        kayit.mesaj = SEMBOL_YOK_MESAJI
+        return kayit
 
     # Sınır eşlemeden sonra uygulanır: eşlenemeyen semboller sınırı kullanmaz.
     sinir = bag.ayar.en_fazla_sembol
