@@ -9,7 +9,8 @@ Her kaynak için sırayla:
 4. Sözlük yüklenir (``sozlugu_yukle``), varyant tablosu kurulur (``varyant_tablosu``) ve
    bütün maddelere ``symbol_ids`` atanır (``sembol_ata``).
 5. Koşullu yorumlar kural tabanlı çıkarılır (``maddelere_uygula``, docs/13).
-6. Bütün maddeler ``Ayarlar().maddeler_dosyasi`` dosyasına yazılır.
+6. Anlam türetme yolları etiketlenir (``yontemleri_uygula``, docs/05).
+7. Bütün maddeler ``Ayarlar().maddeler_dosyasi`` dosyasına yazılır.
 
 Çeviri kimlikleri maddelerle uyuşmazsa ``ceviriyi_uygula`` ``ValueError`` yükseltir ve
 betik durur. Bilgisayarda çalışır, veri gerektirir::
@@ -24,6 +25,7 @@ from ruya.dosya import jsonl_yaz
 from ruya.enrich.ceviri_birlestir import ceviri_oku, ceviriyi_uygula
 from ruya.enrich.kosul_kurallari import maddelere_uygula
 from ruya.enrich.sembol_ata import sembol_ata
+from ruya.enrich.yontem_kurallari import maddelere_uygula as yontemleri_uygula
 from ruya.index.build_symbols import sozlugu_yukle, sozluk_maddeler_tutarliligi, varyant_tablosu
 from ruya.ingest import freud, ibn_sirin, miller, nablusi
 from ruya.schemas import Madde
@@ -55,6 +57,7 @@ def main() -> None:
     sozluk = sozlugu_yukle()
     butun_maddeler = sembol_ata(butun_maddeler, varyant_tablosu(sozluk))
     butun_maddeler = maddelere_uygula(butun_maddeler)
+    butun_maddeler = yontemleri_uygula(butun_maddeler)
 
     jsonl_yaz(butun_maddeler, ayarlar.maddeler_dosyasi)
 
@@ -67,6 +70,9 @@ def main() -> None:
 
     kosullu = sum(1 for m in butun_maddeler if m.kosullar)
     print(f"koşul çıkarılan: {kosullu} madde")
+
+    yontemli = sum(1 for m in butun_maddeler if m.yontem)
+    print(f"yöntem etiketli: {yontemli} madde")
 
     sorunlar = sozluk_maddeler_tutarliligi(sozluk, butun_maddeler)
     if sorunlar:
