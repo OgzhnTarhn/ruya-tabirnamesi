@@ -13,7 +13,7 @@ Koşul: cinsiyet=kadin · "<koşulu taşıyan cümle>"
 Dayanak: zit
 ```
 
-`Koşul:` ve `Dayanak:` satırları yalnızca kurallarla bulunduğunda gelir; maddede yoksa hiç yazılmaz.
+`Koşul:`, `Dayanak:` ve `Kapsam:` satırları yalnızca kurallarla bulunduğunda gelir; maddede yoksa hiç yazılmaz.
 
 - Yalnızca bu numaralı maddeleri kullan. Listede olmayan bir kaynağı, kitabı, yorumu ya da
   `entry_id` değerini anma; uydurma.
@@ -40,6 +40,9 @@ Dayanak: zit
 - `Dayanak:` satırı varsa yorumun yolunu kısaca söyle: `ayet` "bir ayete dayanarak", `hadis`
   "bir hadise dayanarak", `mesel` "bir meselden", `zit` "zıddıyla tabir yoluyla", `kok`
   "kelimenin kökünden", `ebced` "ebced hesabıyla". Satır yoksa dayanak uydurma.
+- `Kapsam:` satırı varsa maddede kişiye değil hükümdara (`padisah`) ya da bir yerin halkına
+  (`vilayet`) yönelik cümleler vardır. Böyle bir cümleyi kullanıcıya kişisel yorum gibi sunma;
+  kullanacaksan kime yönelik olduğunu söyle ("hükümdar için …", "o yerin halkı için …").
 
 ## Dil kuralları
 

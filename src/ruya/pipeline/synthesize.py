@@ -184,7 +184,7 @@ def _maddesi_olanlar(eslesmeler: list[Eslesme], getirilenler: Getirilenler) -> l
 
 
 def _ek_satirlar(madde: Madde, baglam: Baglam | None) -> list[str]:
-    """Kaynağın metinlerinden sonra gelen isteğe bağlı ``Koşul:`` ve ``Dayanak:`` satırları.
+    """Kaynak metninden sonra gelen isteğe bağlı ``Koşul:``, ``Dayanak:``, ``Kapsam:`` satırları.
 
     Bağlamda koşul alanlarından en az biri doluysa yalnızca o alanlara ait koşullar verilir,
     değeri bağlama uyanlar önce gelir; bağlam yoksa ilk koşullar alınır. Madde başına en fazla
@@ -215,6 +215,8 @@ def _ek_satirlar(madde: Madde, baglam: Baglam | None) -> list[str]:
         satirlar.append(f'Koşul: {alanlar} · "{kosul.yorum_tr}"')
     if madde.yontem:
         satirlar.append("Dayanak: " + ", ".join(madde.yontem))
+    if madde.kapsam:
+        satirlar.append(f"Kapsam: {madde.kapsam}")
     return satirlar
 
 

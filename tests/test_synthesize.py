@@ -743,3 +743,25 @@ def test_baska_atifsiz_bolum_korunur():
     _, yorum, _ = _calistir(govde)
 
     assert len(yorum.bolumler) == 2
+
+
+@pytest.mark.parametrize(
+    ("kapsam", "satir"),
+    [("padisah", "Kapsam: padisah"), ("vilayet", "Kapsam: vilayet")],
+)
+def test_kapsam_satiri_kaynaga_eklenir(kapsam: str, satir: str):
+    madde = _madde("nablusi:000002", "nablusi", metin_tr="Hükümdar ise fetheder.").model_copy(
+        update={"kapsam": kapsam}
+    )
+
+    assert satir in sentez._ek_satirlar(madde, None)
+
+
+def test_kapsam_yoksa_satir_yazilmaz():
+    madde = _madde("nablusi:000002", "nablusi", metin_tr="Yılan düşmandır.")
+
+    assert sentez._ek_satirlar(madde, None) == []
+
+
+def test_talimat_kapsam_satirini_anlatir():
+    assert "`Kapsam:`" in talimat_oku(sentez.TALIMAT)
