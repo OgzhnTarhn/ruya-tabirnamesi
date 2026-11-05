@@ -62,6 +62,7 @@ flowchart TB
   4. Yine bulunamazsa `symbol_id=None` döner ve ifade serbest aramayla getirilir. Vektör yedeği denendi, kapatıldı ([13](13-hibrit-getirme.md)).
 - Birebir ve kök eşleşmesi olmayan çok kelimeli ifadelerde sözcükler soldan sağa tek tek denenir ("güvercin sürüsü" → `guvercin`); yöntem `"parca"`, güven 0,8.
 - `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "yok"`. Hata ayıklama ekranında gösterilir.
+- Sözlüğe eşleşmeyen genel fiiller ("kullanmak", "yapmak") getirmeye gitmez (`genel_fiilleri_ele`); rastgele maddeler getiriyorlardı. Geriye sembol kalmazsa "sembol bulamadım" mesajı döner.
 
 ### Adım 3 · Getirme (`pipeline/retrieve.py`)
 
@@ -91,6 +92,7 @@ flowchart TB
   - `entry_id` modele verilen maddelerden biri değilse atıf **atılır** ve sayılır (uydurma atıf; [06](06-degerlendirme.md)'daki sadakat ölçütüne girer).
   - `alinti`, normalleştirildikten sonra maddenin `metin_tr` ya da `metin_asli` metninde geçmiyorsa atıf korunur ama alıntı boşaltılır ve sayılır.
   - Doğrulanan atıflar `Atif(entry_id, baslik, alinti)` nesnelerine çevrilir; `baslik` maddeden gelir, modelden alınmaz.
+  - Bir sembol hem bölümde hem `bulunamayanlar`da görünmez: atıflı bölümü olan sembol listeden çıkar, bulunamayan sembolün atıfsız bölümü atılır (`_uzlastir`).
 - **Sistem talimatı:** Kurallar [05-yorum-yontemi.md](05-yorum-yontemi.md) ve [07-etik-ve-hukuk.md](07-etik-ve-hukuk.md) belgelerinden gelir. Talimat metni `prompts/sentez_v1.md` dosyasında sürümlü tutulur. Talimat değiştiğinde değerlendirme yeniden çalıştırılır.
 - **Çıktı yapısı:** Her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". En sonda uyarı metni.
 
