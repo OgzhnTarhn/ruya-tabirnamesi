@@ -675,3 +675,71 @@ def test_bulunamayanlar_tekrarlanmaz():
 def test_gecersiz_json_sekli_yanitbozuk_verir(govde: object):
     with pytest.raises(YanitBozuk):
         _calistir(govde)
+
+
+def _atifli_bolum(metin: str) -> dict:
+    return _bolum(metin, _kaynak(NABLUSI.entry_id, ""))
+
+
+def test_atifli_bolumu_olan_sembol_bulunamayanlara_girmez():
+    govde = _veri(
+        _atifli_bolum("Uzay gemisi: Doğrudan madde yok, gemi maddesine göre yorumlanır."),
+        bulunamayanlar=["uzay gemisi", "bilgisayar"],
+    )
+
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.bulunamayanlar == ["bilgisayar"]
+    assert len(yorum.bolumler) == 1
+
+
+def test_nitelikli_baslik_da_sembolle_eslesir():
+    govde = _veri(_atifli_bolum("Yılan (siyah): Düşmana yorulur."), bulunamayanlar=["yılan"])
+
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.bulunamayanlar == []
+
+
+def test_atifsiz_bolum_bulunamayan_sembolde_atilir():
+    govde = _veri(
+        _bolum("Bilgisayar: Kaynaklarda bulunamadı."),
+        _atifli_bolum("Yılan: Düşmana yorulur."),
+        bulunamayanlar=["bilgisayar"],
+    )
+
+    _, yorum, _ = _calistir(govde)
+
+    assert [b.metin for b in yorum.bolumler] == ["Yılan: Düşmana yorulur."]
+    assert yorum.bulunamayanlar == ["bilgisayar"]
+
+
+def test_uydurma_atifli_bolum_de_atifsiz_sayilir():
+    govde = _veri(
+        _bolum("Bilgisayar: Uydurma yorum.", _kaynak("nablusi:999999", "x")),
+        bulunamayanlar=["bilgisayar"],
+    )
+
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.bolumler == []
+    assert yorum.bulunamayanlar == ["bilgisayar"]
+
+
+def test_baslik_yalniz_tam_kelimeyle_eslesir():
+    govde = _veri(_atifli_bolum("Atlar: Yolculuğa yorulur."), bulunamayanlar=["at"])
+
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.bulunamayanlar == ["at"]
+
+
+def test_baska_atifsiz_bolum_korunur():
+    govde = _veri(
+        _atifli_bolum("Yılan: Düşmana yorulur."),
+        _bolum("Uzlaşılan noktalar: Ortak yön."),
+    )
+
+    _, yorum, _ = _calistir(govde)
+
+    assert len(yorum.bolumler) == 2

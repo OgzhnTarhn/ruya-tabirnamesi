@@ -39,6 +39,7 @@ from ruya.schemas import (
     YorumBolumu,
     getirme_anahtari,
 )
+from ruya.text.turkce import normallestir
 
 TALIMAT = "sentez_v3"
 
@@ -304,6 +305,33 @@ def _bulunamayanlar(
     return sonuc
 
 
+def _basligi_sembol_mu(bolum: YorumBolumu, ad: str) -> bool:
+    """Bölüm başlığı ("Yılan (siyah): …") bu sembolle mi başlıyor? Tam kelime aranır."""
+    baslik = normallestir(bolum.metin.split(":", 1)[0])
+    anahtar = normallestir(ad)
+    return baslik == anahtar or baslik.startswith(anahtar + " ")
+
+
+def _uzlastir(
+    bolumler: list[YorumBolumu], bulunamayanlar: list[str]
+) -> tuple[list[YorumBolumu], list[str]]:
+    """Bir sembol hem bölümde hem ``bulunamayanlar``'da görünmesin.
+
+    Atıflı bölümü olan sembol bulunmuş sayılır. Bulunamayan sembolün atıfsız bölümü atılır.
+    """
+    kalan_adlar = [
+        ad
+        for ad in bulunamayanlar
+        if not any(b.atiflar and _basligi_sembol_mu(b, ad) for b in bolumler)
+    ]
+    kalan_bolumler = [
+        b
+        for b in bolumler
+        if b.atiflar or not any(_basligi_sembol_mu(b, ad) for ad in kalan_adlar)
+    ]
+    return kalan_bolumler, kalan_adlar
+
+
 def synthesize(
     cikarim: CikarimSonucu,
     eslesmeler: list[Eslesme],
@@ -329,9 +357,13 @@ def synthesize(
         ruya_icerir=True,
     )
     ham = _yanit_dogrula(yanit.json())
+    bolumler, bulunamayanlar = _uzlastir(
+        _bolumleri_cevir(ham, maddeler),
+        _bulunamayanlar(ham.bulunamayanlar, eslesmeler, getirilenler),
+    )
     yorum = Yorum(
-        bolumler=_bolumleri_cevir(ham, maddeler),
-        bulunamayanlar=_bulunamayanlar(ham.bulunamayanlar, eslesmeler, getirilenler),
+        bolumler=bolumler,
+        bulunamayanlar=bulunamayanlar,
         guvenlik_notu=GUVENLIK_NOTU if cikarim.hassas_icerik else None,
         uyari=UYARI_METNI,
     )
