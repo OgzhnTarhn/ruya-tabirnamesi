@@ -1,7 +1,8 @@
 """Adım 4 · Sentez: kaynaklı Türkçe yorum (LLM, numaralı kaynaklar, kodda atıf doğrulama).
 Takvim: Hafta 5.
 
-- Adaylar numaralı kaynaklar olarak verilir ([K1] entry_id · başlık, metin_tr, metin_asli);
+- Adaylar numaralı kaynaklar olarak verilir ([K1] entry_id · başlık, Türkçe metin — pasaj ya
+  da metin_tr; Türkçesi yoksa metin_asli);
   model JSON şemasıyla bolumler[{metin, kaynaklar[{entry_id, alinti}]}] ve bulunamayanlar
   döndürür. ``atiflari_dogrula`` verilmemiş entry_id içeren atıfları atar, metinde geçmeyen
   alıntıları boşaltır (docs/03, adım 4).
@@ -45,6 +46,7 @@ TALIMAT = "sentez_v3"
 EN_UZUN_CIKTI_TOKEN = 16000
 # Uzun maddeler isteği şişirip yavaşlatır; atıf doğrulama yine tam metne bakar.
 EN_UZUN_METIN_TR = 600
+# Asıl metin yalnızca maddenin gösterecek Türkçe metni (pasaj ya da metin_tr) yoksa verilir.
 EN_UZUN_METIN_ASLI = 200
 # Bağlamla eşleştirilebilen koşul alanları (docs/05).
 KOSUL_ALANLARI = ("cinsiyet", "medeni_hal", "mevsim")
@@ -245,7 +247,8 @@ def _kullanici_mesaji(
             satirlar.append(pasaj)
         elif madde.metin_tr:
             satirlar.append(madde.metin_tr[:EN_UZUN_METIN_TR])
-        satirlar.append(madde.metin_asli[:EN_UZUN_METIN_ASLI])
+        else:
+            satirlar.append(madde.metin_asli[:EN_UZUN_METIN_ASLI])
         satirlar.extend(_ek_satirlar(madde, baglam))
         satirlar.append("")
     return "\n".join(satirlar).rstrip()

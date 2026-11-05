@@ -8,8 +8,7 @@ Kullanıcı mesajında her madde şu biçimde numaralanır:
 
 ```
 [K1] nablusi:004310 · Nablusi · حية (yılan)
-<metin_tr>
-<metin_asli>
+<metin>
 Koşul: cinsiyet=kadin · "<koşulu taşıyan cümle>"
 Dayanak: zit
 ```
@@ -19,8 +18,7 @@ Dayanak: zit
 - Yalnızca bu numaralı maddeleri kullan. Listede olmayan bir kaynağı, kitabı, yorumu ya da
   `entry_id` değerini anma; uydurma.
 - Her yorum cümlesi bir atıf taşısın. Atıfsız yorum cümlesi yazma.
-- `alinti` alanına, atıf verdiğin maddenin `metin_tr` metninden **birebir** bir parça koy.
-  `metin_tr` yoksa `metin_asli` metninden al. Kendi cümleni alıntı gibi gösterme, kelimeleri
+- `alinti` alanına, atıf verdiğin maddenin metninden **birebir** bir parça koy. Kendi cümleni alıntı gibi gösterme, kelimeleri
   değiştirme, kısaltırken cümleyi bozma.
 - Bir sembol için maddede karşılık yoksa tahmin yürütme; o sembolü `bulunamayanlar`
   listesine yaz ve "kaynaklarda bulunamadı" de.
@@ -68,7 +66,8 @@ kod bloğu işareti yazma:
 
 - `bolumler`: maddesi olan her sembol için bir bölüm, ardından varsa "Uzlaşılan noktalar" ve
   "Ayrışan noktalar" bölümleri. Her bölümün `metin` alanı Türkçe düz metindir ve başlığını
-  kendi içinde taşır: "Yılan (siyah): Nablusi'nin tabirnamesine göre …". Yalnızca başlıktan
+  kendi içinde taşır: "Yılan (siyah): Nablusi'nin tabirnamesine göre …". Başlıkta yalnız sembol adı ve
+  nitelikleri olsun; eylem, bağlam ya da "görüldü" gibi notlar yazma. Aynı sembol için ikinci bölüm açma, bütün kaynaklarını tek bölümde topla. Yalnızca başlıktan
   oluşan bölüm yazma; her bölümde en az bir tam cümle ve en az bir kaynak bulunsun.
 - Maddesi olmayan semboller için bölüm yazma; yalnızca `bulunamayanlar` listesine koy.
 - "Kaynakların söyledikleri" adlı ayrı bir bölüm yazma. Çelişki ya da ortak nokta yoksa

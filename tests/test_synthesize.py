@@ -394,7 +394,7 @@ def test_adaylar_numarali_kaynak_olarak_verilir():
     assert "[K1]" in kullanici
     assert "[K2]" in kullanici
     assert NABLUSI.metin_tr in kullanici
-    assert NABLUSI.metin_asli in kullanici
+    assert NABLUSI.metin_asli not in kullanici
     assert MILLER.metin_asli in kullanici
 
 
@@ -407,7 +407,7 @@ def test_pasaj_varsa_metin_tr_yerine_pasaj_gonderilir():
     kullanici = _mesajlar(_istek(istemci))["user"]
     assert PASAJ in kullanici
     assert NABLUSI.metin_tr not in kullanici
-    assert NABLUSI.metin_asli in kullanici
+    assert NABLUSI.metin_asli not in kullanici
 
 
 def test_pasaj_yoksa_metin_tr_kirpilarak_gonderilir():
@@ -415,9 +415,36 @@ def test_pasaj_yoksa_metin_tr_kirpilarak_gonderilir():
     istemci, _, _ = _calistir(getirilenler=getirilenler)
 
     kullanici = _mesajlar(_istek(istemci))["user"]
-    assert UZUN.metin_tr[: sentez.EN_UZUN_METIN_TR] in kullanici
+    assert UZUN.metin_tr[: sentez.EN_UZUN_METIN_TR].rstrip() in kullanici
     assert UZUN.metin_tr not in kullanici
     assert UZUN_ALINTI not in kullanici
+
+
+def test_metin_tr_varsa_metin_asli_gonderilmez():
+    istemci, _, _ = _calistir(getirilenler={"yilan": [Aday(madde=NABLUSI, skor=2.0)]})
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert NABLUSI.metin_tr in kullanici
+    assert NABLUSI.metin_asli not in kullanici
+
+
+def test_pasaj_varsa_metin_asli_gonderilmez():
+    getirilenler = {"yilan": [Aday(madde=NABLUSI, skor=2.0, pasaj=PASAJ)]}
+    istemci, _, _ = _calistir(getirilenler=getirilenler)
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert PASAJ in kullanici
+    assert NABLUSI.metin_asli not in kullanici
+
+
+def test_turkce_metni_olmayan_maddede_metin_asli_kirpilarak_gonderilir():
+    uzun_asil = "To dream of snakes is a warning of enemies. " * 20
+    madde = _madde("miller:018713", "miller", baslik_asli="Snakes", metin_asli=uzun_asil)
+    istemci, _, _ = _calistir(getirilenler={"yilan": [Aday(madde=madde, skor=2.0)]})
+
+    kullanici = _mesajlar(_istek(istemci))["user"]
+    assert madde.metin_asli[: sentez.EN_UZUN_METIN_ASLI].rstrip() in kullanici
+    assert madde.metin_asli not in kullanici
 
 
 def _kosullu_madde(kosullar: list[Kosul], yontem: list[str] | None = None) -> Madde:
@@ -447,7 +474,7 @@ def test_kosullar_ve_yontem_kaynak_metinlerinden_sonra_yazilir():
     satirlar = _mesajlar(_istek(istemci))["user"].splitlines()
     kosul = satirlar.index('Koşul: cinsiyet=kadin · "Kadın görürse evlenir."')
     dayanak = satirlar.index("Dayanak: zit, kok")
-    assert satirlar.index(madde.metin_asli) < kosul < dayanak
+    assert satirlar.index(madde.metin_tr) < kosul < dayanak
 
 
 def test_kosul_ve_yontem_yoksa_satir_yazilmaz():
