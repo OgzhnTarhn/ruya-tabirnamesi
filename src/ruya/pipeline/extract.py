@@ -21,7 +21,7 @@ from ruya.llm.client import LLMIstemcisi
 from ruya.llm.talimatlar import talimat_oku
 from ruya.schemas import CikarimSonucu, Kullanim, RuyaGirdisi
 
-TALIMAT = "cikarim_v3"
+TALIMAT = "cikarim_v4"
 
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 8000
