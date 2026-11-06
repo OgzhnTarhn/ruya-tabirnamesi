@@ -200,6 +200,62 @@ def test_genel_fiil_elenince_sira_korunur():
     assert [e.sembol.yalin for e in sonuc] == ["gemi", "binmek"]
 
 
+def test_tekrarlari_ele_ayni_symbol_id_ilk_kalir():
+    eslesmeler = [
+        _eslesme("ölüm haberi", "olum"),
+        _eslesme("baba", "baba"),
+        _eslesme("ölüm", "olum"),
+    ]
+
+    sonuc = map_mod.tekrarlari_ele(eslesmeler)
+
+    assert [e.sembol.yalin for e in sonuc] == ["ölüm haberi", "baba"]
+
+
+def test_tekrarlari_ele_eslesmeyenler_normallestirilerek_elenir():
+    eslesmeler = [_eslesme("köprü", None), _eslesme("Köprü", None)]
+
+    sonuc = map_mod.tekrarlari_ele(eslesmeler)
+
+    assert len(sonuc) == 1
+    assert sonuc[0].sembol.yalin == "köprü"
+
+
+def test_tekrarlari_ele_farkli_eslesmeyenler_kalir():
+    eslesmeler = [_eslesme("köprü", None), _eslesme("nehir", None)]
+
+    sonuc = map_mod.tekrarlari_ele(eslesmeler)
+
+    assert [e.sembol.yalin for e in sonuc] == ["köprü", "nehir"]
+
+
+def test_tekrarlari_ele_eslesen_ve_eslesmeyen_birbirini_silmez():
+    eslesmeler = [_eslesme("köprü", "kopru"), _eslesme("köprü", None)]
+
+    sonuc = map_mod.tekrarlari_ele(eslesmeler)
+
+    assert [e.sembol.yalin for e in sonuc] == ["köprü", "köprü"]
+    assert [e.symbol_id for e in sonuc] == ["kopru", None]
+
+
+def test_tekrarlari_ele_sira_korunur():
+    eslesmeler = [
+        _eslesme("baba", "baba"),
+        _eslesme("ölüm", "olum"),
+        _eslesme("nehir", None),
+        _eslesme("ölüm haberi", "olum"),
+        _eslesme("Nehir", None),
+    ]
+
+    sonuc = map_mod.tekrarlari_ele(eslesmeler)
+
+    assert [e.sembol.yalin for e in sonuc] == ["baba", "ölüm", "nehir"]
+
+
+def test_tekrarlari_ele_bos_girdi_bos_cikti():
+    assert map_mod.tekrarlari_ele([]) == []
+
+
 def test_ascii_katlanmis_eslesme(kok_yok):
     eslesmeler = map_mod.map_symbols([_sembol("tas")], {"taş": "tas"})
 

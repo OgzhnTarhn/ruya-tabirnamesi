@@ -88,6 +88,22 @@ def genel_fiilleri_ele(eslesmeler: list[Eslesme]) -> list[Eslesme]:
     ]
 
 
+def tekrarlari_ele(eslesmeler: list[Eslesme]) -> list[Eslesme]:
+    """Aynı symbol_id'yi ya da aynı normalleştirilmiş metni paylaşan tekrarları atar."""
+    gorulen: set[str] = set()
+    sonuc: list[Eslesme] = []
+    for eslesme in eslesmeler:
+        if eslesme.symbol_id is not None:
+            anahtar = f"id:{eslesme.symbol_id}"
+        else:
+            anahtar = f"metin:{normallestir(eslesme.sembol.yalin)}"
+        if anahtar in gorulen:
+            continue
+        gorulen.add(anahtar)
+        sonuc.append(eslesme)
+    return sonuc
+
+
 def map_symbols(
     semboller: list[Sembol],
     varyantlar: dict[str, str],

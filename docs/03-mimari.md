@@ -64,6 +64,7 @@ flowchart TB
 - Hâlâ eşleşme yoksa çok kelimeli ifadelerde sözcükler tek tek denenir; yöntem `"parca"`, güven 0,8. Son sözcük iyelik ekiyle bitiyorsa soldan sağa ("güvercin sürüsü" → `guvercin`, "kız çocuğu" → `kiz`), bitmiyorsa sıfat + isim sayılıp sağdan sola denenir ("gümüş anahtar" → `anahtar`).
 - `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "yok"`. Hata ayıklama ekranında gösterilir.
 - Sözlüğe eşleşmeyen genel fiiller ("kullanmak", "yapmak") getirmeye gitmez (`genel_fiilleri_ele`); rastgele maddeler getiriyorlardı. Geriye sembol kalmazsa "sembol bulamadım" mesajı döner.
+- Aynı sembole düşen tekrarlar ("ölüm haberi" ve "ölüm" → `olum`) getirmeden önce atılır, ilki kalır (`tekrarlari_ele`); eşlenmeyenler normalleştirilmiş yazımlarıyla karşılaştırılır.
 
 ### Adım 3 · Getirme (`pipeline/retrieve.py`)
 
