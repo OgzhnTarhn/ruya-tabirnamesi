@@ -60,8 +60,8 @@ flowchart TB
   2. `symbols.json` içinde doğrudan arama: ad ya da varyant eşleşmesi.
   3. Bulunamazsa zeyrek ile kök bulup yeniden arama.
   4. Yine bulunamazsa `symbol_id=None` döner ve ifade serbest aramayla getirilir. Vektör yedeği denendi, kapatıldı ([13](13-hibrit-getirme.md)).
-- Birebir ve kök eşleşmesi yoksa Türkçe harfleri düşmüş yazım denenir ("tas" → `tas`, güven 0,95); birden çok sembole düşen yazım belirsiz sayılıp atlanır.
-- Hâlâ eşleşme yoksa çok kelimeli ifadelerde sözcükler tek tek denenir; yöntem `"parca"`, güven 0,8. Son sözcük iyelik ekiyle bitiyorsa soldan sağa ("güvercin sürüsü" → `guvercin`, "kız çocuğu" → `kiz`), bitmiyorsa sıfat + isim sayılıp sağdan sola denenir ("gümüş anahtar" → `anahtar`).
+- Türkçe harfleri düşmüş yazım ("tas") ayrıca denenmez: "tas" (kâse) ile "taş", "kus" ile "kuş" ayrı kelimelerdir. Çıkarım talimatı yazımı korumayı ister.
+- Birebir ve kök eşleşmesi olmayan çok kelimeli ifadelerde sözcükler tek tek denenir; yöntem `"parca"`, güven 0,8. Son sözcük iyelik ekiyle bitiyorsa soldan sağa ("güvercin sürüsü" → `guvercin`, "kız çocuğu" → `kiz`), bitmiyorsa sıfat + isim sayılıp sağdan sola denenir ("gümüş anahtar" → `anahtar`).
 - `yontem` alanı şu değerlerden birini alır: `"birebir" | "kok" | "parca" | "yok"`. Hata ayıklama ekranında gösterilir.
 - Sözlüğe eşleşmeyen genel fiiller ("kullanmak", "yapmak") getirmeye gitmez (`genel_fiilleri_ele`); rastgele maddeler getiriyorlardı. Geriye sembol kalmazsa "sembol bulamadım" mesajı döner.
 - Aynı sembole düşen tekrarlar ("ölüm haberi" ve "ölüm" → `olum`) getirmeden önce atılır, ilki kalır (`tekrarlari_ele`); eşlenmeyenler normalleştirilmiş yazımlarıyla karşılaştırılır.

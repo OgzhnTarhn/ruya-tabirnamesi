@@ -4,10 +4,7 @@ Sıra (docs/03, Adım 2):
 1. text.turkce.normallestir
 2. Varyant tablosunda doğrudan arama → yontem="birebir"
 3. text.turkce.kokler ile kök bulup yeniden arama → yontem="kok"
-4. ASCII katlamalı arama: anahtar Türkçe harflerden arındırılıp varyant anahtarlarıyla
-   karşılaştırılır; birden çok symbol_id'ye düşen katlanmış anahtarlar belirsiz sayılır
-   → yontem="birebir"
-5. Çok kelimeli ifadeyi kelimelere bölüp her kelimeyi (birebir, sonra kök) arama
+4. Çok kelimeli ifadeyi kelimelere bölüp her kelimeyi (birebir, sonra kök) arama
    → yontem="parca". Son kelime iyelik ekiyle bitiyorsa (ı/i/u/ü) kelimeler baştan
    sona, aksi halde sondan başa denenir.
 """
@@ -20,27 +17,6 @@ from ruya.text.turkce import kokler, normallestir
 KOK_GUVENI = 0.9
 
 PARCA_GUVENI = 0.8
-
-ASCII_GUVENI = 0.95
-
-_ASCII_TABLOSU = str.maketrans(
-    {
-        "ç": "c",
-        "ğ": "g",
-        "ı": "i",
-        "ö": "o",
-        "ş": "s",
-        "ü": "u",
-        "â": "a",
-        "î": "i",
-        "û": "u",
-    }
-)
-
-
-def _ascii_katla(metin: str) -> str:
-    """Türkçe harfleri ASCII karşılıklarına indirger."""
-    return metin.translate(_ASCII_TABLOSU)
 
 
 # Tek başına bir imge taşımayan fiiller; "kullanmak" araması rastgele maddeler getiriyor
@@ -109,17 +85,6 @@ def map_symbols(
     varyantlar: dict[str, str],
 ) -> list[Eslesme]:
     """Her sembol için tam olarak bir Eslesme döndürür (eşleşmeyenler yontem="yok")."""
-    katlanmis: dict[str, str] = {}
-    belirsiz: set[str] = set()
-    for varyant, symbol_id in varyantlar.items():
-        katlanmis_anahtar = _ascii_katla(varyant)
-        if katlanmis_anahtar in katlanmis and katlanmis[katlanmis_anahtar] != symbol_id:
-            belirsiz.add(katlanmis_anahtar)
-        else:
-            katlanmis[katlanmis_anahtar] = symbol_id
-    for anahtar in belirsiz:
-        katlanmis.pop(anahtar, None)
-
     eslesmeler: list[Eslesme] = []
     for sembol in semboller:
         anahtar = normallestir(sembol.yalin)
@@ -138,18 +103,6 @@ def map_symbols(
                     symbol_id=varyantlar[kok_eslesmesi],
                     yontem="kok",
                     guven=KOK_GUVENI,
-                )
-            )
-            continue
-
-        katlanmis_eslesme = katlanmis.get(_ascii_katla(anahtar))
-        if katlanmis_eslesme is not None:
-            eslesmeler.append(
-                Eslesme(
-                    sembol=sembol,
-                    symbol_id=katlanmis_eslesme,
-                    yontem="birebir",
-                    guven=ASCII_GUVENI,
                 )
             )
             continue
