@@ -587,7 +587,9 @@
       "olu",
       "olum"
     ],
-    "varyantlar_tr": []
+    "varyantlar_tr": [
+      "tabut"
+    ]
   },
   "cennet": {
     "ad_tr": "cennet",
@@ -1025,7 +1027,9 @@
     "varyantlar_tr": [
       "eller",
       "kıllı eller",
-      "çatlamış eller"
+      "çatlamış eller",
+      "avuç",
+      "parmak"
     ]
   },
   "elbise": {
@@ -1252,7 +1256,9 @@
   "gulmek": {
     "ad_tr": "gülmek",
     "varyantlar_tr": [
-      "gülme"
+      "gülme",
+      "gülümsemek",
+      "gülümseme"
     ],
     "ar": [
       "ضحك"
@@ -2403,7 +2409,9 @@
       "cenaze",
       "hastalik"
     ],
-    "varyantlar_tr": []
+    "varyantlar_tr": [
+      "ölmek"
+    ]
   },
   "oruc": {
     "ad_tr": "oruç",
