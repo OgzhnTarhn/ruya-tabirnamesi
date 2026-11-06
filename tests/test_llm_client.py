@@ -176,6 +176,14 @@ def test_yeniden_denemeler_tukenince_hata(ayar):
     assert len(cagrilar) == 4
 
 
+def test_model_dolu_iken_uzun_beklenir(ayar):
+    _, handler = kaydeden(lambda _sira, _istek: httpx.Response(503))
+    beklemeler: list[float] = []
+    with pytest.raises(LLMHatasi):
+        istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert beklemeler == [15.0, 30.0, 60.0]
+
+
 def test_zaman_asimi_yeniden_denenir_sonra_hata(ayar):
     def donen(sira, istek):
         if sira == 1:

@@ -37,6 +37,9 @@ YENIDEN_DENEME_SAYISI = 4
 YENIDEN_DENENEN_DURUMLAR = frozenset({429, 502, 503, 504})
 EN_UZUN_RETRY_AFTER = 30.0  # üstünde günlük kota sayılır, yeniden denenmez
 ISLENIYOR_BEKLEME_SN = 20.0  # 409: geçit isteği hâlâ işliyor, bu kadar bekle
+# 503 "model dolu": geçit dakikalarca dolu kalabiliyor; kısa üstel bekleme yetmiyor
+# (test setinde iki rüya düştü). Retry-After yoksa 15, 30, 60 sn beklenir.
+MESGUL_BEKLEME_SN = 15.0
 ISLENIYOR_EN_FAZLA = 30  # 409 yoklamalarının üst sınırı (YENIDEN_DENEME_SAYISI'ndan bağımsız)
 # Getirme uçları (embeddings, rerank, ocr) 500'de de yeniden denenir; sohbet yolunun
 # davranışı değişmesin diye ayrı bir küme (docs/13).
@@ -312,7 +315,13 @@ class LLMIstemcisi:
                 raise LLMHatasi(
                     f"EVREN {yanit.status_code}: {_hata_mesaji(yanit)}", durum=yanit.status_code
                 )
-            self.bekle(bekleme if bekleme is not None else min(8.0, 0.5 * 2**deneme))
+            if bekleme is None:
+                bekleme = (
+                    MESGUL_BEKLEME_SN * 2**deneme
+                    if yanit.status_code == 503
+                    else min(8.0, 0.5 * 2**deneme)
+                )
+            self.bekle(bekleme)
             deneme += 1
         raise AssertionError("ulaşılamaz")  # döngü her yolda döner ya da hata verir
 
