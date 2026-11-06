@@ -198,3 +198,84 @@ def test_genel_fiil_elenince_sira_korunur():
     sonuc = map_mod.genel_fiilleri_ele(eslesmeler)
 
     assert [e.sembol.yalin for e in sonuc] == ["gemi", "binmek"]
+
+
+def test_ascii_katlanmis_eslesme(kok_yok):
+    eslesmeler = map_mod.map_symbols([_sembol("tas")], {"taş": "tas"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "tas"
+    assert eslesme.yontem == "birebir"
+    assert eslesme.guven == map_mod.ASCII_GUVENI
+
+
+def test_ascii_katlanmis_eslesme_belirsizse_yok(kok_yok):
+    eslesmeler = map_mod.map_symbols([_sembol("kus")], {"kuş": "kus", "küs": "kusmek"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id is None
+    assert eslesme.yontem == "yok"
+
+
+def test_dogrudan_eslesme_ascii_katlamadan_once_gelir(kok_yok):
+    eslesmeler = map_mod.map_symbols([_sembol("kil")], {"kıl": "kil_a", "kil": "kil_b"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "kil_b"
+    assert eslesme.guven == 1.0
+
+
+def test_ascii_katlama_kokten_sonra_gelir(monkeypatch):
+    monkeypatch.setattr(map_mod, "kokler", lambda kelime: ["taş"], raising=False)
+
+    eslesmeler = map_mod.map_symbols([_sembol("tas")], {"taş": "tas"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "tas"
+    assert eslesme.yontem == "kok"
+
+
+def test_cok_kelimeli_ifade_sondan_basa_anahtar(kok_yok):
+    eslesmeler = map_mod.map_symbols(
+        [_sembol("gümüş anahtar")], {"gümüş": "gumus", "anahtar": "anahtar"}
+    )
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "anahtar"
+    assert eslesme.yontem == "parca"
+
+
+def test_cok_kelimeli_ifade_iyelik_ekliyse_bastan_sona(monkeypatch):
+    monkeypatch.setattr(
+        map_mod, "kokler", lambda kelime: ["çocuk"] if kelime == "çocuğu" else [], raising=False
+    )
+
+    eslesmeler = map_mod.map_symbols([_sembol("kız çocuğu")], {"kız": "kiz", "çocuk": "bebek"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "kiz"
+    assert eslesme.yontem == "parca"
+
+
+def test_cok_kelimeli_ifade_iyelik_ekliyse_ilk_kelime(kok_yok):
+    eslesmeler = map_mod.map_symbols([_sembol("deniz kenarı")], {"deniz": "deniz"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "deniz"
+    assert eslesme.yontem == "parca"
+
+
+def test_cok_kelimeli_ifade_iyelik_ekliyse_mevcut_davranis(kok_yok):
+    eslesmeler = map_mod.map_symbols([_sembol("güvercin sürüsü")], {"güvercin": "guvercin"})
+
+    assert len(eslesmeler) == 1
+    eslesme = eslesmeler[0]
+    assert eslesme.symbol_id == "guvercin"
+    assert eslesme.yontem == "parca"
