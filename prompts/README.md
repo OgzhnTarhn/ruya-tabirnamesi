@@ -18,7 +18,8 @@ LLM'e verilen sabit talimatlar burada, sürümlü olarak durur. Kod bunları
 | Dosya | Kullanan modül | Hafta | Dayanak |
 |---|---|---|---|
 | `cikarim_v1.md` | (eski sürüm) | 4 | docs/03 Adım 1, İG-10–14 |
-| `cikarim_v2.md` | `pipeline/extract.py` | 4 | docs/13 (HyDE), docs/03 Adım 1 |
+| `cikarim_v2.md` | (eski sürüm) | 4 | docs/13 (HyDE), docs/03 Adım 1 |
+| `cikarim_v3.md` | `pipeline/extract.py` | 11 | beden parçası, yer, ölüm, madde sıfatı kuralları (docs/olcumler.md) |
 | `sentez_v1.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07 |
 | `sentez_v2.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07, docs/olcumler.md |
 | `sentez_v3.md` | `pipeline/synthesize.py` | 11 | koşullu yorum, dayanak, Türkçe alıntı (docs/05) |
