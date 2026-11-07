@@ -41,6 +41,6 @@ Olasılık ve etki: D = düşük, O = orta, Y = yüksek.
 Araştırmada **[DOĞRULANMADI]** olarak işaretlenen ve bu projeyi etkileyen bilgiler:
 
 - [ ] OpenITI lisansı (Zenodo kaydında CC BY-NC-SA 4.0): Hafta 0'da elle kontrol et.
-- [ ] Gerçek token sayıları ve rüya başına maliyet: Hafta 1'de ölç.
-- [ ] Chroma'nın yerel sürümünde hibrit arama olup olmadığı: yalnızca Aşama 3'te gerekirse bakılacak.
+- [x] Gerçek token sayıları ve rüya başına maliyet: rüya başına yaklaşık 6.900 token; EVREN 1 Aralık 2026'ya kadar ücretsiz, maliyet 0 ([olcumler](olcumler.md)).
+- [x] ~~Chroma'nın yerel sürümünde hibrit arama olup olmadığı~~ Chroma bırakıldı; hibrit arama kendi kodumuzla yapıldı ([13](13-hibrit-getirme.md)).
 - [ ] KVKK md. 28/1-a'nın metni: proje kişisel kaldığı sürece düşük öncelikli.

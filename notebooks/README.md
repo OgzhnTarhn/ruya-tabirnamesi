@@ -25,11 +25,15 @@ REPO = next(p for p in [Path.cwd(), *Path.cwd().parents] if (p / "pyproject.toml
 |---|---|---|
 | `00_ortam_kontrolu.ipynb` | Python, API anahtarı, `data/` yolları, EVREN bağlantısı, birim testleri | 0 |
 | `deneyler/01_veri_ve_ceviri.ipynb` | Nablusi ayrıştırma, sembol atama ve çeviri denemesi (atılabilir kod) | 1 |
-| `02_ayristir.ipynb` | `ingest/*` → `data/interim/*.jsonl`, istatistikler | 2 |
-| `03_zenginlestir.ipynb` | Sembol atama, çeviri ve koşul işleri (`LLMIstemcisi.toplu`) | 3, 6, 8 |
-| `04_indeks.ipynb` | Chroma indeksi (`data/index/chroma`) | 6 |
-| `05_arayuz.ipynb` | Gradio arayüzü (yerelde, `share=False`) | 5 |
-| `06_degerlendirme.ipynb` | `eval/run_eval.py`, rapor `data/raporlar/` altına | 5 |
+
+Planlanan 02–06 notebook'larının yerini betikler aldı; mantık zaten `src/ruya/` altında olduğu için ayrı notebook gerekmedi:
+
+| Planlanan notebook | Yerine |
+|---|---|
+| `02_ayristir.ipynb`, `03_zenginlestir.ipynb` | `scripts/maddeleri_kur.py` |
+| `04_indeks.ipynb` | `scripts/hibrit_indeks_kur.py` (Chroma yerine numpy) |
+| `05_arayuz.ipynb` | `scripts/arayuz_ac.py` |
+| `06_degerlendirme.ipynb` | `eval/run_eval.py` |
 
 Kaynakları indirmek için notebook gerekmez: `uv run python scripts/download_sources.py`.
 

@@ -76,8 +76,8 @@
 
 ## Kabul ölçütleri (MVP, Aşama 1 sonu)
 
-- [ ] 20 rüyalık test setinde sembol yakalama oranı (recall) ölçülmüş ve ≥ %80.
-- [ ] Her yanıtta en az bir atıf var. Atıfı olmayan yorum cümlesi yok (10 yanıt elle incelenecek).
-- [ ] "Uzay gemisi" testi: kaynakta olmayan bir sembolde sistem "bulunamadı" diyor.
-- [ ] Uyarı metni her yanıtta görünüyor.
-- [ ] Hata ayıklama sekmesi çalışıyor.
+- [x] 20 rüyalık test setinde sembol yakalama oranı (recall) ölçülmüş ve ≥ %80. (6 Kasım, 45 rüya: %96)
+- [x] Her yanıtta en az bir atıf var. Atıfı olmayan yorum cümlesi yok (10 yanıt elle incelenecek). (6 Kasım: 44 yanıtın 228 bölümünün hepsi atıflı; 8 yanıt elle okundu, uydurma yok)
+- [x] "Uzay gemisi" testi: kaynakta olmayan bir sembolde sistem "bulunamadı" diyor. (r016: "uzay gemisine dair bir madde bulunmuyor" diyor, gemi ve binme maddelerini ayrı aktarıyor; uydurma yok)
+- [x] Uyarı metni her yanıtta görünüyor. (6 Kasım: 44/44)
+- [x] Hata ayıklama sekmesi çalışıyor. (`tests/test_gradio_app.py`)

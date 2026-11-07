@@ -59,16 +59,16 @@ gantt
 
 **Amaç:** Projenin iki büyük bilinmeyenini cevaplamak. Hepsi bilgisayarda, `notebooks/deneyler/01_veri_ve_ceviri.ipynb` içinde yapılır. Veri `data/` altına iner.
 
-- [ ] `config.py` ve `llm/client.py`: EVREN geçidi, `deepseek-v4.1-flash`, disk önbelleği, yeniden deneme, `toplu` (31 Ekim kararıyla Hafta 4'ten öne alındı; deneme bu istemciyi kullanır)
-- [ ] `notebooks/_kurulum.py`: bilgisayara uyarla (anahtar kontrolü, autoreload); Colab sürümü 23 Ekim'de yazılmıştı
-- [ ] `00_ortam_kontrolu.ipynb` ile Python sürümünü, API anahtarını ve `data/` yollarını kontrol et
+- [x] `config.py` ve `llm/client.py`: EVREN geçidi, `deepseek-v4.1-flash`, disk önbelleği, yeniden deneme, `toplu` (31 Ekim kararıyla Hafta 4'ten öne alındı; deneme bu istemciyi kullanır)
+- [x] `notebooks/_kurulum.py`: bilgisayara uyarla (anahtar kontrolü, autoreload); Colab sürümü 23 Ekim'de yazılmıştı
+- [x] `00_ortam_kontrolu.ipynb` ile Python sürümünü, API anahtarını ve `data/` yollarını kontrol et
 
 - [x] `scripts/download_sources.py` ile dört kaynağı `data/raw/` altına indir; SHA256 değerleri `kaynaklar.py`'ye sabitlendi (31 Ekim).
-- [ ] Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.
-- [ ] 10 Nablusi ve 10 Miller maddesini `deepseek-v4.1-flash` ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.
-- [ ] 10 alt paragrafı "hangi sembole ait?" sorusuyla LLM'e sınıflandırt ve doğruluğu say.
-- [ ] Gerçek token sayılarını ve istek sürelerini ölç; tüm korpusun çevirisinin günlük kotaya ve 1 Aralık'a kadar sürecek ücretsiz döneme sığıp sığmadığını hesapla.
-- [ ] **Çıktı:** `docs/deneyler/01-veri-ve-ceviri.md`. Hipotez, sonuç ve karar.
+- [x] ~~Deneme betiği: Nablusi'nin "ح" (ḥâ) babından 50 paragrafı ayrıştır. Başlıklı maddeleri ve alt paragrafları say.~~ Ayrıştırıcı korpusun tamamında yazıldı (5.782 madde, birim testli).
+- [x] ~~10 Nablusi ve 10 Miller maddesini `deepseek-v4.1-flash` ile Türkçeye çevir. Çevirileri yan yana koyup oku ve 1–5 arası puan ver.~~ Çeviri doğrudan tüm korpusta yapıldı (2 Kasım); puanlama yapılmadı, gözden geçirme sende.
+- [x] ~~10 alt paragrafı "hangi sembole ait?" sorusuyla LLM'e sınıflandırt ve doğruluğu say.~~ LLM yerine deterministik atama seçildi (alt paragraf üst maddesinin sembolünü alır).
+- [x] ~~Gerçek token sayılarını ve istek sürelerini ölç; tüm korpusun çevirisinin günlük kotaya ve 1 Aralık'a kadar sürecek ücretsiz döneme sığıp sığmadığını hesapla.~~ EVREN tek istekte yavaş kaldığı için çeviri Claude Code + orkestra ile yapıldı.
+- [x] **Çıktı:** `docs/deneyler/01-veri-ve-ceviri.md`. Hipotez, sonuç ve karar.
 
 **Karar noktası (K0):** Çeviri kalitesi 3/5'in altındaysa çeviri talimatı iyileştirilir ya da İngilizce ara katman denenir. Bu durumda 1 hafta kayma olur.
 
@@ -76,7 +76,7 @@ gantt
 
 - [x] Repo iskeleti: `pyproject.toml`, `src/ruya/`, `tests/`, ruff ve pytest ayarları, `nbstripout` git filtresi (23 Ekim)
 - [x] `config.py`: veri yolları (23 Ekim; 31 Ekim'de Colab/Drive yerine `data/`)
-- [ ] `notebooks/01_kaynaklari_indir.ipynb` ve `02_ayristir.ipynb`
+- [x] ~~`notebooks/01_kaynaklari_indir.ipynb` ve `02_ayristir.ipynb`~~ Yerlerini betikler aldı: `scripts/download_sources.py`, `scripts/maddeleri_kur.py`
 - [x] `schemas.py`: `Madde`, `SymbolKaydi` ve boru hattı veri sınıfları (23 Ekim)
 - [x] `ingest/miller.py` ve birim testleri (2.256 madde)
 - [x] `ingest/nablusi.py`: başlıklı maddeler, alt paragraflar, sayfa bilgisi, `~~`, `ms` ve `PageV` temizliği, birim testleri
@@ -85,7 +85,7 @@ gantt
 
 ### Hafta 3 · 9–15 Kasım · Aşama 0: Zenginleştirme ve indeks
 
-- [ ] 50 sembollük ilk liste: LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
+- [x] 50 sembollük ilk liste (143'e çıktı; onayın bekliyor): LLM önerecek, sen onaylayacaksın. `sozluk/symbols.json` dosyasına (git'te) Türkçe, Arapça ve İngilizce varyantlar eklenecek.
 - [x] Sembol atama: LLM'siz, varyant eşlemesiyle `enrich/sembol_ata.py` (`assign_symbols.py` kaldırıldı)
 - [x] Korpus çevirisi öne alındı ve bitti (2 Kasım; [02](02-veri-kaynaklari-ve-semasi.md), bölüm 5). `enrich/ceviri_birlestir.py` çıktıları maddelere işler.
 - [ ] `docs/terimler.md`: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et
@@ -105,7 +105,8 @@ gantt
 - [x] `pipeline/run.py` ve `SorguKaydi`
 - [x] `app/gradio_app.py` (2 Kasım; `05_arayuz.ipynb` yerine `scripts/arayuz_ac.py`): rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
 - [x] `degerlendirme/calistir.py`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
-- [ ] MVP kabul ölçütlerinin kontrolü, ardından `v0.1-mvp` etiketi
+- [x] MVP kabul ölçütlerinin kontrolü (7 Kasım, [01](01-gereksinimler.md); hepsi sağlandı)
+- [ ] `v0.1-mvp` etiketi (karar sende)
 
 ### Öne alınan: hibrit getirme (3 Kasım, kullanıcı kararı)
 
@@ -154,13 +155,14 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 ### Hafta 11 · 4–10 Ocak · Aşama 3: Uzlaşı/ayrışma çıktısı → **v0.3**
 
 - [x] `prompts/sentez_v3.md`: koşullu yorum, "Uzlaşılan / Ayrışan" çıktısı ve dayanak açıklamaları ("Diğer vecihler" bölümü yok)
-- [ ] Tam ölçüm ve v1 ile karşılaştırma, ardından `v0.3` etiketi
+- [x] Tam ölçüm ve v1 ile karşılaştırma (6 Kasım, 45 rüya; [olcumler](olcumler.md))
+- [ ] `v0.3` etiketi (karar sende)
 
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
 
 - [ ] D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (sentez ve çıkarım)
 - [ ] D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)
-- [ ] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim
+- [x] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim (7 Kasım; öğrendiklerin ayrıntısı [14](14-ders-notu.md), bölüm 11)
 - [ ] `v1.0` etiketi
 
 ## İsteğe bağlı devam (Ocak sonrası)
