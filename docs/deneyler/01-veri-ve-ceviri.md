@@ -29,14 +29,20 @@ Projenin iki büyük bilinmeyeni: (1) Nablusi'nin alt paragrafları güvenilir b
 
 | Hipotez | Ölçülen | Tuttu mu? |
 |---|---|---|
-| H1 | | |
-| H2 | | |
-| H3 | | |
-| H4 | | |
+| H1 | 50 paragraflık deneme yapılmadı; ayrıştırıcı doğrudan bütün Nablusi için yazıldı (5.782 madde, birim testli) | Denenmedi, iş aştı |
+| H2 | LLM ile sembol atama denenmedi | Denenmedi: deterministik atama seçildi |
+| H3 | 1–5 puanlaması yapılmadı; dört kaynağın tamamı çevrildi (2 Kasım) | Ölçülmedi |
+| H4 | Çeviri 2 Kasım'da, ücretsiz dönem içinde bitti; ama EVREN tek istekte yavaş kaldığı için Claude Code + orkestra ile | Tuttu, başka yolla |
 
-Gözlemler:
+Gözlemler (7 Kasım'da geriye dönük yazıldı):
+
+- Bu deney planlandığı gibi yapılmadı; 31 Ekim'de sağlayıcı EVREN'e geçince sıra değişti ve doğrudan asıl işlere geçildi.
+- Ayrıştırma: başlıklı madde ve alt paragraf ayrımı kurallarla yapıldı, alt paragraflar `ust_madde_id` ile başlıklarına bağlandı.
+- Sembol atama: LLM yerine sözlük varyantlarıyla eşleme; eşleşmeyen alt paragraf üst maddesinin sembolünü devralır (`enrich/sembol_ata.py`).
+- Çeviri: önce Claude Code ajanları, kullanım sınırından sonra orkestra ile EVREN ajanları. İlk turda yarıda kesilen uzun paragraflar uzunluk oranı denetimiyle bulunup yeniden çevrildi.
+- Çeviri kalitesi henüz insan gözünden geçmedi. Örnek kusur: ibn_sirin:006237'de ذَكَر "zikir" diye çevrilmiş.
 
 ## Karar
 
-- K0 kararı:
-- Güncellenen belgeler (02 bölüm 5'teki süre ve kota, 09 R1/R2/R13/R14, terimler.md):
+- K0 kararı: Deney atlandı; ayrıştırma kurallarla, sembol atama deterministik, çeviri Claude Code + EVREN ile tamamlandı. Kalite kontrolü çevirilerin gözden geçirilmesine bırakıldı.
+- Güncellenen belgeler: 02 bölüm 5 (çeviri stratejisi), 04 TK-03/TK-04, 08 Hafta 1.
