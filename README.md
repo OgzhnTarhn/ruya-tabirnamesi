@@ -2,8 +2,9 @@
 
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
-> **Durum (4 Kasım 2026):** Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme ve arayüz çalışıyor. Sözlük 143 sembol. Ölçüm: [olcumler](docs/olcumler.md). Hibrit getirmenin kazancı henüz ölçülmedi.
-> **Bilinen sorun:** 45 rüyalık ölçümde bir rüya medyan 177 saniye sürdü (düşünme kapanmadan önce 7–14 dakikaydı); hedef 30 saniye. Sembol yakalama %96, atıf kapsamı %100 ([ölçümler](docs/olcumler.md)). Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
+> **Durum (7 Kasım 2026):** Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme, OCR ve arayüz çalışıyor. Sözlük 143 sembol. MVP kabul ölçütleri sağlandı ([01](docs/01-gereksinimler.md)).
+> **Bilinen sorun:** Bir rüya medyan 177 saniye sürüyor; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
+> **Projeyi baştan öğrenmek için:** [14 · Ders notu](docs/14-ders-notu.md).
 
 ## Belgeler
 
@@ -43,6 +44,28 @@ Rüya metni
   → Kaynaklı, gelenek etiketli Türkçe yorum + uyarı
 ```
 
+## Ölçümler
+
+| Tarih | Ne değişti | Rüya | Sembol recall | Precision | Atıf kapsamı | Medyan süre |
+|---|---|---|---|---|---|---|
+| 2 Kasım | İlk uçtan uca ölçüm | 20 | %63 | %100 | %40 | ~538 sn (ort.) |
+| 2 Kasım | Sentez talimatı v2 | 20 | %77 | %100 | %100 | — |
+| 5 Kasım | Düşünme kapalı, hibrit getirme | 45 | %78 | %86 | %100 | 177 sn |
+| 6 Kasım | Çıkarım talimatı v3, eşleme düzeltmeleri | 45 | %96 | %87 | %100 | — |
+
+Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Test seti sentetik ve gözden geçirilmedi; precision'daki "fazla" sembollerin çoğu rüyada gerçekten geçiyor. Ayrıntı: [olcumler](docs/olcumler.md).
+
+## Öğrendiklerim
+
+- **Getirme kötüyse üretim de kötüdür.** Emeğin çoğu aramaya gitti: sözlük, BM25, vektör, HyDE, RRF, reranker ve eşik birlikte.
+- **Modele güvenme, denetle.** Atıflar kodda doğrulanıyor; verilmemiş maddeye atıf atılıyor.
+- **Kesin eşleme gereken yerde kural.** Sembolleri vektörle eşlemek "yılan"ı `akrep`e bağladı; kapatıldı.
+- **Model ayarı göründüğünden önemli.** Düşünme adımını kapatmak yanıtı dakikalardan saniyelere indirdi.
+- **Ölçütün değeri test setinin kalitesi kadardır.** Precision düşük göründü, çünkü beklenen listeler eksikti.
+- **Talimat örneklerine test cümlesi koyma.** Ölçüm ezberi ölçer.
+
+Denenip vazgeçilenlerin tamamı: [14 · Ders notu](docs/14-ders-notu.md), bölüm 11.
+
 **Ortam:** Her şey bilgisayarda (VS Code + Git + uv) · veri `data/` altında, git'e girmez
 
 **Teknolojiler:** Python ≥3.11 · EVREN LLM geçidi (`deepseek-v4.1-flash`, `qwen3-embedding-8b`, `qwen3-reranker-8b`, `deepseek-ocr-2`, httpx) · numpy · kendi BM25'imiz · zeyrek · Gradio · pytest · ruff · nbstripout
@@ -64,17 +87,19 @@ tests/        verisiz birim testleri, mimari testleri, kontrat testleri
 uv sync
 uv run nbstripout --install
 uv run pytest
-uv run ruff check . ; uv run ruff format .
+uv run ruff check .
 ```
 
 Veriyle çalıştırma (anahtar ve `data/` gerekir):
 
 ```powershell
+uv run python scripts/download_sources.py    # ham kaynaklar data/raw altına, bir kez
 uv run python scripts/nltk_kur.py            # kök bulma verisi, bir kez
 uv run python scripts/maddeleri_kur.py       # data/processed/entries.jsonl
 uv run python scripts/hibrit_indeks_kur.py   # data/index/hibrit, yaklaşık 11 dakika
 uv run python scripts/ruya_dene.py "Rüyamda yılan gördüm"
 uv run python scripts/arayuz_ac.py           # yalnız localhost
+uv run python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket deneme   # ölçüm, uzun sürer
 ```
 
 Kurulum ve çalıştırma: [10](docs/10-kurulum-rehberi.md), [11](docs/11-calisma-ortami.md). Hibrit getirmenin tasarımı: [13](docs/13-hibrit-getirme.md).
