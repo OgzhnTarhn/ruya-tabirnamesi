@@ -1,1 +1,407 @@
-[]
+[
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Sembol recall",
+  "deger": 0.63
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Sembol precision",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.9
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Atıf kapsamı",
+  "deger": 0.4
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Medyan süre (sn)",
+  "deger": 538.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek",
+  "commit": "57426f9",
+  "test_seti": "20 rüya (sentetik; 1'i zaman aşımı)",
+  "talimatlar": "cikarim_v1, sentez_v1",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Sembol recall",
+  "deger": 0.77
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Sembol precision",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.9
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Atıf kapsamı",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Medyan süre (sn)",
+  "deger": 196.0
+ },
+ {
+  "tarih": "2026-11-02",
+  "etiket": "asama1-deepseek-sentez-v2",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Sembol recall",
+  "deger": 0.77
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Sembol precision",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.9
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Atıf kapsamı",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Medyan süre (sn)",
+  "deger": 207.0
+ },
+ {
+  "tarih": "2026-11-03",
+  "etiket": "asama1-mimo-sentez",
+  "commit": "a1de337",
+  "test_seti": "20 rüya (sentetik)",
+  "talimatlar": "cikarim_v1, sentez_v2",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Sembol recall",
+  "deger": 0.78
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Sembol precision",
+  "deger": 0.86
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 0.86
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.7
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Atıf kapsamı",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Medyan süre (sn)",
+  "deger": 177.0
+ },
+ {
+  "tarih": "2026-11-05",
+  "etiket": "asama3-hibrit-deepseek",
+  "commit": "8cefe2e",
+  "test_seti": "45 rüya (sentetik; 2'si 503 ile düştü)",
+  "talimatlar": "cikarim_v2, sentez_v3",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Sembol recall",
+  "deger": 0.96
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Sembol precision",
+  "deger": 0.87
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 0.87
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.7
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Atıf kapsamı",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Sadakat ihlali (elle)",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-06",
+  "etiket": "asama3-cikarim-v3",
+  "commit": "c300307",
+  "test_seti": "45 rüya (sentetik; 503'ler yeniden koşuldu)",
+  "talimatlar": "cikarim_v3, sentez_v3",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
+ }
+]

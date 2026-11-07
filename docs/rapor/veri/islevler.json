@@ -1,13 +1,6 @@
 [
  {
   "modul": "config.py",
-  "islev": "colabda_mi",
-  "birim": "config",
-  "durum": "hazir",
-  "hafta": null
- },
- {
-  "modul": "config.py",
   "islev": "ayarlar",
   "birim": "config",
   "durum": "hazir",
@@ -50,7 +43,14 @@
  },
  {
   "modul": "config.py",
-  "islev": "indeks_yedek_klasoru",
+  "islev": "indeks_klasoru",
+  "birim": "config",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "config.py",
+  "islev": "chroma_klasoru",
   "birim": "config",
   "durum": "hazir",
   "hafta": null
@@ -58,13 +58,6 @@
  {
   "modul": "config.py",
   "islev": "llm_onbellek_klasoru",
-  "birim": "config",
-  "durum": "hazir",
-  "hafta": null
- },
- {
-  "modul": "config.py",
-  "islev": "batch_klasoru",
   "birim": "config",
   "durum": "hazir",
   "hafta": null
@@ -92,20 +85,6 @@
  },
  {
   "modul": "config.py",
-  "islev": "calisma",
-  "birim": "config",
-  "durum": "hazir",
-  "hafta": null
- },
- {
-  "modul": "config.py",
-  "islev": "chroma_klasoru",
-  "birim": "config",
-  "durum": "hazir",
-  "hafta": null
- },
- {
-  "modul": "config.py",
   "islev": "hf_klasoru",
   "birim": "config",
   "durum": "hazir",
@@ -115,64 +94,64 @@
   "modul": "degerlendirme/calistir.py",
   "islev": "degerlendir",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "sembol_recall",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "sembol_precision",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "olumsuzlama_hatalari",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "esleme_dogrulugu",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "recall_at_k",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "kaynak_cesitliligi",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "atif_kapsami",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "degerlendirme/metrikler.py",
   "islev": "yasak_ifadeler",
   "birim": "degerlendirme",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "dosya.py",
@@ -196,46 +175,102 @@
   "hafta": null
  },
  {
-  "modul": "enrich/assign_symbols.py",
-  "islev": "batch_istekleri",
+  "modul": "enrich/ceviri_birlestir.py",
+  "islev": "ceviri_oku",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
  },
  {
-  "modul": "enrich/assign_symbols.py",
-  "islev": "sonuclari_uygula",
+  "modul": "enrich/ceviri_birlestir.py",
+  "islev": "ceviriyi_uygula",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
  },
  {
-  "modul": "enrich/conditions.py",
-  "islev": "batch_istekleri",
+  "modul": "enrich/kapsam_kurallari.py",
+  "islev": "kapsami_cikar",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 8
+  "durum": "hazir",
+  "hafta": null
  },
  {
-  "modul": "enrich/conditions.py",
-  "islev": "sonuclari_uygula",
+  "modul": "enrich/kapsam_kurallari.py",
+  "islev": "maddelere_uygula",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 8
+  "durum": "hazir",
+  "hafta": null
  },
  {
-  "modul": "enrich/translate.py",
-  "islev": "batch_istekleri",
+  "modul": "enrich/kosul_kurallari.py",
+  "islev": "kosullari_cikar",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
  },
  {
-  "modul": "enrich/translate.py",
-  "islev": "sonuclari_uygula",
+  "modul": "enrich/kosul_kurallari.py",
+  "islev": "maddelere_uygula",
   "birim": "enrich",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "enrich/sembol_ata.py",
+  "islev": "sembol_ata",
+  "birim": "enrich",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "enrich/yontem_kurallari.py",
+  "islev": "yontemleri_cikar",
+  "birim": "enrich",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "enrich/yontem_kurallari.py",
+  "islev": "maddelere_uygula",
+  "birim": "enrich",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/bm25.py",
+  "islev": "belge_sayisi",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/bm25.py",
+  "islev": "kur",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/bm25.py",
+  "islev": "ara",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/bm25.py",
+  "islev": "kaydet",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/bm25.py",
+  "islev": "yukle",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "index/build_symbols.py",
@@ -248,36 +283,64 @@
   "modul": "index/build_symbols.py",
   "islev": "varyant_tablosu",
   "birim": "index",
-  "durum": "iskelet",
+  "durum": "hazir",
   "hafta": 4
  },
  {
   "modul": "index/build_symbols.py",
   "islev": "sozluk_maddeler_tutarliligi",
   "birim": "index",
-  "durum": "iskelet",
+  "durum": "hazir",
   "hafta": 3
  },
  {
   "modul": "index/build_vectors.py",
-  "islev": "vektor_indeksi_kur",
+  "islev": "hibrit_indeks_kur",
   "birim": "index",
-  "durum": "iskelet",
-  "hafta": 6
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "index/build_vectors.py",
-  "islev": "__init__",
+  "islev": "ara",
   "birim": "index",
-  "durum": "iskelet",
-  "hafta": 6
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "index/build_vectors.py",
-  "islev": "en_yakin_semboller",
+  "islev": "yukle",
   "birim": "index",
-  "durum": "iskelet",
-  "hafta": 6
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/build_vectors.py",
+  "islev": "parca_listesi",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/build_vectors.py",
+  "islev": "bm25_ara",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/build_vectors.py",
+  "islev": "vektor_ara",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "index/parcalar.py",
+  "islev": "parcala",
+  "birim": "index",
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "index/store.py",
@@ -295,59 +358,31 @@
  },
  {
   "modul": "index/store.py",
-  "islev": "en_yakin_semboller",
+  "islev": "sembolun_maddeleri",
   "birim": "index",
   "durum": "hazir",
   "hafta": null
  },
  {
   "modul": "index/store.py",
-  "islev": "__init__",
-  "birim": "index",
-  "durum": "iskelet",
-  "hafta": 4
- },
- {
-  "modul": "index/store.py",
-  "islev": "sembolun_maddeleri",
-  "birim": "index",
-  "durum": "iskelet",
-  "hafta": 4
- },
- {
-  "modul": "index/store.py",
   "islev": "madde",
   "birim": "index",
-  "durum": "iskelet",
-  "hafta": 4
- },
- {
-  "modul": "index/yedek.py",
-  "islev": "indeksi_geri_yukle",
-  "birim": "index",
-  "durum": "iskelet",
-  "hafta": 6
- },
- {
-  "modul": "index/yedek.py",
-  "islev": "indeksi_yedekle",
-  "birim": "index",
-  "durum": "iskelet",
-  "hafta": 6
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "ingest/freud.py",
   "islev": "ayristir",
   "birim": "ingest",
-  "durum": "iskelet",
-  "hafta": 7
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "ingest/ibn_sirin.py",
   "islev": "ayristir",
   "birim": "ingest",
-  "durum": "iskelet",
-  "hafta": 8
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "ingest/kaynaklar.py",
@@ -360,15 +395,15 @@
   "modul": "ingest/miller.py",
   "islev": "ayristir",
   "birim": "ingest",
-  "durum": "iskelet",
-  "hafta": 2
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "ingest/nablusi.py",
   "islev": "ayristir",
   "birim": "ingest",
-  "durum": "iskelet",
-  "hafta": 2
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "kayit.py",
@@ -400,24 +435,59 @@
  },
  {
   "modul": "llm/client.py",
+  "islev": "icerik",
+  "birim": "llm",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "llm/client.py",
+  "islev": "json",
+  "birim": "llm",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "llm/client.py",
   "islev": "mesaj",
   "birim": "llm",
-  "durum": "iskelet",
+  "durum": "hazir",
   "hafta": 4
  },
  {
   "modul": "llm/client.py",
-  "islev": "batch_gonder",
+  "islev": "gom",
   "birim": "llm",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "llm/client.py",
-  "islev": "batch_sonuclari",
+  "islev": "yeniden_sirala",
   "birim": "llm",
-  "durum": "iskelet",
-  "hafta": 3
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "llm/client.py",
+  "islev": "ocr",
+  "birim": "llm",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "llm/client.py",
+  "islev": "toplu",
+  "birim": "llm",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "llm/client.py",
+  "islev": "calistir",
+  "birim": "llm",
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "llm/talimatlar.py",
@@ -430,22 +500,92 @@
   "modul": "pipeline/extract.py",
   "islev": "extract",
   "birim": "pipeline",
-  "durum": "iskelet",
-  "hafta": 4
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "rrf",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "getirme_sorgusu",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "hibrit_getir",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "parca_listesi",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "bm25_ara",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "vektor_ara",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "gom",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "yeniden_sirala",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/map.py",
+  "islev": "genel_fiilleri_ele",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/map.py",
+  "islev": "tekrarlari_ele",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "pipeline/map.py",
   "islev": "map_symbols",
   "birim": "pipeline",
-  "durum": "iskelet",
-  "hafta": 4
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "pipeline/retrieve.py",
   "islev": "retrieve",
   "birim": "pipeline",
-  "durum": "iskelet",
-  "hafta": 4
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "pipeline/run.py",
@@ -463,10 +603,24 @@
  },
  {
   "modul": "pipeline/synthesize.py",
+  "islev": "atiflari_dogrula",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/synthesize.py",
   "islev": "synthesize",
   "birim": "pipeline",
-  "durum": "iskelet",
-  "hafta": 5
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "schemas.py",
+  "islev": "getirme_anahtari",
+  "birim": "schemas",
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "schemas.py",
@@ -514,21 +668,28 @@
   "modul": "text/turkce.py",
   "islev": "kucuk_harf",
   "birim": "text",
-  "durum": "iskelet",
-  "hafta": 2
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "text/turkce.py",
   "islev": "normallestir",
   "birim": "text",
-  "durum": "iskelet",
-  "hafta": 2
+  "durum": "hazir",
+  "hafta": null
  },
  {
   "modul": "text/turkce.py",
   "islev": "kokler",
   "birim": "text",
-  "durum": "iskelet",
-  "hafta": 4
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "text/turkce.py",
+  "islev": "arama_terimleri",
+  "birim": "text",
+  "durum": "hazir",
+  "hafta": null
  }
 ]
