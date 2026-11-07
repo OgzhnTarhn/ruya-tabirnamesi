@@ -138,11 +138,12 @@ def _tablo(yol: Path) -> tuple[list[str], list[list[str]]]:
 
 def _sayi(metin: str) -> float | None:
     metin = metin.replace("≥", "").replace("≤", "").replace(" ", "")
-    if not metin or not re.search(r"\d", metin):
+    # Hücre bir sayıyla başlar; arkasındaki not atılır ("ort. 538", "196 (yalnız sentez)").
+    eslesme = re.match(r"(?:ort\.)?(%?)(\d+(?:,\d+)?)", metin)
+    if eslesme is None:
         return None
-    oran = metin.startswith("%")
-    deger = float(metin.lstrip("%").replace(",", "."))
-    return deger / 100 if oran else deger
+    deger = float(eslesme.group(2).replace(",", "."))
+    return deger / 100 if eslesme.group(1) else deger
 
 
 def olcumler() -> tuple[list[dict], list[dict]]:
