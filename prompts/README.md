@@ -24,6 +24,7 @@ LLM'e verilen sabit talimatlar burada, sürümlü olarak durur. Kod bunları
 | `sentez_v1.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07 |
 | `sentez_v2.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07, docs/olcumler.md |
 | `sentez_v3.md` | (eski sürüm) | 11 | koşullu yorum, dayanak, Türkçe alıntı (docs/05) |
-| `sentez_sembol_v1.md` | `pipeline/synthesize.py` (paralel) | 12 | v4'ün tek sembollük hâli; uzlaşı/ayrışma bölüm içinde |
+| `sentez_sembol_v1.md` | (eski sürüm) | 12 | v4'ün tek sembollük hâli; uzlaşı/ayrışma bölüm içinde |
+| `sentez_sembol_v2.md` | `pipeline/synthesize.py` (paralel) | 12 | v1 + en fazla 3 cümle, 3 kaynak, 20 kelimelik alıntı (süre ölçümü, docs/olcumler.md) |
 | `genel_yorum_v1.md` | `pipeline/synthesize.py` (paralel) | 12 | sembol bölümlerini düz paragrafta birleştirir |
 | `sentez_v4.md` | `pipeline/synthesize.py` (tek çağrı) | 12 | v3 + genel yorum, sembolün kendisi olmayan maddeyi kullanma (bilek/bilezik) |

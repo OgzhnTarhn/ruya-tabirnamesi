@@ -48,10 +48,11 @@ from ruya.text.turkce import normallestir
 TALIMAT = "sentez_v4"
 # Paralel mod açıkken sembol başına ayrı istek ve tek genel yorum isteği yapılır.
 PARALEL_SENTEZ = True
-# Aynı anda uçuşta olabilecek en fazla sembol isteği.
+# Aynı anda uçuşta olabilecek en fazla sembol isteği. EVREN hesap başına model için en fazla 4
+# eşzamanlı istek kabul ediyor; fazlası 429 alır (9 Kasım ölçümü).
 EN_FAZLA_ESZAMANLI = 4
 # Sembol başına isteğin sistem talimatı.
-SEMBOL_TALIMATI = "sentez_sembol_v1"
+SEMBOL_TALIMATI = "sentez_sembol_v2"
 # Genel yorum isteğinin sistem talimatı.
 GENEL_TALIMATI = "genel_yorum_v1"
 
