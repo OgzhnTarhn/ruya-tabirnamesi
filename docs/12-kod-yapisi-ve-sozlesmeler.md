@@ -107,7 +107,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `pipeline/extract.py` | `extract(girdi, istemci) -> (CikarimSonucu, Kullanim)` | ✅ |
 | `pipeline/map.py` | `map_symbols(semboller, varyantlar, vektor=None, esik=0.8) -> list[Eslesme]` | ✅ |
 | `pipeline/retrieve.py` | `retrieve(eslesmeler, depo, baglam, gelenekler, n) -> Getirilenler` | ✅ |
-| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` | ✅ |
+| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` · paralel kipte sembol başına bir çağrı + genel yorum çağrısı; `Kullanim` çağrıların toplamıdır | ✅ |
 | `pipeline/run.py` | `yorumla(girdi, bag) -> SorguKaydi`, `Bagimliliklar`, `varsayilan_bagimliliklar()` | ✅ |
 
 ### Üst katman ve giriş noktaları
