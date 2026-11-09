@@ -30,3 +30,23 @@ Her satırın altına, sayıları değiştiren şeyi bir cümleyle yaz (ör. "ci
 - **Sadakat (8 rüya elle):** r003, r009, r013, r020, r026, r031, r040, r045. Uydurma atıf ya da kaynakta olmayan iddia görülmedi; olumsuzlanan örümcek (r040) yorumlanmadı; her yanıtta uyarı var. Bir çeviri hatası yoruma taşınmış: ibn_sirin:006237'de Arapça ذَكَر (erkeklik organı) "zikir" diye çevrilmiş. Bazı atıflar konuya gevşek bağlı (deniz kenarı bölümünde balık maddesi).
 - **2026-11-06 · cikarim_v4 (yarım):** v3'teki "`taş` (tas değil)" örneği kâse anlamındaki "tas"ı bozduğu için v4 yazıldı ve harf katlama yedeği kaldırıldı. Ölçüm 18 rüyada durduruldu: aynı 18 rüyada recall v3 %90, v4 %89; tam ölçüm yapılmadı. Bu 18 rüyada önbelleksiz medyan süre 204 sn: rüya başına sembol 3'ten 5,5'e çıktığı için sentez uzuyor (sentez hızı 12 → 16 token/sn, yavaşlık modelden değil).
 - **2026-11-03 · kök eşleme düzeltmesi:** Bu iki ölçümde kök eşleme çalışmıyordu (zeyrek NLTK verisi eksikti, hata yutuluyordu). Düzeltmeden sonra çıkarım önbelleğiyle yalnız eşleme yeniden hesaplandı: recall %82 (51/62), yanlış eşleme yok. Uçtan uca ölçüm yenilenmedi.
+
+### 2026-11-09 · Süre: paralel sentez (5 rüya)
+
+Önbellek kapalı, aynı 5 rüya (r003, r005, r008, r013, r030), aynı akşam. Geçit o gün yavaştı
+(tek çağrı saniyede ~6 token); süreler 5 Kasım'la değil yalnız kendi aralarında karşılaştırılır.
+Betik `data/deneyler/hiz5.jsonl` dosyasına yazar; tam test seti koşulmadı.
+
+| Kip | Talimat | Sentez medyanı | Toplam medyanı | Sentez çıktı tokenı (5 rüya) | Atıf kapsamı | Yasak ifade |
+|---|---|---|---|---|---|---|
+| Tek çağrı | sentez_v4 | 341 sn | 389 sn | 14.811 | %100 | 0 |
+| Paralel, 4 eşzamanlı | sentez_sembol_v1 + genel_yorum_v1 | 239 sn | 307 sn | 24.075 | 4'ünde %100, 1'inde %85 | 0 |
+| Paralel, 4 eşzamanlı | sentez_sembol_v2 + genel_yorum_v1 | 193 sn | 270 sn | 16.695 | %100 | 0 |
+
+- Paralel kip sentezi yaklaşık %40 kısalttı. v1'de her sembol çağrısı ~575 token yazıyordu;
+  v2'de 3 cümle, 3 kaynak ve 20 kelimelik alıntı sınırı tokenı %30 azalttı.
+- EVREN hesap başına model için en fazla 4 eşzamanlı istek kabul ediyor; 8 denenince bir rüya
+  429 ile düştü. `EN_FAZLA_ESZAMANLI = 4`.
+- Kalan sürenin büyük ve en dalgalı parçası çıkarım (26–158 sn, ~330 token, çoğu HyDE metni).
+  30 saniye hedefi bu geçitte paralellikle tutmuyor; sıradaki aday çıkarımı kısaltmak ve
+  arayüzde bölümleri geldikçe göstermek.
