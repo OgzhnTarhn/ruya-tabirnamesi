@@ -38,7 +38,7 @@
 |---|---|---|
 | İG-30 | Yorum yalnızca getirilen maddelere dayanır. Her yorum cümlesi bir kaynağa atıf taşır. | [M] |
 | İG-31 | Bir sembol için madde yoksa "kaynaklarda bulunamadı" der ve tahmin yürütmez. | [M] |
-| İG-32 | Çıktıyı sabit bir yapıda verir: sembol başına "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". | [M] (basit) → [S] (tam) |
+| İG-32 | Çıktıyı sabit bir yapıda verir: en başta düz bir genel yorum, ardından sembol başına "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". | [M] (basit) → [S] (tam) |
 | İG-33 | Her yorumun hangi gelenekten geldiğini belirtir (İslami klasik / Batı halk / psikanalitik). Çeviri metinler için "makine çevirisi" notu düşer. | [M] |
 | İG-34 | İbn Sirin'e atfedilen metinden gelen yorumlarda "nispeti sahih değil" notunu gösterir. | [M] |
 | İG-35 | Ölüm, hastalık ve felaket sembollerinde yumuşatılmış bir dil kullanır ve geleneğin "kötü rüya anlatılmaz" adabını hatırlatır. | [M] |

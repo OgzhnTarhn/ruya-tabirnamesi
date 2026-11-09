@@ -89,14 +89,14 @@ flowchart TB
   <metin_asli>
   ```
 
-  Model JSON şemasıyla yanıt verir: `{"bolumler": [{"metin": "...", "kaynaklar": [{"entry_id": "nablusi:004310", "alinti": "..."}]}], "bulunamayanlar": ["..."]}`. Başlık bölümlerinin `kaynaklar` listesi boştur.
+  Model JSON şemasıyla yanıt verir: `{"bolumler": [{"metin": "...", "kaynaklar": [{"entry_id": "nablusi:004310", "alinti": "..."}]}], "bulunamayanlar": ["..."], "genel_yorum": "..."}`. `genel_yorum` bölümleri birleştiren tek paragraftır; atıf taşımaz, bölümlerde olmayan anlam eklemez (`sentez_v4`). Başlık bölümlerinin `kaynaklar` listesi boştur.
 - **Atıf doğrulama (kodda, `atiflari_dogrula`):** API düzeyinde atıf denetimi olmadığı için ([04](04-teknoloji-secimi.md), TK-03) model çıktısı kodda denetlenir:
   - `entry_id` modele verilen maddelerden biri değilse atıf **atılır** ve sayılır (uydurma atıf; [06](06-degerlendirme.md)'daki sadakat ölçütüne girer).
   - `alinti`, normalleştirildikten sonra maddenin `metin_tr` ya da `metin_asli` metninde geçmiyorsa atıf korunur ama alıntı boşaltılır ve sayılır.
   - Doğrulanan atıflar `Atif(entry_id, baslik, alinti)` nesnelerine çevrilir; `baslik` maddeden gelir, modelden alınmaz.
   - Bir sembol hem bölümde hem `bulunamayanlar`da görünmez: atıflı bölümü olan sembol listeden çıkar, bulunamayan sembolün atıfsız bölümü atılır (`_uzlastir`).
 - **Sistem talimatı:** Kurallar [05-yorum-yontemi.md](05-yorum-yontemi.md) ve [07-etik-ve-hukuk.md](07-etik-ve-hukuk.md) belgelerinden gelir. Talimat metni `prompts/sentez_v1.md` dosyasında sürümlü tutulur. Talimat değiştiğinde değerlendirme yeniden çalıştırılır.
-- **Çıktı yapısı:** Her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". En sonda uyarı metni.
+- **Çıktı yapısı:** En başta genel yorum (düz paragraf), ardından her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve "Kaynaklarda bulunmayanlar". En sonda uyarı metni.
 
 ### Orkestrasyon (`pipeline/run.py`)
 

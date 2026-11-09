@@ -133,7 +133,7 @@ flowchart LR
     RG[RuyaGirdisi<br/>metin · baglam · gelenekler] -->|extract| CS[CikarimSonucu<br/>semboller · ruya_turu_ipucu · hassas_icerik]
     CS -->|gecerli_semboller<br/>map_symbols| E["list[Eslesme]<br/>sembol · symbol_id · yontem · guven"]
     E -->|retrieve| G["Getirilenler<br/>{symbol_id: list[Aday]}"]
-    G -->|synthesize| Y[Yorum<br/>bolumler+atiflar · bulunamayanlar · uyari]
+    G -->|synthesize| Y[Yorum<br/>genel_yorum · bolumler+atiflar · bulunamayanlar · uyari]
     RG & CS & E & G & Y --> SK[SorguKaydi<br/>+ olcumler: AdimOlcumu × 4]
 ```
 
@@ -145,7 +145,7 @@ flowchart LR
 | `Sembol`, `CikarimSonucu` | Adım 1 | `olumsuz=True` semboller `gecerli_semboller`'e girmez · `ham_ifade` rüya metninin parçasıdır, loglanmaz |
 | `Eslesme` | Adım 2 | `yontem="yok"` ⇔ `symbol_id=None` |
 | `Aday` | Adım 3 | Madde + `skor` + `gerekceler` (hata ayıklama sekmesi için) |
-| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm, modelin JSON çıktısındaki bir `bolumler` öğesidir ve kodda doğrulanmış atıflarını taşır (03, adım 4) · İG-32'deki yapı (sembol başlıkları, uzlaşı/ayrışma) metnin içinde Markdown başlıklarıyla taşınır · atıf kapsamında başlık bölümleri sayılmaz (06, bölüm 2) · `uyari` zorunlu |
+| `Yorum`, `YorumBolumu`, `Atif` | Adım 4 | Her bölüm, modelin JSON çıktısındaki bir `bolumler` öğesidir ve kodda doğrulanmış atıflarını taşır (03, adım 4) · İG-32'deki yapı (sembol başlıkları, uzlaşı/ayrışma) metnin içinde Markdown başlıklarıyla taşınır · atıf kapsamında başlık bölümleri sayılmaz (06, bölüm 2) · `genel_yorum` (`str | None`) bölümleri birleştiren atıfsız düz paragraftır, arayüzde en başta gösterilir · `uyari` zorunlu |
 | `Kullanim`, `AdimOlcumu` | Her adım | LLM adımlarında token ve maliyet; `talimat` alanı sürümü kaydeder (ör. `cikarim_v1`) |
 | `SorguKaydi` | Arayüz, değerlendirme, log | `log_kaydi()` rüya metnini ve sembol ifadelerini **içermez** (testli) |
 | `TestOrnegi` | `eval/dataset/*.jsonl` | `id` biçimi `r007` |

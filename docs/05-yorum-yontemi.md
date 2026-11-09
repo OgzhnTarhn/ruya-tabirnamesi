@@ -85,7 +85,7 @@ Talimat dosyası Aşama 1'de yazılacak. Şimdilik kuralları:
 7. Ölüm, hastalık ve felaket sembollerinde yumuşak bir dil kullan. Gerekirse geleneğin zıddıyla tabir yoluna değin (ölüm = uzun ömür), ama bunu teselli amacıyla çarpıtma.
 8. Dinî otorite iddiasında bulunma. "Diyanet'e göre", "Allah'ın mesajı" ve benzeri ifadeler yasak.
 9. Psikolojik ya da tıbbi teşhis koyma. Freud'dan gelen yorumları "psikanalitik bir bakış açısı" olarak sun.
-10. Çıktı yapısı: her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve en sonda "Kaynaklarda bulunmayanlar".
+10. Çıktı yapısı: en başta rüyayı bütün olarak anlatan düz bir genel yorum (yalnız bölümlerdeki yorumları birleştirir, yeni anlam eklemez), ardından her sembol için "Kaynakların söyledikleri", ardından "Uzlaşılan noktalar", "Ayrışan noktalar" ve en sonda "Kaynaklarda bulunmayanlar".
 
 ## 4. Örnek: beklenen yanıtın iskeleti
 
