@@ -3,9 +3,9 @@ Takvim: Hafta 5.
 
 - Adaylar numaralı kaynaklar olarak verilir ([K1] entry_id · başlık, Türkçe metin — pasaj ya
   da metin_tr; Türkçesi yoksa metin_asli);
-  model JSON şemasıyla bolumler[{metin, kaynaklar[{entry_id, alinti}]}] ve bulunamayanlar
-  döndürür. ``atiflari_dogrula`` verilmemiş entry_id içeren atıfları atar, metinde geçmeyen
-  alıntıları boşaltır (docs/03, adım 4).
+  model JSON şemasıyla genel_yorum, bolumler[{metin, kaynaklar[{entry_id, alinti}]}] ve
+  bulunamayanlar döndürür. ``atiflari_dogrula`` verilmemiş entry_id içeren atıfları atar,
+  metinde geçmeyen alıntıları boşaltır (docs/03, adım 4).
 - Sistem talimatı ``prompts/sentez_v<n>.md``; kurallar docs/05 bölüm 3 ve docs/07.
   Sabit talimat mesajların başında durur (geçidin önek önbelleği için).
 - Eşleşmeyen ya da maddesi olmayan semboller ``Yorum.bulunamayanlar``'a (İG-31).
@@ -41,7 +41,7 @@ from ruya.schemas import (
 )
 from ruya.text.turkce import normallestir
 
-TALIMAT = "sentez_v3"
+TALIMAT = "sentez_v4"
 
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 16000
@@ -79,6 +79,8 @@ class _HamYanit(BaseModel):
 
     bolumler: list[_HamBolum]
     bulunamayanlar: list[str] = Field(default_factory=list)
+    # Sonda durur: model önce bölümleri yazar, sonra onları özetler.
+    genel_yorum: str = ""
 
 
 def _yanit_dogrula(veri: object) -> _HamYanit:
@@ -365,6 +367,7 @@ def synthesize(
     )
     yorum = Yorum(
         bolumler=bolumler,
+        genel_yorum=ham.genel_yorum.strip() or None,
         bulunamayanlar=bulunamayanlar,
         guvenlik_notu=GUVENLIK_NOTU if cikarim.hassas_icerik else None,
         uyari=UYARI_METNI,

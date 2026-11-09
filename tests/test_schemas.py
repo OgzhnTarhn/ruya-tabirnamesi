@@ -17,6 +17,8 @@ from ruya.schemas import (
     SorguKaydi,
     SozlukDosyasi,
     TestOrnegi,
+    Yorum,
+    YorumBolumu,
     getirme_anahtari,
 )
 
@@ -172,3 +174,27 @@ def test_getirme_anahtari():
     serbest = Sembol(yalin="baba", ham_ifade="baba")
     eslesme = Eslesme(sembol=serbest, symbol_id=None, yontem="yok", guven=0.0)
     assert getirme_anahtari(eslesme) == "serbest:baba"
+
+
+def test_yorum_genel_yorum_varsayilan_none():
+    yorum = Yorum(bolumler=[], uyari="u")
+    assert yorum.genel_yorum is None
+
+
+def test_yorum_metni_genel_yorumla_baslar():
+    yorum = Yorum(
+        bolumler=[YorumBolumu(metin="Yılan: x")],
+        genel_yorum="Genel.",
+        uyari="u",
+    )
+    assert yorum.metin.startswith("Genel.")
+    assert "Genel." in yorum.metin
+    assert "Yılan: x" in yorum.metin
+
+
+def test_yorum_metni_genel_yorum_yoksa_bolumleri_birlestirir():
+    yorum = Yorum(
+        bolumler=[YorumBolumu(metin="Yılan: x"), YorumBolumu(metin="Deniz: y")],
+        uyari="u",
+    )
+    assert yorum.metin == "Yılan: xDeniz: y"

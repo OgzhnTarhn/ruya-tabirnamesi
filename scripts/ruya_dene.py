@@ -68,6 +68,9 @@ def main() -> int:
     else:
         if kayit.yorum.guvenlik_notu:
             _yaz(kayit.yorum.guvenlik_notu)
+        if kayit.yorum.genel_yorum:
+            _yaz("Genel yorum", kayit.yorum.genel_yorum)
+            print()
         for bolum in kayit.yorum.bolumler:
             _yaz(bolum.metin)
             for atif in bolum.atiflar:

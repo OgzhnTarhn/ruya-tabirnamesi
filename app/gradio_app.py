@@ -59,6 +59,8 @@ def yorum_metni(kayit: SorguKaydi) -> str:
     parcalar: list[str] = []
     if yorum.guvenlik_notu:
         parcalar.append(yorum.guvenlik_notu)
+    if yorum.genel_yorum:
+        parcalar.append(f"Genel yorum: {yorum.genel_yorum}")
 
     numara = 0
     for bolum in yorum.bolumler:

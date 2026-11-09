@@ -352,13 +352,20 @@ def test_ruya_icerir_true_ile_gonderilir():
 def test_sistem_mesaji_sentez_talimati():
     istemci, _, _ = _calistir()
 
-    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v3")
+    assert _mesajlar(_istek(istemci))["system"] == talimat_oku("sentez_v4")
 
 
 def test_istekte_dusunme_adimi_kapatilir():
     istemci, _, _ = _calistir()
 
     assert _istek(istemci)["chat_template_kwargs"] == {"enable_thinking": False}
+
+
+def test_istek_semasinda_genel_yorum_alani_var():
+    istemci, _, _ = _calistir()
+
+    sema = _istek(istemci)["response_format"]["json_schema"]["schema"]
+    assert "genel_yorum" in sema["properties"]
 
 
 def _sembol_satirlari(kullanici: str) -> list[str]:
@@ -600,6 +607,27 @@ def test_uyari_her_zaman_eklenir():
     assert yorum.uyari == UYARI_METNI
 
 
+def test_genel_yorum_yanittan_striplenerek_doner():
+    govde = {**GECERLI_YORUM, "genel_yorum": "  Gelenekte bu rüya ...  "}
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.genel_yorum == "Gelenekte bu rüya ..."
+
+
+def test_genel_yorum_yoksa_none_doner():
+    _, yorum, _ = _calistir()
+
+    assert yorum.genel_yorum is None
+
+
+@pytest.mark.parametrize("genel_yorum", ["", "   ", "\n\t "])
+def test_bos_genel_yorum_none_doner(genel_yorum: str):
+    govde = {**GECERLI_YORUM, "genel_yorum": genel_yorum}
+    _, yorum, _ = _calistir(govde)
+
+    assert yorum.genel_yorum is None
+
+
 def test_hassas_icerikte_guvenlik_notu_eklenir():
     _, yorum, _ = _calistir(cikarim=_cikarim(hassas_icerik=True))
 
@@ -644,6 +672,7 @@ def test_hic_madde_yoksa_llm_cagrilmaz_ve_bos_yorum_doner():
 
     assert istemci.cagrilar == []
     assert yorum.bolumler == []
+    assert yorum.genel_yorum is None
     assert "yılan" in yorum.bulunamayanlar
     assert "at" in yorum.bulunamayanlar
     assert yorum.uyari == UYARI_METNI

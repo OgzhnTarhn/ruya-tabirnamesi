@@ -275,13 +275,16 @@ class Yorum(_Sema):
     """Adım 4'ün çıktısı."""
 
     bolumler: list[YorumBolumu]
+    # Bölümleri birleştiren atıfsız düz paragraf (sentez_v4).
+    genel_yorum: str | None = None
     bulunamayanlar: list[str] = Field(default_factory=list)  # İG-31
     guvenlik_notu: str | None = None  # hassas içerikte yanıtın başına
     uyari: str  # İG-36: her yanıtın altında
 
     @property
     def metin(self) -> str:
-        return "".join(b.metin for b in self.bolumler)
+        bolum_metni = "".join(b.metin for b in self.bolumler)
+        return (self.genel_yorum or "") + bolum_metni
 
 
 class Kullanim(_Sema):

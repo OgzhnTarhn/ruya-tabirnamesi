@@ -130,6 +130,22 @@ def test_yorum_metni_yorum_yoksa_mesaji_dondurur():
     assert UYARI_METNI not in metin
 
 
+def test_yorum_metni_genel_yorumu_guvenlik_notundan_sonra_ve_bolumlerden_once_yazar(yorum):
+    yorum.genel_yorum = "Gelenekte bu rüya genel olarak hayra yorulur."
+    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
+
+    parcalar = metin.split("\n\n")
+    assert parcalar[0] == GUVENLIK_NOTU
+    assert parcalar[1] == f"Genel yorum: {yorum.genel_yorum}"
+    assert parcalar[2] == yorum.bolumler[0].metin
+
+
+def test_yorum_metni_genel_yorum_yoksa_genel_yorum_yazmaz(yorum):
+    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
+
+    assert "Genel yorum" not in metin
+
+
 # --- atif_ayrintilari -------------------------------------------------------
 
 
