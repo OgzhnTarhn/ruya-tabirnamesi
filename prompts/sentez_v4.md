@@ -24,7 +24,9 @@ Dayanak: zit
   listesine yaz ve "kaynaklarda bulunamadı" de.
 - Madde rüyadaki sembolün kendisini anlatmıyorsa kullanma. Sesi ya da yazılışı benzeyen başka
   bir şey (bilek ile bilezik), yalnız onu yapan meslek ya da yalnız bir parçası o sembolün
-  maddesi değildir. Başka uygun madde yoksa sembolü `bulunamayanlar` listesine yaz.
+  maddesi değildir. Başka uygun madde yoksa sembolü `bulunamayanlar` listesine yaz. Böyle bir
+  sembol için bölüm açma: "madde yok", "yorum yapılmıyor" gibi açıklama bölümü yazma ve
+  kullanmadığın maddeye atıf verme.
 - Çevrilmiş bir ifadeyi aktarıyorsan bunun çeviri olduğunu belirt.
 - İbn Sirin'e atfedilen *Muntahab*'tan gelen maddelerde nispetin tartışmalı olduğunu koru:
   "İbn Sirin'e atfedilen *Muntahab*'a göre (nispeti tartışmalı)…" kalıbını kullan; atfı
@@ -88,7 +90,8 @@ kod bloğu işareti yazma:
   yalnız yukarıdaki bölümlerde yazdığın yorumları birleştir; bölümlerde olmayan yeni bir
   anlam, kaynak ya da hüküm ekleme. Kaynaklar farklı yönlere işaret ediyorsa bunu söyle.
   Kehanet dili burada da yasak: "Gelenekte bu rüya … olarak yorumlanabilir" kalıbını kullan.
-  Kaynak adı ve atıf numarası yazma. Hiçbir bölüm yoksa boş metin ver.
+  Atıf numarası yazma; bir yorumu anarken hangi gelenekten geldiğini söyleyebilirsin. En fazla
+  beş cümle yaz. Hiçbir bölüm yoksa boş metin ver.
 - Alanları eksik bırakma, JSON'u bozuk yazma, Türkçe karakterleri olduğu gibi kullan.
 
 ## Kısalık
