@@ -13,17 +13,21 @@ Takvim: Hafta 5.
 - ``Yorum.uyari`` her zaman ``etik.UYARI_METNI`` (İG-36).
 - İstek ``istemci.mesaj(istek, ruya_icerir=True)`` ile gönderilir (rüya metni
   içerir; docs/03 bölüm 5.2).
+- Paralel mod (``PARALEL_SENTEZ``): sembol başına ayrı istek eşzamanlı gönderilir, sonra
+  bölüm metinlerinden tek bir genel yorum istenir (docs/03, adım 4). Tek çağrı yolu
+  ``PARALEL_SENTEZ`` kapalıyken kullanılır.
 """
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 
 from ruya.config import MODEL_SENTEZ, SOHBET_EK_ALANLARI
 from ruya.etik import GUVENLIK_NOTU, UYARI_METNI
-from ruya.hatalar import YanitBozuk
+from ruya.hatalar import RuyaHatasi, YanitBozuk
 from ruya.llm.client import LLMIstemcisi
 from ruya.llm.talimatlar import talimat_oku
 from ruya.schemas import (
@@ -42,6 +46,14 @@ from ruya.schemas import (
 from ruya.text.turkce import normallestir
 
 TALIMAT = "sentez_v4"
+# Paralel mod açıkken sembol başına ayrı istek ve tek genel yorum isteği yapılır.
+PARALEL_SENTEZ = True
+# Aynı anda uçuşta olabilecek en fazla sembol isteği.
+EN_FAZLA_ESZAMANLI = 4
+# Sembol başına isteğin sistem talimatı.
+SEMBOL_TALIMATI = "sentez_sembol_v1"
+# Genel yorum isteğinin sistem talimatı.
+GENEL_TALIMATI = "genel_yorum_v1"
 
 # Modelin düşünme tokenları da bu sınıra dahildir.
 EN_UZUN_CIKTI_TOKEN = 16000
@@ -83,12 +95,34 @@ class _HamYanit(BaseModel):
     genel_yorum: str = ""
 
 
-def _yanit_dogrula(veri: object) -> _HamYanit:
+class _HamSembolYanit(BaseModel):
+    """Paralel modda tek sembol isteğinin yanıtı; genel yorum ayrı istekte istenir."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    bolumler: list[_HamBolum]
+    bulunamayanlar: list[str] = Field(default_factory=list)
+
+
+class _HamGenelYanit(BaseModel):
+    """Genel yorum isteğinin yanıtı: tek alan."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    genel_yorum: str = ""
+
+
+def _sema_dogrula(sema: type[BaseModel], veri: object) -> Any:
     """Ham JSON'u şemaya çevirir; biçim bozuksa ``YanitBozuk`` verir."""
     try:
-        return _HamYanit.model_validate(veri)
+        return sema.model_validate(veri)
     except ValidationError as hata:
         raise YanitBozuk(f"Sentez yanıtı şemaya uymuyor: {hata}") from hata
+
+
+def _yanit_dogrula(veri: object) -> _HamYanit:
+    """Ham JSON'u şemaya çevirir; biçim bozuksa ``YanitBozuk`` verir."""
+    return _sema_dogrula(_HamYanit, veri)
 
 
 # --- Atıf doğrulama ---------------------------------------------------------
@@ -120,7 +154,9 @@ def _alinti_dogrula(alinti: str, madde: Madde) -> str:
     return ""
 
 
-def _bolumleri_cevir(ham: _HamYanit, maddeler: dict[str, Madde]) -> list[YorumBolumu]:
+def _bolumleri_cevir(
+    ham: _HamYanit | _HamSembolYanit, maddeler: dict[str, Madde]
+) -> list[YorumBolumu]:
     """Ham bölümleri doğrulanmış ``YorumBolumu`` listesine çevirir; sıra korunur."""
     bolumler: list[YorumBolumu] = []
     for bolum in ham.bolumler:
@@ -222,14 +258,9 @@ def _ek_satirlar(madde: Madde, baglam: Baglam | None) -> list[str]:
     return satirlar
 
 
-def _kullanici_mesaji(
-    eslesmeler: list[Eslesme],
-    maddeler: dict[str, Madde],
-    pasajlar: dict[str, str],
-    baglam: Baglam | None,
-) -> str:
-    """Semboller, bağlam ve numaralı kaynaklar; rüya metni bu adıma gelmez."""
-    satirlar = ["Rüyadaki semboller:"]
+def _sembol_satirlari(eslesmeler: list[Eslesme]) -> list[str]:
+    """``- yalin (nitelikler: ...; eylem: ...)`` satırları; istek ve genel yorum paylaşır."""
+    satirlar: list[str] = []
     for eslesme in eslesmeler:
         sembol = eslesme.sembol
         ekler = []
@@ -241,6 +272,18 @@ def _kullanici_mesaji(
             ekler.append("duygu: " + sembol.duygu)
         son = f" ({'; '.join(ekler)})" if ekler else ""
         satirlar.append(f"- {sembol.yalin}{son}")
+    return satirlar
+
+
+def _kullanici_mesaji(
+    eslesmeler: list[Eslesme],
+    maddeler: dict[str, Madde],
+    pasajlar: dict[str, str],
+    baglam: Baglam | None,
+) -> str:
+    """Semboller, bağlam ve numaralı kaynaklar; rüya metni bu adıma gelmez."""
+    satirlar = ["Rüyadaki semboller:"]
+    satirlar.extend(_sembol_satirlari(eslesmeler))
     satirlar.append("")
     satirlar.append(_baglam_metni(baglam))
     satirlar.append("")
@@ -264,6 +307,8 @@ def _istek_kur(
     maddeler: dict[str, Madde],
     pasajlar: dict[str, str],
     baglam: Baglam | None,
+    talimat: str = TALIMAT,
+    sema: type[BaseModel] = _HamYanit,
 ) -> dict[str, Any]:
     """OpenAI uyumlu sohbet gövdesi: sabit sistem talimatı başta, kaynaklar sonda."""
     return {
@@ -271,7 +316,7 @@ def _istek_kur(
         "model": MODEL_SENTEZ,
         "max_tokens": EN_UZUN_CIKTI_TOKEN,
         "messages": [
-            {"role": "system", "content": talimat_oku(TALIMAT)},
+            {"role": "system", "content": talimat_oku(talimat)},
             {
                 "role": "user",
                 "content": _kullanici_mesaji(eslesmeler, maddeler, pasajlar, baglam),
@@ -281,7 +326,7 @@ def _istek_kur(
             "type": "json_schema",
             "json_schema": {
                 "name": "sentez",
-                "schema": _HamYanit.model_json_schema(),
+                "schema": sema.model_json_schema(),
                 "strict": True,
             },
         },
@@ -336,6 +381,134 @@ def _uzlastir(
     return kalan_bolumler, kalan_adlar
 
 
+def _topla(kullanimlar: list[Kullanim]) -> Kullanim:
+    """Çağrıların kullanımını toplar; disk önbelleği ancak hepsi oradan geldiyse True."""
+    return Kullanim(
+        model=MODEL_SENTEZ,
+        girdi_token=sum(k.girdi_token for k in kullanimlar),
+        cikti_token=sum(k.cikti_token for k in kullanimlar),
+        onbellek_okuma_token=sum(k.onbellek_okuma_token for k in kullanimlar),
+        onbellek_yazma_token=sum(k.onbellek_yazma_token for k in kullanimlar),
+        maliyet_usd=sum(k.maliyet_usd for k in kullanimlar),
+        disk_onbelleginden=all(k.disk_onbelleginden for k in kullanimlar),
+    )
+
+
+def _sembol_maddeleri(eslesme: Eslesme, getirilenler: Getirilenler) -> dict[str, Madde]:
+    """Bir sembolün adaylarından entry_id'ye göre tekilleştirilmiş maddeler; sıra korunur."""
+    maddeler: dict[str, Madde] = {}
+    for aday in getirilenler.get(getirme_anahtari(eslesme), []):
+        maddeler.setdefault(aday.madde.entry_id, aday.madde)
+    return maddeler
+
+
+def _sembol_cagrisi(
+    eslesme: Eslesme,
+    maddeler: dict[str, Madde],
+    pasajlar: dict[str, str],
+    baglam: Baglam | None,
+    istemci: LLMIstemcisi,
+) -> tuple[_HamSembolYanit, list[YorumBolumu], Kullanim]:
+    """Tek sembol için istek atar; yanıtı şemaya ve o sembolün maddelerine göre doğrular."""
+    yanit = istemci.mesaj(
+        _istek_kur([eslesme], maddeler, pasajlar, baglam, SEMBOL_TALIMATI, _HamSembolYanit),
+        ruya_icerir=True,
+    )
+    ham = _sema_dogrula(_HamSembolYanit, yanit.json())
+    return ham, _bolumleri_cevir(ham, maddeler), yanit.kullanim
+
+
+def _genel_mesaji(eslesmeler: list[Eslesme], bolumler: list[YorumBolumu]) -> str:
+    """Sembol satırları ve bölüm metinleri; genel yorum isteğinin kullanıcı mesajı."""
+    satirlar = ["Rüyadaki semboller:"]
+    satirlar.extend(_sembol_satirlari(eslesmeler))
+    satirlar.append("")
+    satirlar.append("Yorum bölümleri:")
+    for bolum in bolumler:
+        satirlar.append(bolum.metin)
+        satirlar.append("")
+    return "\n".join(satirlar).rstrip()
+
+
+def _genel_istek_kur(eslesmeler: list[Eslesme], bolumler: list[YorumBolumu]) -> dict[str, Any]:
+    """Genel yorum isteği: tek alanlı şema, sabit sistem talimatı başta."""
+    return {
+        **SOHBET_EK_ALANLARI,
+        "model": MODEL_SENTEZ,
+        "max_tokens": EN_UZUN_CIKTI_TOKEN,
+        "messages": [
+            {"role": "system", "content": talimat_oku(GENEL_TALIMATI)},
+            {"role": "user", "content": _genel_mesaji(eslesmeler, bolumler)},
+        ],
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "name": "genel_yorum",
+                "schema": _HamGenelYanit.model_json_schema(),
+                "strict": True,
+            },
+        },
+    }
+
+
+def _genel_yorum(
+    eslesmeler: list[Eslesme], bolumler: list[YorumBolumu], istemci: LLMIstemcisi
+) -> tuple[str | None, Kullanim | None]:
+    """Bölüm metinlerinden genel yorum ister; hata ya da bozuk yanıtta ``None`` döner."""
+    try:
+        yanit = istemci.mesaj(_genel_istek_kur(eslesmeler, bolumler), ruya_icerir=True)
+        ham = _sema_dogrula(_HamGenelYanit, yanit.json())
+    except RuyaHatasi:
+        return None, None
+    return ham.genel_yorum.strip() or None, yanit.kullanim
+
+
+def _paralel_sentez(
+    cikarim: CikarimSonucu,
+    eslesmeler: list[Eslesme],
+    getirilenler: Getirilenler,
+    baglam: Baglam | None,
+    istemci: LLMIstemcisi,
+) -> tuple[Yorum, Kullanim]:
+    """Sembol başına eşzamanlı istek, ardından tek genel yorum isteği (docs/03, adım 4)."""
+    maddesi_olanlar = _maddesi_olanlar(eslesmeler, getirilenler)
+    pasajlar = _pasajlar(getirilenler)
+    isler = [(eslesme, _sembol_maddeleri(eslesme, getirilenler)) for eslesme in maddesi_olanlar]
+    sonuclar: list[tuple[_HamSembolYanit, list[YorumBolumu], Kullanim]] = []
+    if isler:
+        with ThreadPoolExecutor(max_workers=min(EN_FAZLA_ESZAMANLI, len(isler))) as havuz:
+            gelecekler = [
+                havuz.submit(_sembol_cagrisi, eslesme, maddeler, pasajlar, baglam, istemci)
+                for eslesme, maddeler in isler
+            ]
+            # Sıra korunur: sonuçlar gönderim sırasıyla toplanır.
+            sonuclar = [gelecek.result() for gelecek in gelecekler]
+    bolumler: list[YorumBolumu] = []
+    model_bulunamayanlar: list[str] = []
+    kullanimlar: list[Kullanim] = []
+    for ham, sembol_bolumleri, kullanim in sonuclar:
+        bolumler.extend(sembol_bolumleri)
+        model_bulunamayanlar.extend(ham.bulunamayanlar)
+        kullanimlar.append(kullanim)
+    bolumler, bulunamayanlar = _uzlastir(
+        bolumler,
+        _bulunamayanlar(model_bulunamayanlar, eslesmeler, getirilenler),
+    )
+    genel_yorum: str | None = None
+    if bolumler:
+        genel_yorum, genel_kullanim = _genel_yorum(maddesi_olanlar, bolumler, istemci)
+        if genel_kullanim is not None:
+            kullanimlar.append(genel_kullanim)
+    yorum = Yorum(
+        bolumler=bolumler,
+        genel_yorum=genel_yorum,
+        bulunamayanlar=bulunamayanlar,
+        guvenlik_notu=GUVENLIK_NOTU if cikarim.hassas_icerik else None,
+        uyari=UYARI_METNI,
+    )
+    return yorum, _topla(kullanimlar)
+
+
 def synthesize(
     cikarim: CikarimSonucu,
     eslesmeler: list[Eslesme],
@@ -354,6 +527,8 @@ def synthesize(
             uyari=UYARI_METNI,
         )
         return yorum, Kullanim(model=MODEL_SENTEZ)
+    if PARALEL_SENTEZ:
+        return _paralel_sentez(cikarim, eslesmeler, getirilenler, baglam, istemci)
     yanit = istemci.mesaj(
         _istek_kur(
             _maddesi_olanlar(eslesmeler, getirilenler), maddeler, _pasajlar(getirilenler), baglam

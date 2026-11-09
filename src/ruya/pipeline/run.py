@@ -146,6 +146,11 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     )
     kayit.yorum = yorum
     kayit.olcumler.append(
-        AdimOlcumu(adim="sentez", sure_sn=sure, kullanim=kullanim, talimat=synthesize.TALIMAT)
+        AdimOlcumu(
+            adim="sentez",
+            sure_sn=sure,
+            kullanim=kullanim,
+            talimat=synthesize.SEMBOL_TALIMATI if synthesize.PARALEL_SENTEZ else synthesize.TALIMAT,
+        )
     )
     return kayit

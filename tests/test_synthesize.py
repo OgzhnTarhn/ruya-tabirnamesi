@@ -25,6 +25,14 @@ from ruya.schemas import (
     YorumBolumu,
 )
 
+
+@pytest.fixture(autouse=True)
+def _tek_cagri_modu(monkeypatch):
+    """Bu dosyadaki testler eski tek çağrılı sentez modunu sınar."""
+    # raising=False: sabit henüz eklenmemişken de mevcut testler çalışsın.
+    monkeypatch.setattr(sentez, "PARALEL_SENTEZ", False, raising=False)
+
+
 # --- örnek maddeler ---------------------------------------------------------
 
 
