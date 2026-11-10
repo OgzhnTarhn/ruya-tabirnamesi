@@ -131,7 +131,13 @@ def kilometre_taslari() -> list[dict]:
 
 
 def _tablo(yol: Path) -> tuple[list[str], list[list[str]]]:
-    satirlar = [s for s in yol.read_text(encoding="utf-8").splitlines() if s.startswith("|")]
+    # Yalnız belgedeki ilk tablo: notların içindeki küçük tablolar ölçüm satırı değildir.
+    satirlar: list[str] = []
+    for s in yol.read_text(encoding="utf-8").splitlines():
+        if s.startswith("|"):
+            satirlar.append(s)
+        elif satirlar:
+            break
     hucreler = [[h.strip() for h in s.strip("|").split("|")] for s in satirlar]
     return hucreler[0], [h for h in hucreler[2:] if any(h)]
 
