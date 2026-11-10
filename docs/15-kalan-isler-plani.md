@@ -39,6 +39,10 @@ kutular iş bittikçe işaretlenir.
 etiket dosyası `data/deneyler/getirme/etiketler.md`). Faz 2'de D3 ve D4 bitti; D1/D2
 senin etiketlerini bekliyor.
 
+**11 Kasım:** D1/D2 gümüş etiketle ön sonuç verdi ([D1-D2](deneyler/D1-D2-getirme.md)):
+reranker ve vektör kolu kalır, HyDE kaldırma adayı. README, ders notu ve pano güncellendi.
+Kalan: senin etiketlerin (2.1), Faz 4.
+
 ### Faz 1 · 10–14 Kasım: temel ölçüm ve getirme deney aracı
 
 | # | İş | Yapan | Çıktı |
