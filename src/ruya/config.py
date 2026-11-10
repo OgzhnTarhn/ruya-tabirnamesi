@@ -67,6 +67,7 @@ class Fiyat:
 # EVREN modelleri 1 Aralık 2026'ya kadar ücretsiz; fiyat açıklanınca yalnızca burası güncellenir.
 FIYATLAR: dict[str, Fiyat] = {
     "deepseek-v4.1-flash": Fiyat(girdi=0.0, cikti=0.0),
+    MODEL_SENTEZ_D4: Fiyat(girdi=0.0, cikti=0.0),
 }
 
 
