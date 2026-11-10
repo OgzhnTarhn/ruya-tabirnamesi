@@ -11,6 +11,9 @@ linki bulan herkes senin API anahtarınla sorgu çalıştırabilir.
 
 from __future__ import annotations
 
+import queue
+import threading
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +28,7 @@ from ruya.hatalar import (
     YanitKesildi,
 )
 from ruya.pipeline.run import Bagimliliklar, yorumla
-from ruya.schemas import Baglam, RuyaGirdisi, SorguKaydi
+from ruya.schemas import Baglam, RuyaGirdisi, SorguKaydi, Yorum
 
 # docs/03, bölüm 5.4: hata sınıfı → kullanıcıya gösterilen Türkçe mesaj.
 HATA_MESAJLARI: dict[type[RuyaHatasi], str] = {
@@ -50,6 +53,21 @@ GELENEKLER: list[tuple[str, str]] = [
 # --- Saf yardımcılar (sunucu açmadan test edilir) ---------------------------
 
 
+def _bolum_satirlari(yorum: Yorum) -> list[str]:
+    """Bölüm metinleri ve numaralı atıf satırları; yorum_metni ve ara_metin paylaşır."""
+    satirlar: list[str] = []
+    numara = 0
+    for bolum in yorum.bolumler:
+        satirlar.append(bolum.metin)
+        for atif in bolum.atiflar:
+            numara += 1
+            satir = f"[{numara}] {atif.baslik}"
+            if atif.alinti:
+                satir += f" — “{atif.alinti}”"
+            satirlar.append(satir)
+    return satirlar
+
+
 def yorum_metni(kayit: SorguKaydi) -> str:
     """Yorum sekmesinin metni: güvenlik notu başta, numaralı atıflar, uyarı sonda."""
     yorum = kayit.yorum
@@ -62,21 +80,76 @@ def yorum_metni(kayit: SorguKaydi) -> str:
     if yorum.genel_yorum:
         parcalar.append(f"Genel yorum: {yorum.genel_yorum}")
 
-    numara = 0
-    for bolum in yorum.bolumler:
-        parcalar.append(bolum.metin)
-        for atif in bolum.atiflar:
-            numara += 1
-            satir = f"[{numara}] {atif.baslik}"
-            if atif.alinti:
-                satir += f" — “{atif.alinti}”"
-            parcalar.append(satir)
+    parcalar.extend(_bolum_satirlari(yorum))
 
     if yorum.bulunamayanlar:
         parcalar.append("Kaynaklarda bulunamayanlar: " + ", ".join(yorum.bulunamayanlar))
 
     parcalar.append(yorum.uyari or UYARI_METNI)
     return "\n\n".join(parcalar)
+
+
+def _sembol_listesi(kayit: SorguKaydi) -> str:
+    """Eşlenen sembollerin yalın adları, virgülle ayrılmış."""
+    return ", ".join(eslesme.sembol.yalin for eslesme in kayit.eslesmeler)
+
+
+def ara_metin(asama: str, kayit: SorguKaydi) -> str:
+    """İlerleme aşamasının kullanıcıya gösterilen metni (akış sırasında)."""
+    if asama == "esleme":
+        return f"Semboller bulundu: {_sembol_listesi(kayit)}. Kaynaklar aranıyor…"
+    if asama == "getirme":
+        return f"Kaynaklar bulundu, yorum yazılıyor…\n\nSemboller: {_sembol_listesi(kayit)}"
+    if asama == "sentez":
+        hazir = len(kayit.yorum.bolumler) if kayit.yorum is not None else 0
+        parcalar = [
+            f"Yorum yazılıyor: {hazir} bölüm hazır; kalan semboller ve "
+            "genel yorum yazılıyor…"
+        ]
+        if kayit.yorum is not None:
+            parcalar.extend(_bolum_satirlari(kayit.yorum))
+        return "\n\n".join(parcalar)
+    return "Yorum hazırlanıyor…"
+
+
+def yorum_akisi(
+    girdi: RuyaGirdisi, bag: Bagimliliklar
+) -> Iterator[tuple[str, SorguKaydi | None]]:
+    """Boru hattını ayrı bir iş parçacığında çalıştırır, ilerlemeyi parça parça yayar.
+
+    Her parça ``(metin, kayıt)`` çiftidir: ilerleme metinlerinde kayıt ``None``, sonda
+    yorum metniyle birlikte tam kayıt döner. ``RuyaHatasi`` kullanıcı mesajına çevrilir;
+    diğer hatalar iş parçacığından ana iş parçacığına taşınıp yeniden fırlatılır.
+    """
+    kuyruk: queue.Queue[tuple[str, Any]] = queue.Queue()
+
+    def _bildir(asama: str, kayit: SorguKaydi) -> None:
+        kuyruk.put(("ara", (asama, kayit)))
+
+    def _calistir() -> None:
+        try:
+            kayit = yorumla(girdi, bag, ilerleme=_bildir)
+        except BaseException as hata:  # ana iş parçacığına taşınır
+            kuyruk.put(("hata", hata))
+        else:
+            kuyruk.put(("son", kayit))
+
+    is_parcacigi = threading.Thread(target=_calistir, daemon=True)
+    is_parcacigi.start()
+
+    while True:
+        tur, veri = kuyruk.get()
+        if tur == "ara":
+            asama, kayit = veri
+            yield ara_metin(asama, kayit), None
+        elif tur == "son":
+            yield yorum_metni(veri), veri
+            return
+        else:
+            if isinstance(veri, RuyaHatasi):
+                yield hata_mesaji(veri), None
+                return
+            raise veri
 
 
 def atif_ayrintilari(kayit: SorguKaydi, entry_id: str, depo: Any) -> str:
@@ -242,6 +315,7 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
     - "Hata ayıklama" sekmesi: çıkarılan semboller, eşlemeler (yöntem, güven), getirilen
       maddeler ve skorları, adım süreleri, token ve maliyet. Hepsi SorguKaydi'ndan okunur.
     - HataSinifi → kullanıcı mesajı eşlemesi docs/03 bölüm 5.4'e göre.
+    - Yorum akışlıdır: semboller ve bölümler hazır oldukça görünür.
     """
     import gradio as gr  # ağır paket: yalnızca işlevin içinde (docs/12, bölüm 1)
 
@@ -252,33 +326,33 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
         mevsim: str | None,
         gurbette: str | None,
         gelenekler: list[str] | None,
-    ) -> tuple[str, SorguKaydi | None, Any, dict[str, Any]]:
-        """Yorumla düğmesi: boru hattını çalıştırır, sekme çıktılarını döndürür."""
+    ) -> Iterator[tuple[str, SorguKaydi | None, Any, dict[str, Any]]]:
+        """Yorumla düğmesi: boru hattını akışlı çalıştırır, sekme çıktılarını döndürür."""
         metin = (metin or "").strip()
         if not metin:
-            return (
+            yield (
                 "Lütfen rüyanızı yazın.",
                 None,
                 gr.update(choices=[], value=None),
                 {},
             )
+            return
         girdi = RuyaGirdisi(
             metin=metin[:3000],
             baglam=_baglam_kur(cinsiyet, medeni_hal, mevsim, gurbette),
             gelenekler=list(gelenekler) if gelenekler else None,
         )
-        try:
-            kayit = yorumla(girdi, bag)
-        except RuyaHatasi as hata:
-            return hata_mesaji(hata), None, gr.update(choices=[], value=None), {}
-
-        secenekler = _atif_secenekleri(kayit)
-        return (
-            yorum_metni(kayit),
-            kayit,
-            gr.update(choices=secenekler, value=None),
-            hata_ayiklama(kayit),
-        )
+        for parca, kayit in yorum_akisi(girdi, bag):
+            if kayit is None:
+                yield parca, None, gr.update(choices=[], value=None), {}
+                continue
+            secenekler = _atif_secenekleri(kayit)
+            yield (
+                parca,
+                kayit,
+                gr.update(choices=secenekler, value=None),
+                hata_ayiklama(kayit),
+            )
 
     def _atif_goster(kayit: SorguKaydi | None, entry_id: str | None) -> str:
         if kayit is None or not entry_id:
@@ -319,7 +393,9 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
                 value=None,
             )
             dugme = gr.Button("Yorumla", variant="primary")
-            gr.Markdown("Yorum genellikle 1–4 dakika sürer.")
+            gr.Markdown(
+                "Semboller ve yorumlar geldikçe görünür; tamamı birkaç dakika sürebilir."
+            )
 
         with gr.Tabs():
             with gr.Tab("Yorum"):

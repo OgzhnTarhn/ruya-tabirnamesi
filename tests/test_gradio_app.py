@@ -2,6 +2,7 @@
 
 import datetime as dt
 import sys
+import threading
 from pathlib import Path
 
 import pytest
@@ -234,3 +235,81 @@ def test_baslat_yerel_ve_paylasimsiz_acar(monkeypatch):
     assert len(demo.cagrilar) == 1
     assert demo.cagrilar[0]["share"] is False
     assert demo.cagrilar[0]["server_name"] == "127.0.0.1"
+
+
+# --- ara_metin --------------------------------------------------------------
+
+
+def test_ara_metin_esleme_sembolleri_listeler():
+    kayit = _kayit()
+    metin = gradio_app.ara_metin("esleme", kayit)
+    assert "Semboller bulundu" in metin
+    for eslesme in kayit.eslesmeler:
+        assert eslesme.sembol.yalin in metin
+
+
+def test_ara_metin_getirme_yorum_yaziliyor_der():
+    metin = gradio_app.ara_metin("getirme", _kayit())
+    assert "yorum yazılıyor" in metin.lower()
+
+
+def test_ara_metin_sentez_bolumleri_atiflari_ve_durumu_yazar(yorum):
+    kayit = _kayit(yorum=yorum)
+    metin = gradio_app.ara_metin("sentez", kayit)
+
+    for bolum in yorum.bolumler:
+        assert bolum.metin in metin
+    assert "[1]" in metin
+    assert "[2]" in metin
+    assert ATIF.baslik in metin
+    assert "genel yorum yazılıyor" in metin.lower()
+    assert UYARI_METNI not in metin
+
+
+def test_ara_metin_bilinmeyen_asama_bos_degil():
+    metin = gradio_app.ara_metin("bilinmeyen", _kayit())
+    assert isinstance(metin, str)
+    assert metin.strip()
+
+
+# --- yorum_akisi ------------------------------------------------------------
+
+
+def test_yorum_akisi_ara_ve_son_metinleri_sirayla_yayar(monkeypatch, yorum):
+    k1 = _kayit()
+    k2 = _kayit(yorum=yorum)
+    final = _kayit(yorum=yorum)
+    ana_ident = threading.get_ident()
+
+    def sahte(girdi, bag, ilerleme=None):
+        assert threading.get_ident() != ana_ident
+        ilerleme("esleme", k1)
+        ilerleme("sentez", k2)
+        return final
+
+    monkeypatch.setattr(gradio_app, "yorumla", sahte)
+
+    parcalar = list(gradio_app.yorum_akisi(RuyaGirdisi(metin="rüya"), bag=None))
+
+    assert parcalar == [
+        (gradio_app.ara_metin("esleme", k1), None),
+        (gradio_app.ara_metin("sentez", k2), None),
+        (gradio_app.yorum_metni(final), final),
+    ]
+
+
+def test_yorum_akisi_hata_mesajini_yayar_ve_bitirir(monkeypatch):
+    k1 = _kayit()
+    ana_ident = threading.get_ident()
+
+    def sahte(girdi, bag, ilerleme=None):
+        assert threading.get_ident() != ana_ident
+        ilerleme("esleme", k1)
+        raise LLMHatasi("x")
+
+    monkeypatch.setattr(gradio_app, "yorumla", sahte)
+
+    parcalar = list(gradio_app.yorum_akisi(RuyaGirdisi(metin="rüya"), bag=None))
+
+    assert parcalar[0] == (gradio_app.ara_metin("esleme", k1), None)
+    assert parcalar[-1] == (gradio_app.hata_mesaji(LLMHatasi("x")), None)
