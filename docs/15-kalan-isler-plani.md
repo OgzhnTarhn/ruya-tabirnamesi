@@ -30,6 +30,7 @@ kutular iş bittikçe işaretlenir.
 | K8 | **D5 (yerel model) yapılmayacak.** | GPU yok, API'siz yerel model bu proje için öğrenme getirisi düşük; 08'de isteğe bağlıydı. |
 | K9 | **Etiketler senin kararın; ben öneririm, ben atmam.** Öneri: `v0.1-mvp` = MVP denetiminin commit'i (7 Kasım), `v0.2` = D1–D3 notları, `v0.3` = temel ölçüm, `v1.0` = D4 + son README. | CLAUDE.md: push ve sürüm kararı kullanıcıda. |
 | K11 | **Ölçümler orkestra işleriyle ve birbirleriyle aynı anda koşmaz** (aynı modeli kullanıyorlarsa). 429'da istemci 15–60 sn bekler. | 10 Kasım temel ölçümünde 9 rüya, D3/D4'te 8 rüya eşzamanlı istek sınırıyla düştü; orkestra agent'ları da aynı hesabı kullanıyor. |
+| K12 | **D1/D2 için önce gümüş etiket:** havuzu bir LLM hakem (`deepseek-v4.1-flash`, `getirme_hakemi_v1`) işaretler ve ön karar bununla verilir. Senin etiketlerin gelince aynı hesap tekrarlanır, hakemle uyuşma oranı da yazılır; kesin karar senin etiketlerinle. | 11 Kasım: etiketleme şimdilik yapılamıyor; hakem ücretsiz dönemde çalışmalı. Hakem reranker'dan (qwen) farklı bir model, çeşitlerden birini kayırmaz. |
 | K10 | **Deney kodu `src/ruya/degerlendirme/` altına girer** (sınanır), çalıştırma betikleri `eval/` altında durur. Model ve ayar değişikliği kodu değiştirmeden `Ayarlar` ve parametrelerle yapılır. | Model adları yalnız `config.py`'de (CLAUDE.md); deney kodu tekrar kullanılabilir kalır. |
 
 ## 3. Fazlar

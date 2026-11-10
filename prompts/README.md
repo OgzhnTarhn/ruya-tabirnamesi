@@ -28,4 +28,5 @@ LLM'e verilen sabit talimatlar burada, sürümlü olarak durur. Kod bunları
 | `sentez_sembol_v1.md` | (eski sürüm) | 12 | v4'ün tek sembollük hâli; uzlaşı/ayrışma bölüm içinde |
 | `sentez_sembol_v2.md` | `pipeline/synthesize.py` (paralel) | 12 | v1 + en fazla 3 cümle, 3 kaynak, 20 kelimelik alıntı (süre ölçümü, docs/olcumler.md) |
 | `genel_yorum_v1.md` | `pipeline/synthesize.py` (paralel) | 12 | sembol bölümlerini düz paragrafta birleştirir |
+| `getirme_hakemi_v1.md` | `degerlendirme/hakem.py` | 12 | D1/D2 gümüş etiket: aday madde sembol için ilgili mi ([15](../docs/15-kalan-isler-plani.md) K12) |
 | `sentez_v4.md` | `pipeline/synthesize.py` (tek çağrı) | 12 | v3 + genel yorum, sembolün kendisi olmayan maddeyi kullanma (bilek/bilezik) |

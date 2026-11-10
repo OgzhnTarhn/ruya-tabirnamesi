@@ -120,7 +120,8 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `degerlendirme/getirme_deneyi.py` | `CESITLER`, `deney_kos(ornekler, bag, cikti) -> Path`, `havuz(satirlar, k)`, `etiket_dosyasi_yaz(...)`, `etiketleri_oku(yol)`, `recall_at_k`, `mrr`, `ozet(satirlar, etiketler, k)` (D1/D2, [15](15-kalan-isler-plani.md) K4–K5) | 🕓 |
 | `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`), `yorum_akisi(girdi, bag)` (boru hattını ayrı iş parçacığında koşar, ara metinleri sırayla verir; Yorumla düğmesi bunu akıtır) | ✅ |
 | `eval/run_eval.py` | CLI: `--dataset`, `--etiket` | ✅ (gövde `degerlendir`'e bağlı) |
-| `eval/getirme_deneyi.py` | CLI: `kos --alt-kume`, `etiket`, `ozet` | 🕓 |
+| `degerlendirme/hakem.py` | `TALIMAT = "getirme_hakemi_v1"`, `hakem_istegi(ruya_metni, sembol, maddeler) -> dict`, `hakem_sec(ruya_metni, sembol, maddeler, istemci) -> set[str]`, `gumus_etiketle(havuz, satirlar, metinler, depo, istemci) -> dict[tuple[str, str], set[str]]` (LLM hakem; [15](15-kalan-isler-plani.md) K12) | 🕓 |
+| `eval/getirme_deneyi.py` | CLI: `kos --alt-kume`, `etiket`, `hakem`, `ozet` | 🕓 |
 | `scripts/download_sources.py` | CLI: `--asama`, `--kaynak`, `--yeniden` | ✅ |
 | `notebooks/_kurulum.py` | Anahtar kontrolü, autoreload, yolların gösterimi | 🔁 bilgisayara uyarlanacak |
 
