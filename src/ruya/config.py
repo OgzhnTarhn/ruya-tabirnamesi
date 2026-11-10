@@ -33,6 +33,8 @@ MODEL_SENTEZ = "deepseek-v4.1-flash"
 MODEL_CEVIRI = "deepseek-v4.1-flash"
 MODEL_SEMBOL_ATAMA = "deepseek-v4.1-flash"
 MODEL_KOSUL = "deepseek-v4.1-flash"
+# D4 deneyinde sentezin rakip modeli (docs/15, K7); yalnız eval/run_eval.py --sentez-modeli d4.
+MODEL_SENTEZ_D4 = "mimo-v2.6-pro"
 
 # --- Hibrit getirme: EVREN modelleri ve eşikler (docs/13, bölümler 3-4) ------
 MODEL_EMBEDDING = "qwen3-embedding-8b"

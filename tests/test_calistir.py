@@ -117,6 +117,22 @@ def test_her_ornek_bir_kez_calistirilir(bag, veri_seti, sahte_yorumla):
     assert sahte_yorumla[0].baglam is None
 
 
+def test_kimlikler_verilince_yalniz_onlar_calistirilir(bag, veri_seti, sahte_yorumla):
+    rapor = degerlendir(veri_seti, "asama1-test", bag, kimlikler={"r001", "r003"})
+    metin = rapor.read_text(encoding="utf-8")
+
+    assert [g.metin for g in sahte_yorumla] == [ORNEKLER[0]["metin"], ORNEKLER[2]["metin"]]
+    assert "r001" in metin
+    assert "r003" in metin
+    assert "r002" not in metin
+
+
+def test_kimlikler_none_butun_ornekler_calistirilir(bag, veri_seti, sahte_yorumla):
+    degerlendir(veri_seti, "asama1-test", bag, kimlikler=None)
+
+    assert [g.metin for g in sahte_yorumla] == [o["metin"] for o in ORNEKLER]
+
+
 def test_rapor_olcut_tablosu_icerir(bag, veri_seti, sahte_yorumla):
     rapor = degerlendir(veri_seti, "asama1-test", bag)
     metin = rapor.read_text(encoding="utf-8")

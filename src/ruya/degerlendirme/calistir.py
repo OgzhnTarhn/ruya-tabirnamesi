@@ -162,11 +162,13 @@ def _rapor_metni(
     return "\n".join(satirlar)
 
 
-def degerlendir(veri_seti: Path, etiket: str, bag: Bagimliliklar) -> Path:
-    """Raporun data/raporlar/ altındaki yolunu döndürür.
-
-    EVREN 1 Aralık 2026'ya kadar ücretsizdir; her rüya dakikalar sürer."""
+def degerlendir(
+    veri_seti: Path, etiket: str, bag: Bagimliliklar, *, kimlikler: set[str] | None = None
+) -> Path:
+    """Raporun data/raporlar/ altındaki yolunu döndürür."""
     ornekler = list(jsonl_oku(veri_seti, TestOrnegi))
+    if kimlikler is not None:
+        ornekler = [ornek for ornek in ornekler if ornek.id in kimlikler]
     kayitlar: list[tuple[TestOrnegi, SorguKaydi]] = []
     hatalar: list[tuple[str, str]] = []
 
