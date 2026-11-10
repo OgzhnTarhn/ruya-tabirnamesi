@@ -9,7 +9,13 @@ from ruya.config import GETIRME_ESIGI
 from ruya.hatalar import LLMHatasi
 from ruya.index.parcalar import Parca
 from ruya.index.store import BellekDeposu
-from ruya.pipeline.hibrit import getirme_sorgusu, hibrit_getir, rrf
+from ruya.pipeline.hibrit import (
+    TUM_KOLLAR,
+    getirme_sorgusu,
+    hibrit_getir,
+    rrf,
+    siralama,
+)
 from ruya.schemas import Baglam, Eslesme, Kosul, Madde, Sembol
 from ruya.text.turkce import arama_terimleri
 
@@ -692,3 +698,235 @@ def test_rerankere_en_fazla_kirk_aday_gider():
     hibrit_getir([eslesme], depo, indeks, istemci, n=100)
 
     assert len(istemci.rerank_cagrilari[0][1]) == 40
+
+
+# --- siralama: deney için eşiksiz, sınırsız sıralama ------------------------
+
+
+def test_tum_kollar_sabiti_dort_kolu_tasir():
+    assert frozenset({"sozluk", "bm25", "vektor", "hyde"}) == TUM_KOLLAR
+
+
+def test_siralama_esik_uygulamaz_dusuk_rerank_skoru_da_doner():
+    madde = _madde("nablusi:000001", "nablusi", ["yilan"])
+    parca = _parca("nablusi:000001")
+    depo = BellekDeposu([madde])
+    indeks = SahteIndeks({"nablusi:000001": [parca]})
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: 0.01})
+
+    sonuc = siralama([_eslesme("yilan")], depo, indeks, istemci)
+
+    assert set(sonuc) == {"yilan"}
+    assert sonuc["yilan"] == [("nablusi:000001", pytest.approx(0.01))]
+
+
+def test_siralama_kaynak_siniri_uygulamaz_ayni_kaynaktan_iki_aday_doner():
+    birinci = _madde("nablusi:000001", "nablusi", [])
+    ikinci = _madde("nablusi:000002", "nablusi", [])
+    parcalar = {madde.entry_id: [_parca(madde.entry_id)] for madde in (birinci, ikinci)}
+    depo = BellekDeposu([birinci, ikinci])
+    eslesme = _eslesme("yilan")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks(
+        parcalar,
+        bm25={
+            terimler: [
+                (parcalar["nablusi:000001"][0], 9.0),
+                (parcalar["nablusi:000002"][0], 8.0),
+            ]
+        },
+    )
+    istemci = SahteIstemci(
+        puanlar={
+            parcalar["nablusi:000001"][0].baglamli_metin: 0.9,
+            parcalar["nablusi:000002"][0].baglamli_metin: 0.8,
+        }
+    )
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"bm25"})
+
+    assert [entry_id for entry_id, _skor in sonuc["yilan"]] == [
+        "nablusi:000001",
+        "nablusi:000002",
+    ]
+
+
+def test_siralama_yalniz_istenen_kollar_kullanilir_gom_cagrilmaz():
+    madde = _madde("nablusi:000001", "nablusi", ["yilan"])
+    parca = _parca("nablusi:000001")
+    depo = BellekDeposu([madde])
+    eslesme = _eslesme("yilan", hyde="Rüyada yılan görmek korkuya işarettir.")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks({"nablusi:000001": [parca]}, bm25={terimler: [(parca, 5.0)]})
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: 0.45})
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"sozluk", "bm25"})
+
+    assert [entry_id for entry_id, _skor in sonuc["yilan"]] == ["nablusi:000001"]
+    assert istemci.gom_cagrilari == []
+    assert indeks.vektor_cagrilari == []
+
+
+def test_siralama_hyde_kolu_yoksa_hyde_metni_gomlenmez():
+    madde = _madde("nablusi:000001", "nablusi", [])
+    parca = _parca("nablusi:000001")
+    depo = BellekDeposu([madde])
+    hyde = "Rüyada yılan ısırırsa düşmana işarettir."
+    eslesme = _eslesme("yilan", hyde=hyde)
+    sorgu, _terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks(
+        {"nablusi:000001": [parca]},
+        vektor={_vektor_anahtari(_vektor(sorgu)): [(parca, 0.8)]},
+    )
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: 0.45})
+
+    siralama([eslesme], depo, indeks, istemci, kollar={"vektor"})
+
+    assert len(istemci.gom_cagrilari) == 1
+    metinler, _bayrak = istemci.gom_cagrilari[0]
+    assert sorgu in metinler
+    assert hyde not in metinler
+
+
+def test_siralama_rerank_false_rrf_skoru_ve_sirasi_doner():
+    birinci = _madde("nablusi:000001", "nablusi", [])
+    ikinci = _madde("nablusi:000002", "nablusi", [])
+    parcalar = {madde.entry_id: [_parca(madde.entry_id)] for madde in (birinci, ikinci)}
+    depo = BellekDeposu([birinci, ikinci])
+    eslesme = _eslesme("yilan")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks(
+        parcalar,
+        bm25={
+            terimler: [
+                (parcalar["nablusi:000002"][0], 9.0),
+                (parcalar["nablusi:000001"][0], 8.0),
+            ]
+        },
+    )
+    istemci = SahteIstemci()
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"bm25"}, rerank=False)
+
+    assert istemci.rerank_cagrilari == []
+    assert sonuc["yilan"] == [
+        ("nablusi:000002", pytest.approx(1 / 61)),
+        ("nablusi:000001", pytest.approx(1 / 62)),
+    ]
+
+
+def test_siralama_rerank_hatasinda_rrf_sirasi_kullanilir():
+    birinci = _madde("nablusi:000001", "nablusi", [])
+    ikinci = _madde("nablusi:000002", "nablusi", [])
+    parcalar = {madde.entry_id: [_parca(madde.entry_id)] for madde in (birinci, ikinci)}
+    depo = BellekDeposu([birinci, ikinci])
+    eslesme = _eslesme("yilan")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks(
+        parcalar,
+        bm25={
+            terimler: [
+                (parcalar["nablusi:000002"][0], 9.0),
+                (parcalar["nablusi:000001"][0], 8.0),
+            ]
+        },
+    )
+    istemci = SahteIstemci(rerank_hatasi=True)
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"bm25"})
+
+    assert sonuc["yilan"] == [
+        ("nablusi:000002", pytest.approx(1 / 61)),
+        ("nablusi:000001", pytest.approx(1 / 62)),
+    ]
+
+
+def test_siralama_gelenekler_none_psikanalitik_maddeleri_haric_tutar():
+    freud = _madde("freud:000001", "freud", [], gelenek="psikanalitik")
+    parca = _parca("freud:000001")
+    depo = BellekDeposu([freud])
+    eslesme = _eslesme("yilan")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks({"freud:000001": [parca]}, bm25={terimler: [(parca, 5.0)]})
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: 0.45})
+
+    assert siralama([eslesme], depo, indeks, istemci, kollar={"bm25"})["yilan"] == []
+
+    secili = siralama(
+        [eslesme], depo, indeks, istemci, kollar={"bm25"}, gelenekler=["psikanalitik"]
+    )
+    assert [entry_id for entry_id, _skor in secili["yilan"]] == ["freud:000001"]
+
+
+def test_siralama_k_siniri_ve_esit_skorda_entry_id_artan_sira():
+    birinci = _madde("nablusi:000001", "nablusi", [])
+    ikinci = _madde("nablusi:000002", "nablusi", [])
+    parcalar = {madde.entry_id: [_parca(madde.entry_id)] for madde in (birinci, ikinci)}
+    depo = BellekDeposu([birinci, ikinci])
+    eslesme = _eslesme("yilan")
+    sorgu, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks(
+        parcalar,
+        bm25={terimler: [(parcalar["nablusi:000002"][0], 9.0)]},
+        vektor={_vektor_anahtari(_vektor(sorgu)): [(parcalar["nablusi:000001"][0], 0.9)]},
+    )
+    istemci = SahteIstemci()
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"bm25", "vektor"}, rerank=False)
+
+    assert sonuc["yilan"] == [
+        ("nablusi:000001", pytest.approx(1 / 61)),
+        ("nablusi:000002", pytest.approx(1 / 61)),
+    ]
+
+    tek = siralama([eslesme], depo, indeks, istemci, kollar={"bm25", "vektor"}, rerank=False, k=1)
+    assert tek["yilan"] == [("nablusi:000001", pytest.approx(1 / 61))]
+
+
+def test_siralama_eslenmemis_sembol_serbest_anahtariyla_doner():
+    madde = _madde("miller:000001", "miller", [], gelenek="bati_halk")
+    parca = _parca("miller:000001")
+    depo = BellekDeposu([madde])
+    eslesme = _eslesme(None, yalin="baba", yontem="yok")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    indeks = SahteIndeks({"miller:000001": [parca]}, bm25={terimler: [(parca, 3.0)]})
+    istemci = SahteIstemci(puanlar={parca.baglamli_metin: 0.45})
+
+    sonuc = siralama([eslesme], depo, indeks, istemci, kollar={"bm25"})
+
+    assert set(sonuc) == {"serbest:baba"}
+    assert [entry_id for entry_id, _skor in sonuc["serbest:baba"]] == ["miller:000001"]
+
+
+# --- hibrit_getir: refaktör sonrası eşik ve kaynak sınırı korunur -----------
+
+
+def test_hibrit_getir_esik_ve_kaynak_siniri_hala_uygulanir():
+    maddeler = [
+        _madde("nablusi:000001", "nablusi", []),
+        _madde("nablusi:000002", "nablusi", []),
+        _madde("miller:000001", "miller", [], gelenek="bati_halk"),
+        _madde("miller:000002", "miller", [], gelenek="bati_halk"),
+    ]
+    parcalar = {madde.entry_id: [_parca(madde.entry_id)] for madde in maddeler}
+    depo = BellekDeposu(maddeler)
+    eslesme = _eslesme("yilan")
+    _, terimler = _sorgu_ve_terimler(eslesme)
+    puanlar = {
+        "nablusi:000001": 0.9,
+        "nablusi:000002": 0.8,
+        "miller:000001": 0.6,
+        "miller:000002": 0.05,
+    }
+    bm25 = [(parcalar[entry_id][0], 10.0 - sira) for sira, entry_id in enumerate(puanlar)]
+    indeks = SahteIndeks(parcalar, bm25={terimler: bm25})
+    istemci = SahteIstemci(
+        puanlar={parcalar[entry_id][0].baglamli_metin: skor for entry_id, skor in puanlar.items()}
+    )
+
+    sonuc = hibrit_getir([eslesme], depo, indeks, istemci, n=1)
+
+    assert [aday.madde.entry_id for aday in sonuc["yilan"]] == [
+        "nablusi:000001",
+        "miller:000001",
+    ]

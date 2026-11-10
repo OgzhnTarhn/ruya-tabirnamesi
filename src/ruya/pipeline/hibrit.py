@@ -5,6 +5,7 @@ reranker ve eşik (docs/13-hibrit-getirme.md).
 - ``getirme_sorgusu``: bir sembolden arama sorgusu üretir; HyDE metni ayrıca aranır.
 - ``hibrit_getir``: dört kaynağın adaylarını RRF ile birleştirir, reranker ile sıralar ve
   eşiğin altındaki adayları atar.
+- ``siralama``: deneyler için eşiksiz ve kaynak sınırsız sıralama (docs/15 K4).
 """
 
 from __future__ import annotations
@@ -36,6 +37,9 @@ BM25_K = 40
 VEKTOR_K = 40
 EN_FAZLA_ADAY = 40
 KOSUL_PUANI = 0.1
+
+# Getirmenin dört kolu; deneylerde bunların bir alt kümesi seçilir (docs/15 K4).
+TUM_KOLLAR = frozenset({"sozluk", "bm25", "vektor", "hyde"})
 
 # Bağlam koşulunda karşılaştırılan alanlar (Baglam'daki isimleriyle).
 _KOSUL_ALANLARI = ("cinsiyet", "medeni_hal", "mevsim")
@@ -79,16 +83,18 @@ def getirme_sorgusu(sembol: Sembol) -> str:
     return sorgu
 
 
-def _gommeler(eslesmeler: list[Eslesme], istemci: _Istemci) -> dict[str, list[float]]:
+def _gommeler(
+    eslesmeler: list[Eslesme], istemci: _Istemci, hyde: bool = True
+) -> dict[str, list[float]]:
     """Bütün sorguları ve HyDE metinlerini tek çağrıda gömer; metin → vektör döndürür.
 
-    Gömme geçidi hata verirse vektör araması atlanır: boş sözlük döner. Uyarıya rüya
-    metni yazılmaz (İOG-07).
+    ``hyde=False`` iken HyDE metinleri gömülmez. Gömme geçidi hata verirse vektör araması
+    atlanır: boş sözlük döner. Uyarıya rüya metni yazılmaz (İOG-07).
     """
     metinler: list[str] = []
     for eslesme in eslesmeler:
         metinler.append(getirme_sorgusu(eslesme.sembol))
-        if eslesme.sembol.hyde:
+        if hyde and eslesme.sembol.hyde:
             metinler.append(eslesme.sembol.hyde)
     if not metinler:
         return {}
@@ -237,23 +243,18 @@ def _yedek_sec(
     return _kaynak_sinirla(secilen, n)
 
 
-def _sec(
+def _rerank_puanlari(
     eslesme: Eslesme,
-    listeler: dict[str, list[str]],
+    adaylar: list[tuple[str, float]],
     parcalar: dict[str, Parca],
-    depo: MaddeDeposu,
     indeks: _Indeks,
     istemci: _Istemci,
-    baglam: Baglam | None,
-    n: int,
-    esik: float,
-) -> list[Aday]:
-    """RRF ile adayları seçer, reranker ile sıralar, eşiği ve kaynak sınırını uygular."""
-    skorlar = rrf(list(listeler.values()))
-    if not skorlar:
-        return []
-    adaylar = sorted(skorlar.items(), key=lambda cift: (-cift[1], cift[0]))[:EN_FAZLA_ADAY]
+) -> list[tuple[str, Parca, float]] | None:
+    """Adayları reranker ile puanlar: (entry_id, parça, puan) listesi.
 
+    Parçası olmayan adaylar atlanır. Reranker hata verirse ``None`` döner (çağıran RRF
+    sırasına düşer).
+    """
     belgeler: list[str] = []
     parca_ile: list[tuple[str, Parca]] = []
     for entry_id, _skor in adaylar:
@@ -273,13 +274,42 @@ def _sec(
         _log.warning(
             "Yeniden sıralama yapılamadı, RRF sırası kullanılıyor: %s", type(hata).__name__
         )
-        return _yedek_sec(adaylar, listeler, parcalar, depo, indeks, n)
+        return None
 
     puan_sozlugu = {sira: puan for sira, puan in puanlar}
+    return [
+        (entry_id, parca, puan_sozlugu[sira])
+        for sira, (entry_id, parca) in enumerate(parca_ile)
+        if sira in puan_sozlugu
+    ]
+
+
+def _sec(
+    eslesme: Eslesme,
+    listeler: dict[str, list[str]],
+    parcalar: dict[str, Parca],
+    depo: MaddeDeposu,
+    indeks: _Indeks,
+    istemci: _Istemci,
+    baglam: Baglam | None,
+    n: int,
+    esik: float,
+) -> list[Aday]:
+    """RRF ile adayları seçer, reranker ile sıralar, eşiği ve kaynak sınırını uygular."""
+    skorlar = rrf(list(listeler.values()))
+    if not skorlar:
+        return []
+    adaylar = sorted(skorlar.items(), key=lambda cift: (-cift[1], cift[0]))[:EN_FAZLA_ADAY]
+
+    puanlar = _rerank_puanlari(eslesme, adaylar, parcalar, indeks, istemci)
+    if puanlar is None:
+        return _yedek_sec(adaylar, listeler, parcalar, depo, indeks, n)
+    if not puanlar:
+        return []
+
     secilen: list[Aday] = []
-    for sira, (entry_id, parca) in enumerate(parca_ile):
-        puan = puan_sozlugu.get(sira)
-        if puan is None or puan < esik:
+    for entry_id, parca, puan in puanlar:
+        if puan < esik:
             continue
         madde = depo.madde(entry_id)
         kosul_skoru, kosul_gerekceleri = _kosul_skoru(madde, baglam)
@@ -297,6 +327,45 @@ def _sec(
 
     secilen.sort(key=lambda aday: (-aday.skor, aday.madde.entry_id))
     return _kaynak_sinirla(secilen, n)
+
+
+def siralama(
+    eslesmeler: list[Eslesme],
+    depo: MaddeDeposu,
+    indeks: _Indeks,
+    istemci: _Istemci,
+    gelenekler: list[Gelenek] | None = None,
+    kollar: frozenset[str] | set[str] = TUM_KOLLAR,
+    rerank: bool = True,
+    k: int = 10,
+) -> dict[str, list[tuple[str, float]]]:
+    """Deneyler için eşiksiz, kaynak sınırsız sıralama (docs/15 K4).
+
+    Yalnızca ``kollar`` içindeki kaynaklar kullanılır; ``rerank=False`` iken RRF skoru döner.
+    Sonuç anahtarı ``getirme_anahtari(eslesme)``; değer ``(entry_id, skor)`` çiftleridir.
+    """
+    gerekli_gomme = bool(kollar & {"vektor", "hyde"})
+    gommeler = _gommeler(eslesmeler, istemci, hyde="hyde" in kollar) if gerekli_gomme else {}
+
+    sonuc: dict[str, list[tuple[str, float]]] = {}
+    for eslesme in eslesmeler:
+        listeler, parcalar = _listeler(eslesme, depo, indeks, gelenekler, gommeler)
+        listeler = {ad: entry_idler for ad, entry_idler in listeler.items() if ad in kollar}
+        skorlar = rrf(list(listeler.values()))
+        adaylar = sorted(skorlar.items(), key=lambda cift: (-cift[1], cift[0]))[:EN_FAZLA_ADAY]
+
+        if rerank:
+            puanlar = _rerank_puanlari(eslesme, adaylar, parcalar, indeks, istemci)
+            if puanlar is None:
+                sirali = adaylar
+            else:
+                sirali = [(entry_id, puan) for entry_id, _parca, puan in puanlar]
+        else:
+            sirali = adaylar
+
+        sirali.sort(key=lambda cift: (-cift[1], cift[0]))
+        sonuc[getirme_anahtari(eslesme)] = sirali[:k]
+    return sonuc
 
 
 def hibrit_getir(
