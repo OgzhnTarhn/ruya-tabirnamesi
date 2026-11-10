@@ -107,8 +107,8 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `pipeline/extract.py` | `extract(girdi, istemci) -> (CikarimSonucu, Kullanim)` | ✅ |
 | `pipeline/map.py` | `map_symbols(semboller, varyantlar, vektor=None, esik=0.8) -> list[Eslesme]` | ✅ |
 | `pipeline/retrieve.py` | `retrieve(eslesmeler, depo, baglam, gelenekler, n) -> Getirilenler` | ✅ |
-| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` · paralel kipte sembol başına bir çağrı + genel yorum çağrısı; `Kullanim` çağrıların toplamıdır | ✅ |
-| `pipeline/run.py` | `yorumla(girdi, bag) -> SorguKaydi`, `Bagimliliklar`, `varsayilan_bagimliliklar()` | ✅ |
+| `pipeline/synthesize.py` | `synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci) -> (Yorum, Kullanim)` · paralel kipte sembol başına bir çağrı + genel yorum çağrısı; isteğe bağlı `ilerleme(bolumler)` her sembol bitince o ana kadarki bölümlerle (sembol sırasıyla) çağrılır; `Kullanim` çağrıların toplamıdır | ✅ |
+| `pipeline/run.py` | `yorumla(girdi, bag, ilerleme=None) -> SorguKaydi` · `ilerleme(asama, kayit)` eşlemeden (`"esleme"`), getirmeden (`"getirme"`) sonra ve sentezde her sembol bitince (`"sentez"`, `kayit.yorum` o ana kadarki bölümler) çağrılır; kayıt kopyadır, `Bagimliliklar`, `varsayilan_bagimliliklar()` | ✅ |
 
 ### Üst katman ve giriş noktaları
 
@@ -117,7 +117,7 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `kayit.py` | `sorgu_logla` (rüya metni olmadan), `gecmise_yaz` (yalnızca `RUYA_GECMIS=on`) | ✅ |
 | `degerlendirme/metrikler.py` | `sembol_recall`, `sembol_precision`, `esleme_dogrulugu`, `recall_at_k`, `kaynak_cesitliligi`, `atif_kapsami`, `yasak_ifadeler` | ✅ |
 | `degerlendirme/calistir.py` | `degerlendir(veri_seti, etiket, bag) -> rapor yolu` | ✅ |
-| `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`) | ✅ |
+| `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`), `yorum_akisi(girdi, bag)` (boru hattını ayrı iş parçacığında koşar, ara metinleri sırayla verir; Yorumla düğmesi bunu akıtır) | ✅ |
 | `eval/run_eval.py` | CLI: `--dataset`, `--etiket` | ✅ (gövde `degerlendir`'e bağlı) |
 | `scripts/download_sources.py` | CLI: `--asama`, `--kaynak`, `--yeniden` | ✅ |
 | `notebooks/_kurulum.py` | Anahtar kontrolü, autoreload, yolların gösterimi | 🔁 bilgisayara uyarlanacak |

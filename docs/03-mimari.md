@@ -110,7 +110,7 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     return SorguKaydi(...)   # her adımın çıktısı + AdimOlcumu (süre, token, maliyet, talimat)
 ```
 
-`SorguKaydi` her adımın çıktısını, süresini, token sayısını ve maliyetini taşır. Arayüz ve değerlendirme betiği aynı nesneyi kullanır. `Bagimliliklar` boru hattının dış dünyaya (API, depo, sözlük) açılan tek kapısıdır; testlerde sahteleri verilir (bkz. [12](12-kod-yapisi-ve-sozlesmeler.md), bölüm 4). Orkestrasyon `src/ruya/pipeline/run.py` içinde hazır ve testli.
+`SorguKaydi` her adımın çıktısını, süresini, token sayısını ve maliyetini taşır. Arayüz ve değerlendirme betiği aynı nesneyi kullanır. `Bagimliliklar` boru hattının dış dünyaya (API, depo, sözlük) açılan tek kapısıdır; testlerde sahteleri verilir (bkz. [12](12-kod-yapisi-ve-sozlesmeler.md), bölüm 4). Orkestrasyon `src/ruya/pipeline/run.py` içinde hazır ve testli. Arayüz beklerken boş kalmasın diye `yorumla` isteğe bağlı bir `ilerleme` geri çağırması alır: bulunan semboller, getirme ve geldikçe sembol bölümleri ekranda görünür; genel yorum en sonda gelir (10 Kasım).
 
 ## 4. Klasör yapısı
 
