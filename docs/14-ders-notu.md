@@ -409,7 +409,9 @@ Kapsam: (yoksa satır yok)
 <pasaj metni>
 ```
 
-Model `prompts/sentez_v3.md` kurallarıyla JSON yazar: her sembol için bir bölüm, her bölümde atıflar (`entry_id` + kısa alıntı), sonda "Uzlaşılan noktalar", "Ayrışan noktalar" ve bulunamayan semboller.
+Model JSON yazar: her sembol için bir bölüm, her bölümde atıflar (`entry_id` + kısa alıntı), bulunamayan semboller ve en sonda birkaç cümlelik düz bir **genel yorum**.
+
+**Paralel sentez (9 Kasım).** İlk sürümde bütün semboller tek istekte yazılıyordu (`sentez_v4`); model uzun bir metni tek başına yazarken rüya başına 2–6 dakika geçiyordu. Şimdi her sembol için ayrı, kısa bir istek gider (`sentez_sembol_v2`: en çok 3 cümle, 3 kaynak, 20 kelimelik alıntı) ve bu istekler aynı anda çalışır. Bölümler bitince ayrı bir kısa istek (`genel_yorum_v1`) onları düz bir paragrafta birleştirir; bu istek hata verirse yorum genel yorumsuz döner. Her sembol isteği yalnız o sembolün maddelerini görür, atıflar da yalnız onlarla denetlenir. Geçit hesap başına bir modelde **en fazla 4 eşzamanlı** istek kabul ettiği için `EN_FAZLA_ESZAMANLI = 4`. Sentez süresi yaklaşık %40 kısaldı.
 
 Talimattaki başlıca kurallar (docs/05, docs/07):
 1. Yalnızca verilen maddelere dayan; her yorum cümlesi atıf taşısın.
@@ -442,7 +444,7 @@ Her rüya için tek bir kayıt nesnesi oluşur: girdi, çıkarım sonucu, eşle�
 - **Model adları tek yerde:** Bütün model adları ve adres yalnızca `src/ruya/config.py` içinde. Model değiştirmek tek satır.
 - **Yeniden deneme:**
   - 429/502/503/504 gibi geçici hatalarda 4 kez denenir.
-  - "Model dolu" (503) yanıtında 15, 30, 60 saniye beklenir; kısa beklemeler yetmiyordu, test setinde rüyalar düşüyordu.
+  - "Model dolu" (503) ve "çok istek" (429: 4 eşzamanlı istek ya da dakikalık token sınırı) yanıtlarında 15, 30, 60 saniye beklenir; kısa beklemeler yetmiyordu, test setinde rüyalar düşüyordu.
   - 409 "istek hâlâ işleniyor" yanıtında aynı **Idempotency-Key** ile beklenip yeniden sorulur, böylece aynı istek iki kez çalıştırılmaz.
   - Sunucu "çok uzun bekle" diyorsa (günlük kota) beklemek anlamsız; hata verilir.
 - **Disk önbelleği:** İsteğin tamamının özeti (hash) dosya adı olur, cevap `data/cache/llm/` altına yazılır. Aynı istek ikinci kez gelirse cevap diskten okunur. Talimat değişirse özet değişir, önbellek kendiliğinden geçersiz olur.
@@ -465,6 +467,7 @@ uv run python scripts/arayuz_ac.py
 - **Bağlam (isteğe bağlı):** cinsiyet, medeni hâl, mevsim, gurbette mi. Koşul bonusunu besler. Sistem bunları asla tahmin etmez, yalnızca kullanıcının verdiğini kullanır.
 - **Gelenek seçimi:** boş bırakılırsa hepsi; "psikanalitik" seçilirse Freud da girer.
 - **Yorum sekmesi:** atıflı yorum; bir atıf seçilince maddenin tam metni görünür.
+- **Akış (10 Kasım):** Yorum geldikçe görünür. Boru hattı ayrı bir iş parçacığında çalışır ve her aşamada (`esleme`, `getirme`, her biten sembol için `sentez`) kaydın bir kopyasıyla haber verir; arayüz bu haberleri bir kuyruktan okuyup ekrana yazar. Kullanıcı birkaç saniyede sembolleri, sonra sembol yorumlarını tek tek görür; uyarı ve genel yorum en sonda gelir.
 - **Hata ayıklama sekmesi:** `SorguKaydi`'nin tamamı JSON olarak; her adımın çıktısı ve süresi.
 
 ---
@@ -535,6 +538,7 @@ Bu kurallar talimata yazılır ve değerlendirmede yasak ifadeler kodla taranır
 | 2 Kasım | sentez_v2 | 20 | %77 | %100 | %100 | ~196 sn (yalnız sentez) |
 | 5 Kasım | Düşünme kapalı, hibrit getirme, sentez_v3 | 45 | %78 | %86 | %100 | 177 sn |
 | 6 Kasım | cikarim_v3, eşleme düzeltmeleri | 45 | **%96** | %87 | %100 | ölçülemedi (önbellek) |
+| 10 Kasım | cikarim_v4, paralel sentez, genel yorum | 45 | %96 | %87 | %100 | 165 sn |
 
 Bütün koşularda olumsuzlama hatası 0, yasak ifade 0.
 
@@ -544,6 +548,11 @@ Bütün koşularda olumsuzlama hatası 0, yasak ifade 0.
 - **Önbellek tuzağı:** Bir koşuda çıkarım önceki denemenin önbelleğinden geldiği için süre gerçek değildi; o satıra süre yazılmadı. Ölçüm yaparken önbelleğin neyi değiştirdiğini bilmek gerekir.
 
 **Sadakat (8 rüya elle okundu):** Uydurma atıf ya da kaynakta olmayan bir iddia görülmedi; olumsuzlanan örümcek yorumlanmadı; her yanıtta uyarı vardı. Görülen kusurlar: çeviri hatasının ("zikir") yoruma geçmesi ve bazı atıfların konuya gevşek bağlı olması (deniz kenarı bölümünde balık maddesi).
+
+**Deneyler (10 Kasım, 15 rüyalık alt küme):**
+- **D3 · Kaynak başına N:** N=2 tokenı %55 artırdı ama süreyi değiştirmedi (paralel istekler); N=3 süreyi %56 uzattı. Talimat sembol başına en çok 3 kaynak kullandığı için fazladan maddeler yoruma pek girmiyor. **N=1 kalıyor.**
+- **D4 · Sentez modeli:** `mimo-v2.6-pro` ölçülen kalitede aynı, ama rüya başına ~55 sn daha yavaş ve %30 daha çok token. **deepseek kalıyor.**
+- **D1/D2 · Vektör kolu ve reranker:** Getirme dört çeşitle koşuldu (hepsi, reranker'sız, vektörsüz, HyDE'siz), sıralamalar kaydedildi. Hangisinin doğru maddeyi bulduğunu bilmek için "doğru cevap" etiketi gerekiyor; etiketler **havuzlamayla** hazırlanır: her çeşidin ilk 5'i birleştirilir, yalnız bu havuz işaretlenir (TREC usulü). Ön karar için havuzu bir LLM hakem işaretliyor (gümüş etiket); kesin karar insan etiketleriyle verilecek. İlk bulgu: HyDE'yi kapatınca ilk 5 sonucun %93'ü aynı kalıyor, reranker'ı kapatınca %64'ü.
 
 Çalıştırma: `uv run python eval/run_eval.py --dataset eval/dataset/ruyalar_v1.jsonl --etiket <ad>`. Rapor `data/raporlar/<tarih>_<etiket>.md`, özet satırı `docs/olcumler.md`.
 
@@ -561,7 +570,7 @@ Bütün koşularda olumsuzlama hatası 0, yasak ifade 0.
 | **zeyrek** | Türkçe morfoloji, kök bulma. |
 | **numpy** | Vektörlerin saklanması ve kosinüs hesabı. |
 | **Gradio** | Web arayüzü. |
-| **pytest** | Testler: 735 test geçiyor. |
+| **pytest** | Testler: 818 test geçiyor. |
 | **ruff** | Kod denetimi (lint). Commit'ten önce temiz olmalı. |
 
 ### 10.2 Klasör yapısı ve katmanlar
@@ -575,7 +584,7 @@ src/ruya/
   enrich/                   ← çeviri birleştirme, sembol atama, koşul/yöntem/kapsam
   index/                    ← sözlük tabloları, parçalar, BM25, vektörler, depo
   pipeline/                 ← extract, map, hibrit, retrieve, synthesize, run
-  degerlendirme/            ← metrikler, calistir
+  degerlendirme/            ← metrikler, calistir, getirme_deneyi, hakem
 app/gradio_app.py           ← arayüz
 scripts/                    ← ince komut satırı betikleri
 prompts/                    ← sürümlü talimatlar
@@ -619,7 +628,10 @@ Planlama ve doğrulama Claude Code'da, kodun bir kısmı **orkestra** ile EVREN 
 | Yerel embedding (`multilingual-e5-large`) ve yerel reranker (`bge-reranker`) | EVREN'deki Qwen3 modelleri hızlı (0,3–0,4 sn), torch kurmak gerekmiyor | Altyapı yükü de bir maliyet |
 | **Sembol adlarını vektörle eşlemek** | "yılan" 0,82 ile `akrep`e, 0,60 ile doğru `yilan`a yakın çıktı. Aynı skorda doğru ve yanlış eşleme olduğu için hiçbir eşik işe yaramadı | Embedding "aynı türden" ile "aynı şey"i ayıramaz; kesin eşleme gereken yerde kural kullan |
 | **Türkçe harf katlama** ("tas" → taş) | "tas" (kâse) ile "taş", "kus" ile "kuş" ayrı kelimeler; gerçek kelimeleri yanlış sembole bağlıyordu | Dil kurallarını basitleştirmek anlamı bozabilir |
-| Kaynak başına N = 2 madde | Sentez 12 dakika sürdü | Bağlam penceresine konan her şey hız demektir |
+| Kaynak başına N = 2 madde | Tek çağrılı sentezde 12 dakika sürdü; paralel sentezde süre aynı ama token %55 fazla ve kazanç görünmüyor (D3) | Bağlam penceresine konan her şey hız ya da para demektir |
+| Tek istekte bütün yorum (`sentez_v4`) | Uzun metni tek istekte yazmak 2–6 dakika; sembol başına paralel istekler %40 kısalttı | Bağımsız parçaları paralel iste |
+| Kısa çıkarım talimatı (`cikarim_v5`) | En çok 10 sembol ve kısa HyDE; uzun rüyada süre kısaldı ama beklenen sembolleri kesti, kısa rüyada hiçbir şey değişmedi | Önce neyin yavaş olduğunu ölç; geçidin dalgalanması talimat farkından büyüktü |
+| Sentezde `mimo-v2.6-pro` | Kalite aynı, daha yavaş ve daha pahalı (D4) | Büyük model her işte daha iyi değil |
 | DeepSeek'in düşünme adımı açık | 7–14 dakikalık yanıtlar; bu iş akıl yürütme gerektirmiyor | Model ayarları göründüğünden önemli |
 | Geniş koşul kuralları (%23) | Rüyada görülen kişiyi rüya sahibi sandı; daraltılınca %9,5 | Kural kesinliği kapsamadan önemli |
 | LLM ile koşul çıkarma | 10.801 madde günler sürerdi | Ucuz kural + zararsız kaçırma |
@@ -631,15 +643,15 @@ Planlama ve doğrulama Claude Code'da, kodun bir kısmı **orkestra** ile EVREN 
 ## 12. Bilinen sorunlar ve sıradaki işler
 
 **Bilinen sorunlar:**
-1. **Hız:** Medyan 177 saniye, hedef 30 saniye. Süre büyük ölçüde geçidin yüküne ve sentezin uzunluğuna bağlı.
+1. **Hız:** Medyan 165 saniye, hedef 30 saniye. Süre büyük ölçüde geçidin yüküne bağlı (aynı istek 18 ile 151 sn arasında sürdü). Arayüz sonucu geldikçe gösterdiği için bekleme daha az hissediliyor.
 2. **Gözden geçirilmemiş içerik:** Sözlük, test seti ve çeviriler insan gözünden geçmedi.
 3. **Getirme gevşekliği:** Bazı atıflar konuya gevşek bağlı; eşik (0,15) test setiyle ayarlanmadı.
 4. **Kategoriler kullanılmıyor:** Bab ve HVDC kategorileri sözlükte var, kodda yok.
-5. **v4 ölçülmedi:** `cikarim_v4` tam test setiyle ölçülmedi (18 rüyada v3 ile aynı düzeyde).
+5. **Eşzamanlılık sınırı:** Geçit hesap başına 4 eşzamanlı istek kabul ediyor; iki rüya aynı anda yorumlanırsa ya da ölçümle kod yazan agent'lar aynı anda çalışırsa istekler 429 alır.
 
 **Senin yapacakların:** sözlüğü, test setini ve çevirileri gözden geçirmek; 10 yanıtın atıflarını, 20 koşulu, 20 kapsam etiketini elle kontrol etmek; Brill ve OpenITI lisanslarını doğrulamak; `v0.1-mvp` etiketine karar vermek.
 
-**Ölçüm gerektiren deneyler:** D1–D5 (embedding karşılaştırması, reranker, N değeri, model karşılaştırması).
+**Sıradaki işler:** Sıra ve kararlar [15 · Kalan işler planı](15-kalan-isler-plani.md)'nda. D1/D2 etiket bekliyor; D3 ve D4 bitti, D5 yapılmayacak.
 
 ---
 
