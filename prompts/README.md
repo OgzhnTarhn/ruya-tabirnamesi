@@ -21,6 +21,7 @@ LLM'e verilen sabit talimatlar burada, sürümlü olarak durur. Kod bunları
 | `cikarim_v2.md` | (eski sürüm) | 4 | docs/13 (HyDE), docs/03 Adım 1 |
 | `cikarim_v3.md` | (eski sürüm) | 11 | beden parçası, yer, ölüm, madde sıfatı kuralları (docs/olcumler.md) |
 | `cikarim_v4.md` | `pipeline/extract.py` | 11 | v3 + kelimeyi anlamıyla yaz (kus/kuş) |
+| `cikarim_v5.md` | (denendi, kullanılmıyor) | 12 | v4 + kısa HyDE, en çok 10 sembol; recall düştü (docs/olcumler.md) |
 | `sentez_v1.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07 |
 | `sentez_v2.md` | (eski sürüm) | 5 | docs/05 bölüm 3, docs/07, docs/olcumler.md |
 | `sentez_v3.md` | (eski sürüm) | 11 | koşullu yorum, dayanak, Türkçe alıntı (docs/05) |

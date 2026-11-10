@@ -50,3 +50,25 @@ Betik `data/deneyler/hiz5.jsonl` dosyasına yazar; tam test seti koşulmadı.
 - Kalan sürenin büyük ve en dalgalı parçası çıkarım (26–158 sn, ~330 token, çoğu HyDE metni).
   30 saniye hedefi bu geçitte paralellikle tutmuyor; sıradaki aday çıkarımı kısaltmak ve
   arayüzde bölümleri geldikçe göstermek.
+
+### 2026-11-10 · Süre: kısa çıkarım talimatı (5 rüya, 2 tur)
+
+`cikarim_v5` = v4 + HyDE tek cümle ve en çok 12 kelime, `ham_ifade` en çok dört kelime, en çok
+10 sembol. Aynı 5 rüya (r003, r005, r008, r013, r030), önbellek kapalı, sentez kapalı. Her
+rüyada v4 ile v5 aynı anda gönderildi; geçidin o anki hızı ikisini eşit etkiledi. Betik
+`data/deneyler/cikarim_v5.jsonl` dosyasına yazar.
+
+| Talimat | Çıkarım medyanı | Çıktı tokenı medyanı | Çıktı tokenı (10 çağrı) | Sembol recall | Sembol precision |
+|---|---|---|---|---|---|
+| cikarim_v4 | 85 sn | 659 | 8.281 | %97,5 | %92,2 |
+| cikarim_v5 | 50 sn | 650 | 6.966 | %93,8 | %94,7 |
+
+- Kazancın tamamı uzun rüyalardan geldi (r005, r013: 13–14 sembol yerine 10). Kısa rüyalarda
+  token ve süre değişmedi; HyDE'yi kısaltma talimatı çıktıyı fark edilir kısaltmadı.
+- 10 sembol sınırı beklenen sembolleri de kesti (r005'te `yol`, bir turda `su`). v5 bir kez
+  `cami` yerine `camii` yazdı.
+- İki sürümün getirdiği maddeler sembol başına ortalama %84 örtüştü (Jaccard, 63 sembol).
+- Aynı rüyanın süresi turdan tura 7 kata kadar değişti (r003: 18 ve 151 sn); geçidin
+  dalgalanması talimat farkından büyük.
+- **Karar:** v5 kullanılmıyor, `extract.py` v4'te kaldı. Çıkarım bir sembol başına ~90 token
+  yazıyor; büyük kısmı JSON alan adları ve HyDE. Gerçek kısaltma şema değişikliği ister.
