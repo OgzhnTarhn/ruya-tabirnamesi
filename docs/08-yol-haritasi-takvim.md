@@ -45,6 +45,9 @@ gantt
 
 ## Hafta hafta plan
 
+> **10 Kasım:** Kalan işlerin sırası, kararları ve 1 Aralık öncesi ölçüm planı
+> [15](15-kalan-isler-plani.md)'te. Aşağıdaki kutular iş bittikçe işaretlenir.
+
 ### Hafta 0 · 21–25 Ekim · Belgeler ve kurulum ✅ (büyük kısmı bitti)
 
 - [x] Proje fikri ve araştırma

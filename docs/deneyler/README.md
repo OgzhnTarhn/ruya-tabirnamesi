@@ -10,8 +10,8 @@ Her deney kısa bir not olarak burada durur (docs/06, bölüm 4). Not, deney bit
 | # | Deney | Hafta | Not | Durum |
 |---|---|---|---|---|
 | 01 | Veri ve çeviri denemesi (K0) | 1 | [01-veri-ve-ceviri.md](01-veri-ve-ceviri.md) | 🕓 |
-| D1 | e5-large ile Qwen3-Embedding-0.6B | 7 | — | 🕓 |
+| D1 | Vektör kolu var / yok (sözlük + BM25 ile hibrit; 10 Kasım'da yeniden tanımlandı, [15](../15-kalan-isler-plani.md) K3) | 7 | — | 🕓 |
 | D2 | Reranker var / yok | 7 | — | 🕓 |
 | D3 | Kaynak başına N = 1, 2, 3 | 7 | — | 🕓 |
-| D4 | Opus 5.5 / Sonnet 5.5 / Haiku 5.5 | 12 | — | 🕓 |
-| D5 | Claude ile yerel Gemma/Qwen (isteğe bağlı) | 12 | — | 🕓 |
+| D4 | Sentezde `deepseek-v4.1-flash` / `mimo-v2.6-pro` ([15](../15-kalan-isler-plani.md) K7) | 12 | — | 🕓 |
+| D5 | ~~Yerel Gemma/Qwen~~ yapılmayacak ([15](../15-kalan-isler-plani.md) K8) | 12 | — | ✖ |
