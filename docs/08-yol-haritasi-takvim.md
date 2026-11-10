@@ -133,7 +133,7 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 - [x] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
 - [x] Reranker entegrasyonu (`qwen3-reranker-8b`)
-- [ ] Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları
+- [ ] Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları (10 Kasım: D3 bitti, N=1 kalır; D1/D2 etiket bekliyor)
 - [x] Gelenek seçimi arayüzü (İG-03)
 - [ ] `v0.2` etiketi
 
@@ -163,8 +163,8 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
 
-- [ ] D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (sentez ve çıkarım)
-- [ ] D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)
+- [x] D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (10 Kasım, yalnız sentez; deepseek kalır, [D4](deneyler/D4-model.md))
+- [x] ~~D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)~~ yapılmayacak ([15](15-kalan-isler-plani.md) K8)
 - [x] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim (7 Kasım; öğrendiklerin ayrıntısı [14](14-ders-notu.md), bölüm 11)
 - [ ] `v1.0` etiketi
 

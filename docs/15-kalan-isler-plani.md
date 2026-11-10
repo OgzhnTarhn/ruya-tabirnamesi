@@ -29,9 +29,14 @@ kutular iş bittikçe işaretlenir.
 | K7 | **D4'te rakip model `mimo-v2.6-pro`**, yalnız sentezde. Çıkarım `deepseek-v4.1-flash`'ta kalır. | 3 Kasım'daki mimo denemesi eski boru hattıyla yapılmıştı; çıkarım recall'ı zaten %96. |
 | K8 | **D5 (yerel model) yapılmayacak.** | GPU yok, API'siz yerel model bu proje için öğrenme getirisi düşük; 08'de isteğe bağlıydı. |
 | K9 | **Etiketler senin kararın; ben öneririm, ben atmam.** Öneri: `v0.1-mvp` = MVP denetiminin commit'i (7 Kasım), `v0.2` = D1–D3 notları, `v0.3` = temel ölçüm, `v1.0` = D4 + son README. | CLAUDE.md: push ve sürüm kararı kullanıcıda. |
+| K11 | **Ölçümler orkestra işleriyle ve birbirleriyle aynı anda koşmaz** (aynı modeli kullanıyorlarsa). 429'da istemci 15–60 sn bekler. | 10 Kasım temel ölçümünde 9 rüya, D3/D4'te 8 rüya eşzamanlı istek sınırıyla düştü; orkestra agent'ları da aynı hesabı kullanıyor. |
 | K10 | **Deney kodu `src/ruya/degerlendirme/` altına girer** (sınanır), çalıştırma betikleri `eval/` altında durur. Model ve ayar değişikliği kodu değiştirmeden `Ayarlar` ve parametrelerle yapılır. | Model adları yalnız `config.py`'de (CLAUDE.md); deney kodu tekrar kullanılabilir kalır. |
 
 ## 3. Fazlar
+
+**Durum (10 Kasım akşamı):** Faz 1 bitti (temel ölçüm, getirme deney aracı, sıralamalar,
+etiket dosyası `data/deneyler/getirme/etiketler.md`). Faz 2'de D3 ve D4 bitti; D1/D2
+senin etiketlerini bekliyor.
 
 ### Faz 1 · 10–14 Kasım: temel ölçüm ve getirme deney aracı
 
