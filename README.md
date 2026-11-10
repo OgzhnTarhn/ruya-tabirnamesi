@@ -25,6 +25,7 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 | 12 | [Kod yapısı ve sözleşmeler](docs/12-kod-yapisi-ve-sozlesmeler.md) | Katmanlar, modül imzaları, veri ürünleri, adlandırma, geliştirme döngüsü |
 | 13 | [Hibrit getirme](docs/13-hibrit-getirme.md) | BM25, vektör, HyDE, RRF, reranker; araştırma ve kararlar |
 | 14 | [Ders notu](docs/14-ders-notu.md) | Projeyi baştan sona ders gibi anlatır: RAG kavramları, veri hattı, bir rüyanın yolculuğu, ölçme, dersler |
+| 15 | [Kalan işler planı](docs/15-kalan-isler-plani.md) | 10 Kasım sonrası iş sırası, kritik kararlar, deney planı |
 | — | [Kaynaklar](docs/KAYNAKLAR.md) | Künyeler, lisanslar, atıf metinleri |
 | — | [Terimler](docs/terimler.md) | Çeviride kullanılan tabir terimleri |
 | — | [Kurallar](docs/kurallar.md) | Okuma notların (şablon, Hafta 3) |
@@ -40,7 +41,7 @@ Rüya metni
   → 1. Sembol çıkarımı   (DeepSeek · JSON şeması)
   → 2. Eşleme            (sözlük + zeyrek · yoksa serbest arama)
   → 3. Hibrit getirme    (sözlük + BM25 + vektör + HyDE → RRF → reranker ve eşik · bağlam koşulları)
-  → 4. Sentez            (DeepSeek · numaralı kaynaklar + kodda atıf doğrulama)
+  → 4. Sentez            (DeepSeek · sembol başına paralel istek + kısa genel yorum · kodda atıf doğrulama)
   → Kaynaklı, gelenek etiketli Türkçe yorum + uyarı
 ```
 
@@ -52,8 +53,9 @@ Rüya metni
 | 2 Kasım | Sentez talimatı v2 | 20 | %77 | %100 | %100 | — |
 | 5 Kasım | Düşünme kapalı, hibrit getirme | 45 | %78 | %86 | %100 | 177 sn |
 | 6 Kasım | Çıkarım talimatı v3, eşleme düzeltmeleri | 45 | %96 | %87 | %100 | — |
+| 10 Kasım | Çıkarım v4, paralel sentez, genel yorum | 45 | %96 | %87 | %100 | 165 sn |
 
-Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Test seti sentetik ve gözden geçirilmedi; precision'daki "fazla" sembollerin çoğu rüyada gerçekten geçiyor. Ayrıntı: [olcumler](docs/olcumler.md).
+Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Arayüz yorumu geldikçe gösterir: semboller birkaç saniyede, sembol yorumları hazır oldukça. Deneyler: kaynak başına 1 madde (D3) ve sentezde `deepseek-v4.1-flash` (D4) kalıyor; vektör kolu ve reranker deneyleri (D1/D2) etiket bekliyor. Test seti sentetik ve gözden geçirilmedi; precision'daki "fazla" sembollerin çoğu rüyada gerçekten geçiyor. Ayrıntı: [olcumler](docs/olcumler.md).
 
 ## Öğrendiklerim
 
@@ -63,6 +65,8 @@ Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Test seti sentetik v
 - **Model ayarı göründüğünden önemli.** Düşünme adımını kapatmak yanıtı dakikalardan saniyelere indirdi.
 - **Ölçütün değeri test setinin kalitesi kadardır.** Precision düşük göründü, çünkü beklenen listeler eksikti.
 - **Talimat örneklerine test cümlesi koyma.** Ölçüm ezberi ölçer.
+- **Süreyi önce ölç, sonra kısalt.** Sentezi sembol başına paralel isteklere bölmek süreyi %40 kısalttı; çıkarım talimatını kısaltmak ise geçidin dalgalanması yanında kayboldu ve recall'ı düşürdü.
+- **Paylaşılan sınırlar ölçümü bozar.** Aynı hesabın 4 eşzamanlı istek sınırını ölçüm ve kod yazan agent'lar birlikte kullanınca rüyalar 429 ile düştü.
 
 Denenip vazgeçilenlerin tamamı: [14 · Ders notu](docs/14-ders-notu.md), bölüm 11.
 
