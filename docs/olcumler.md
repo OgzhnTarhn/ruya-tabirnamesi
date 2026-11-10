@@ -15,6 +15,7 @@
 | 2026-11-03 | asama1-mimo-sentez | a1de337 | 20 rüya (sentetik) | cikarim_v1, sentez_v2 | %77 | %100 | 0 | %100 | — | 2,9 | %100 | ölçülmedi | ölçülmedi | 0 | 207 (yalnız sentez) | 0,00 |
 | 2026-11-05 | asama3-hibrit-deepseek | 8cefe2e | 45 rüya (sentetik; 2'si 503 ile düştü) | cikarim_v2, sentez_v3 | %78 | %86 | 0 | %86 | — | 2,7 | %100 | ölçülmedi | ölçülmedi | 0 | 177 | 0,00 |
 | 2026-11-06 | asama3-cikarim-v3 | c300307 | 45 rüya (sentetik; 503'ler yeniden koşuldu) | cikarim_v3, sentez_v3 | %96 | %87 | 0 | %87 | — | 2,7 | %100 | 0 (8 rüya elle) | ölçülmedi | 0 | önbellekli, ölçülemedi | 0,00 |
+| 2026-11-10 | asama3-paralel-sentez | 696aa88 | 45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu) | cikarim_v4, sentez_sembol_v2 + genel_yorum_v1 | %96 | %87 | 0 | %87 | — | 2,8 | %100 | ölçülmedi | ölçülmedi | 0 | 165 | 0,00 |
 
 ## Notlar
 
@@ -72,3 +73,19 @@ rüyada v4 ile v5 aynı anda gönderildi; geçidin o anki hızı ikisini eşit e
   dalgalanması talimat farkından büyük.
 - **Karar:** v5 kullanılmıyor, `extract.py` v4'te kaldı. Çıkarım bir sembol başına ~90 token
   yazıyor; büyük kısmı JSON alan adları ve HyDE. Gerçek kısaltma şema değişikliği ister.
+
+### 2026-11-10 · Temel ölçüm: şimdiki boru hattı (45 rüya)
+
+`cikarim_v4` + hibrit getirme + paralel sentez (`sentez_sembol_v2` + `genel_yorum_v1`), N=1.
+Raporlar `data/raporlar/2026-11-10_asama3-paralel-sentez*.md` (ana koşu ve iki tekrar);
+ölçütler rüya sayısına göre birleştirildi.
+
+- İlk koşuda 9 rüya 429 ile düştü: aynı anda çalışan orkestra işleri de aynı hesabın
+  `deepseek-v4.1-flash` sınırlarını (4 eşzamanlı istek, dakikalık token) kullanıyordu.
+  İstemci 429'da 7 sn bekleyip vazgeçiyordu; artık 503 gibi 15, 30, 60 sn bekliyor (696aa88).
+  Tekrarlar başka hiçbir iş çalışmazken yapıldı ve hepsi geçti.
+- Sembol recall %96, precision %87: 6 Kasım (`cikarim_v3`) ile aynı düzey; v4 recall'ı düşürmedi.
+- Kaçırılan semboller: r005 `yol`, r009 `hastalik` ve `tas`, r011 `cennet`, r015 `el`.
+- Medyan süre 165 sn, ortalama 170 sn; tek çağrılı sentezle yapılan 5 Kasım ölçümünde 177 sn
+  medyandı, ama geçidin hızı günden güne değiştiği için fark kesin değil.
+- Aynı gün D3 ve D4 ([deneyler](deneyler/README.md)): N=1 ve `deepseek-v4.1-flash` kalıyor.
