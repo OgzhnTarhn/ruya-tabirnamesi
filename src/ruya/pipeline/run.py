@@ -17,14 +17,14 @@ from typing import TypeVar
 
 from ruya.config import Ayarlar, ayarlar
 from ruya.dosya import jsonl_oku
-from ruya.etik import SEMBOL_YOK_MESAJI
+from ruya.etik import SEMBOL_YOK_MESAJI, UYARI_METNI
 from ruya.index.build_symbols import sozlugu_yukle, varyant_tablosu
 from ruya.index.build_vectors import HibritIndeks
 from ruya.index.store import BellekDeposu, MaddeDeposu
 from ruya.llm.client import LLMIstemcisi
 from ruya.pipeline import extract, hibrit, retrieve, synthesize
 from ruya.pipeline import map as esleme
-from ruya.schemas import AdimOlcumu, Eslesme, Madde, RuyaGirdisi, SorguKaydi
+from ruya.schemas import AdimOlcumu, Eslesme, Madde, RuyaGirdisi, SorguKaydi, Yorum, YorumBolumu
 
 T = TypeVar("T")
 
@@ -75,8 +75,17 @@ def _zamanla(islev: Callable[..., T], *argumanlar: object) -> tuple[T, float]:
     return sonuc, time.perf_counter() - baslangic
 
 
-def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
-    """Bir rüyayı uçtan uca yorumlar. API hataları (ModelReddetti vb.) çağırana iletilir."""
+def yorumla(
+    girdi: RuyaGirdisi,
+    bag: Bagimliliklar,
+    *,
+    ilerleme: Callable[[str, SorguKaydi], None] | None = None,
+) -> SorguKaydi:
+    """Bir rüyayı uçtan uca yorumlar. API hataları (ModelReddetti vb.) çağırana iletilir.
+
+    ``ilerleme`` verilirse her aşama bittiğinde ``(aşama, kayıt kopyası)`` ile çağrılır:
+    ``esleme``, ``getirme`` ve her sentez bölümü için ``sentez``.
+    """
     kayit = SorguKaydi(zaman=dt.datetime.now(dt.UTC), girdi=girdi)
 
     # 1 · Çıkarım
@@ -113,6 +122,8 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
     eslesmeler = secilenler
     kayit.eslesmeler = eslesmeler
     kayit.atlanan_semboller = [e.sembol.yalin for e in atlananlar]
+    if ilerleme is not None:
+        ilerleme("esleme", kayit.model_copy(deep=True))
 
     # 3 · Getirme
     if bag.hibrit is not None:
@@ -139,10 +150,34 @@ def yorumla(girdi: RuyaGirdisi, bag: Bagimliliklar) -> SorguKaydi:
         )
     kayit.getirilenler = getirilenler
     kayit.olcumler.append(AdimOlcumu(adim="getirme", sure_sn=sure))
+    if ilerleme is not None:
+        ilerleme("getirme", kayit.model_copy(deep=True))
 
     # 4 · Sentez
+    sentez_ilerleme: Callable[[list[YorumBolumu]], None] | None = None
+    if ilerleme is not None:
+
+        def _bildir(bolumler: list[YorumBolumu]) -> None:
+            ilerleme(
+                "sentez",
+                kayit.model_copy(
+                    deep=True,
+                    update={"yorum": Yorum(bolumler=list(bolumler), uyari=UYARI_METNI)},
+                ),
+            )
+
+        sentez_ilerleme = _bildir
+
     (yorum, kullanim), sure = _zamanla(
-        synthesize.synthesize, cikarim, eslesmeler, getirilenler, girdi.baglam, bag.istemci
+        partial(
+            synthesize.synthesize,
+            cikarim,
+            eslesmeler,
+            getirilenler,
+            girdi.baglam,
+            bag.istemci,
+            ilerleme=sentez_ilerleme,
+        )
     )
     kayit.yorum = yorum
     kayit.olcumler.append(

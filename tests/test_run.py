@@ -14,6 +14,7 @@ from ruya.schemas import (
     RuyaGirdisi,
     Sembol,
     Yorum,
+    YorumBolumu,
 )
 
 KULLANIM = Kullanim(model="deepseek-v4.1-flash", girdi_token=100, cikti_token=50, maliyet_usd=0.002)
@@ -50,7 +51,10 @@ def sahte_adimlar(monkeypatch):
         cagrilar["n"] = n
         return {e.symbol_id: [] for e in eslesmeler}
 
-    def sahte_synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci):
+    def sahte_synthesize(cikarim, eslesmeler, getirilenler, baglam, istemci, ilerleme=None):
+        if ilerleme is not None:
+            for bolumler in cagrilar.get("sentez_ilerleme", []):
+                ilerleme(bolumler)
         bulunamayanlar = [sid for sid in getirilenler if sid is not None]
         return Yorum(bolumler=[], bulunamayanlar=bulunamayanlar, uyari=UYARI_METNI), KULLANIM
 
@@ -155,3 +159,73 @@ def test_yalniz_genel_fiil_varsa_sembol_yok_mesaji_doner(bag, sahte_adimlar):
     assert kayit.mesaj == SEMBOL_YOK_MESAJI
     assert kayit.yorum is None
     assert [o.adim for o in kayit.olcumler] == ["cikarim", "esleme"]
+
+
+# --- ilerleme geri çağrısı --------------------------------------------------
+
+BOLUM1 = YorumBolumu(metin="Deniz: ilim ve rızka yorumlanır.")
+BOLUM2 = YorumBolumu(metin="Yılan: düşmanla yorumlanır.")
+
+
+def test_ilerleme_asamalari_sirayla_bildirir(bag, sahte_adimlar):
+    sahte_adimlar["sentez_ilerleme"] = [[BOLUM1], [BOLUM1, BOLUM2]]
+    olaylar: list[tuple[str, object]] = []
+
+    kayit = run.yorumla(
+        RuyaGirdisi(metin="deniz yilan"),
+        bag,
+        ilerleme=lambda asama, kayit: olaylar.append((asama, kayit)),
+    )
+
+    assert [asama for asama, _ in olaylar] == ["esleme", "getirme", "sentez", "sentez"]
+    assert kayit.yorum is not None
+
+    esleme_kaydi = olaylar[0][1]
+    assert [e.sembol.yalin for e in esleme_kaydi.eslesmeler] == ["deniz", "yilan"]
+
+    sentez_kayitlari = [k for asama, k in olaylar if asama == "sentez"]
+    assert sentez_kayitlari[0].yorum.bolumler == [BOLUM1]
+    assert sentez_kayitlari[1].yorum.bolumler == [BOLUM1, BOLUM2]
+    assert all(k.yorum.genel_yorum is None for k in sentez_kayitlari)
+
+
+def test_ilerleme_kayitlari_kopyadir(bag, sahte_adimlar):
+    sahte_adimlar["sentez_ilerleme"] = [[BOLUM1], [BOLUM1, BOLUM2]]
+    olaylar: list[tuple[str, object]] = []
+
+    kayit = run.yorumla(
+        RuyaGirdisi(metin="deniz yilan"),
+        bag,
+        ilerleme=lambda asama, kayit: olaylar.append((asama, kayit)),
+    )
+
+    for _, bildirilen in olaylar:
+        bildirilen.eslesmeler.clear()
+        bildirilen.mesaj = "değiştirildi"
+
+    assert [e.sembol.yalin for e in kayit.eslesmeler] == ["deniz", "yilan"]
+    assert kayit.mesaj is None
+    assert kayit.yorum is not None
+
+
+def test_sembol_yoksa_ilerleme_cagrilmaz(bag, sahte_adimlar, monkeypatch):
+    monkeypatch.setattr(
+        extract, "extract", lambda girdi, istemci: (CikarimSonucu(semboller=[]), KULLANIM)
+    )
+    olaylar: list[str] = []
+
+    kayit = run.yorumla(
+        RuyaGirdisi(metin="hiçbir şey"),
+        bag,
+        ilerleme=lambda asama, kayit: olaylar.append(asama),
+    )
+
+    assert olaylar == []
+    assert kayit.mesaj == SEMBOL_YOK_MESAJI
+
+
+def test_ilerleme_verilmezse_davranis_degismez(bag, sahte_adimlar):
+    kayit = run.yorumla(RuyaGirdisi(metin="deniz yilan"), bag)
+
+    assert [o.adim for o in kayit.olcumler] == ["cikarim", "esleme", "getirme", "sentez"]
+    assert kayit.yorum is not None

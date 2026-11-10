@@ -20,7 +20,8 @@ Takvim: Hafta 5.
 
 from __future__ import annotations
 
-from concurrent.futures import ThreadPoolExecutor
+from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
@@ -470,24 +471,42 @@ def _paralel_sentez(
     getirilenler: Getirilenler,
     baglam: Baglam | None,
     istemci: LLMIstemcisi,
+    ilerleme: Callable[[list[YorumBolumu]], None] | None = None,
 ) -> tuple[Yorum, Kullanim]:
-    """Sembol başına eşzamanlı istek, ardından tek genel yorum isteği (docs/03, adım 4)."""
+    """Sembol başına eşzamanlı istek, ardından tek genel yorum isteği (docs/03, adım 4).
+
+    ``ilerleme`` verilirse her sembol yanıtı bittiğinde o ana dek biten bölümlerle (sembol
+    sırasında) çağrılır; genel yorum için çağrılmaz.
+    """
     maddesi_olanlar = _maddesi_olanlar(eslesmeler, getirilenler)
     pasajlar = _pasajlar(getirilenler)
     isler = [(eslesme, _sembol_maddeleri(eslesme, getirilenler)) for eslesme in maddesi_olanlar]
-    sonuclar: list[tuple[_HamSembolYanit, list[YorumBolumu], Kullanim]] = []
+    sonuclar: list[tuple[_HamSembolYanit, list[YorumBolumu], Kullanim] | None] = [None] * len(isler)
     if isler:
         with ThreadPoolExecutor(max_workers=min(EN_FAZLA_ESZAMANLI, len(isler))) as havuz:
-            gelecekler = [
-                havuz.submit(_sembol_cagrisi, eslesme, maddeler, pasajlar, baglam, istemci)
-                for eslesme, maddeler in isler
-            ]
-            # Sıra korunur: sonuçlar gönderim sırasıyla toplanır.
-            sonuclar = [gelecek.result() for gelecek in gelecekler]
+            gelecekler = {
+                havuz.submit(_sembol_cagrisi, eslesme, maddeler, pasajlar, baglam, istemci): konum
+                for konum, (eslesme, maddeler) in enumerate(isler)
+            }
+            # Sıra korunur: sonuçlar sembol konumuna yazılır, bitenler sırayla bildirilir.
+            for gelecek in as_completed(gelecekler):
+                sonuclar[gelecekler[gelecek]] = gelecek.result()
+                if ilerleme is not None:
+                    ilerleme(
+                        [
+                            bolum
+                            for sonuc in sonuclar
+                            if sonuc is not None
+                            for bolum in sonuc[1]
+                        ]
+                    )
     bolumler: list[YorumBolumu] = []
     model_bulunamayanlar: list[str] = []
     kullanimlar: list[Kullanim] = []
-    for ham, sembol_bolumleri, kullanim in sonuclar:
+    for sonuc in sonuclar:
+        if sonuc is None:
+            continue
+        ham, sembol_bolumleri, kullanim = sonuc
         bolumler.extend(sembol_bolumleri)
         model_bulunamayanlar.extend(ham.bulunamayanlar)
         kullanimlar.append(kullanim)
@@ -516,8 +535,14 @@ def synthesize(
     getirilenler: Getirilenler,
     baglam: Baglam | None,
     istemci: LLMIstemcisi,
+    *,
+    ilerleme: Callable[[list[YorumBolumu]], None] | None = None,
 ) -> tuple[Yorum, Kullanim]:
-    """Kaynaklı Türkçe yorumu üretir; atıfları kodda doğrular."""
+    """Kaynaklı Türkçe yorumu üretir; atıfları kodda doğrular.
+
+    ``ilerleme`` yalnızca paralel modda kullanılır: her sembol yanıtı bittiğinde o ana dek
+    biten bölümlerle çağrılır. Tek çağrı yolunda yok sayılır.
+    """
     maddeler = _maddeler(getirilenler)
     if not maddeler:
         # Maddesi olmayan semboller için modele gitmeye değmez (İG-31).
@@ -529,7 +554,7 @@ def synthesize(
         )
         return yorum, Kullanim(model=MODEL_SENTEZ)
     if PARALEL_SENTEZ:
-        return _paralel_sentez(cikarim, eslesmeler, getirilenler, baglam, istemci)
+        return _paralel_sentez(cikarim, eslesmeler, getirilenler, baglam, istemci, ilerleme)
     yanit = istemci.mesaj(
         _istek_kur(
             _maddesi_olanlar(eslesmeler, getirilenler), maddeler, _pasajlar(getirilenler), baglam

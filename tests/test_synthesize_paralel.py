@@ -24,6 +24,7 @@ from ruya.schemas import (
     Kullanim,
     Madde,
     Sembol,
+    YorumBolumu,
 )
 
 
@@ -227,8 +228,10 @@ def _calistir(
     getirilenler: dict[str, list[Aday]] | None = None,
     baglam: Baglam | None = None,
     istemci: ParalelSahteIstemci | None = None,
+    ilerleme=None,
 ):
     istemci = ParalelSahteIstemci() if istemci is None else istemci
+    ek = {} if ilerleme is None else {"ilerleme": ilerleme}
     yorum, kullanim = sentez.synthesize(
         _cikarim() if cikarim is None else cikarim,
         [_eslesme("yılan", "yilan"), _eslesme("deniz", "deniz")]
@@ -237,6 +240,7 @@ def _calistir(
         _getirilenler() if getirilenler is None else getirilenler,
         baglam,
         istemci,
+        **ek,
     )
     return istemci, yorum, kullanim
 
@@ -378,3 +382,53 @@ def test_disk_onbelleginden_yalnizca_butun_cagrilar_ondan_geldiyse_true():
 
     assert hepsi_diskten.disk_onbelleginden is True
     assert hicbiri.disk_onbelleginden is False
+
+
+# --- ilerleme geri çağrısı --------------------------------------------------
+
+
+def test_ilerleme_her_biten_sembol_icin_sembol_sirasinda_cagrilir():
+    cagrilar: list[list[YorumBolumu]] = []
+
+    _calistir(ilerleme=cagrilar.append)
+
+    # yılan yavaş bitse de liste sembol sırasında: önce deniz, sonra yılan + deniz.
+    assert [[b.metin for b in bolumler] for bolumler in cagrilar] == [
+        [DENIZ_METIN],
+        [YILAN_METIN, DENIZ_METIN],
+    ]
+
+
+def test_ilerleme_genel_yorum_icin_cagrilmaz():
+    cagrilar: list[list[YorumBolumu]] = []
+
+    istemci, _, _ = _calistir(ilerleme=cagrilar.append)
+
+    assert len(_genel_istekleri(istemci)) == 1
+    assert len(cagrilar) == 2
+
+
+def test_ilerleme_synthesize_i_cagiran_is_parcacigindan_cagrilir():
+    ana_is_parcacigi = threading.get_ident()
+    kimlikler: list[int] = []
+
+    _calistir(ilerleme=lambda bolumler: kimlikler.append(threading.get_ident()))
+
+    assert kimlikler == [ana_is_parcacigi, ana_is_parcacigi]
+
+
+def test_ilerleme_verilmezse_davranis_degismez():
+    _, yorum, _ = _calistir()
+
+    assert [b.metin for b in yorum.bolumler] == [YILAN_METIN, DENIZ_METIN]
+
+
+def test_tek_cagri_modunda_ilerleme_kabul_edilir_ama_cagrilmaz(monkeypatch):
+    monkeypatch.setattr(sentez, "PARALEL_SENTEZ", False)
+    cagrilar: list[list[YorumBolumu]] = []
+
+    istemci, yorum, _ = _calistir(ilerleme=cagrilar.append)
+
+    assert cagrilar == []
+    assert len(istemci.cagrilar) == 1
+    assert [b.metin for b in yorum.bolumler] == [YILAN_METIN]
