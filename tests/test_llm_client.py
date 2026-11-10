@@ -13,7 +13,12 @@ import pytest
 from ruya import config
 from ruya.config import Ayarlar
 from ruya.hatalar import ApiAnahtariYok, LLMHatasi, ModelReddetti, YanitBozuk, YanitKesildi
-from ruya.llm.client import LLMIstemcisi, LLMYaniti, onbellek_anahtari
+from ruya.llm.client import (
+    YENIDEN_DENEME_SAYISI,
+    LLMIstemcisi,
+    LLMYaniti,
+    onbellek_anahtari,
+)
 
 ISTEK = {
     "model": "deepseek-v4.1-flash",
@@ -182,6 +187,53 @@ def test_model_dolu_iken_uzun_beklenir(ayar):
     with pytest.raises(LLMHatasi):
         istemci(handler, ayar, beklemeler).mesaj(ISTEK)
     assert beklemeler == [15.0, 30.0, 60.0]
+
+
+def test_429_retry_after_yoksa_uzun_beklenir(ayar):
+    cagrilar, handler = kaydeden(lambda sira, _: httpx.Response(429) if sira <= 3 else yanit())
+    beklemeler: list[float] = []
+    sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert sonuc.json() == {"a": 1}
+    assert len(cagrilar) == 4
+    assert beklemeler == [15.0, 30.0, 60.0]
+
+
+def test_429_retry_after_varsa_o_kadar_beklenir(ayar):
+    def donen(sira, _):
+        if sira == 1:
+            return httpx.Response(429, headers={"Retry-After": "5"})
+        return yanit()
+
+    cagrilar, handler = kaydeden(donen)
+    beklemeler: list[float] = []
+    sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert sonuc.json() == {"a": 1}
+    assert len(cagrilar) == 2
+    assert beklemeler == [5.0]
+
+
+def test_502_ve_504_retry_after_yoksa_kisa_beklenir(ayar):
+    def donen(sira, _):
+        if sira == 1:
+            return httpx.Response(502)
+        if sira == 2:
+            return httpx.Response(504)
+        return yanit()
+
+    cagrilar, handler = kaydeden(donen)
+    beklemeler: list[float] = []
+    sonuc = istemci(handler, ayar, beklemeler).mesaj(ISTEK)
+    assert sonuc.json() == {"a": 1}
+    assert len(cagrilar) == 3
+    assert beklemeler == [0.5, 1.0]
+
+
+def test_429_denemeler_tukenince_hata(ayar):
+    cagrilar, handler = kaydeden(lambda _sira, _istek: httpx.Response(429))
+    with pytest.raises(LLMHatasi) as hata:
+        istemci(handler, ayar, []).mesaj(ISTEK)
+    assert hata.value.durum == 429
+    assert len(cagrilar) == YENIDEN_DENEME_SAYISI
 
 
 def test_zaman_asimi_yeniden_denenir_sonra_hata(ayar):

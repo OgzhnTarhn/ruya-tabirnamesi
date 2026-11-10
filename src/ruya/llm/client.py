@@ -37,9 +37,12 @@ YENIDEN_DENEME_SAYISI = 4
 YENIDEN_DENENEN_DURUMLAR = frozenset({429, 502, 503, 504})
 EN_UZUN_RETRY_AFTER = 30.0  # üstünde günlük kota sayılır, yeniden denenmez
 ISLENIYOR_BEKLEME_SN = 20.0  # 409: geçit isteği hâlâ işliyor, bu kadar bekle
-# 503 "model dolu": geçit dakikalarca dolu kalabiliyor; kısa üstel bekleme yetmiyor
+# 429/503 "model dolu": geçit dakikalarca dolu kalabiliyor; kısa üstel bekleme yetmiyor
 # (test setinde iki rüya düştü). Retry-After yoksa 15, 30, 60 sn beklenir.
 MESGUL_BEKLEME_SN = 15.0
+# EVREN 429 = eşzamanlı istek ya da dakikalık token sınırı, saniyeler değil onlarca saniye ister;
+# 10 Kasım temel ölçümünde 9 rüya düştü.
+MESGUL_DURUMLARI = frozenset({429, 503})
 ISLENIYOR_EN_FAZLA = 30  # 409 yoklamalarının üst sınırı (YENIDEN_DENEME_SAYISI'ndan bağımsız)
 # Getirme uçları (embeddings, rerank, ocr) 500'de de yeniden denenir; sohbet yolunun
 # davranışı değişmesin diye ayrı bir küme (docs/13).
@@ -318,7 +321,7 @@ class LLMIstemcisi:
             if bekleme is None:
                 bekleme = (
                     MESGUL_BEKLEME_SN * 2**deneme
-                    if yanit.status_code == 503
+                    if yanit.status_code in MESGUL_DURUMLARI
                     else min(8.0, 0.5 * 2**deneme)
                 )
             self.bekle(bekleme)
