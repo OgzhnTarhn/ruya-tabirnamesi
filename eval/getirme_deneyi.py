@@ -5,13 +5,16 @@ Bilgisayarda::
     uv run python eval/getirme_deneyi.py kos --dataset eval/dataset/ruyalar_v1.jsonl \\
         --alt-kume eval/dataset/alt_kume_15.txt
     uv run python eval/getirme_deneyi.py etiket
+    uv run python eval/getirme_deneyi.py hakem
     uv run python eval/getirme_deneyi.py ozet --k 5
 
 ``kos`` her rüyanın çıkarımını bir kez yapar ve dört çeşidin sıralamasını
 ``data/deneyler/getirme/siralamalar.jsonl`` altına yazar. ``etiket`` bu sıralamalardan
 TREC usulü havuzu çıkarıp işaretlemeye hazır Markdown dosyası yazar; var olan dosyanın
-üstüne ancak ``--uzerine-yaz`` ile yazılır, böylece işaretler kaybolmaz. ``ozet``
-işaretli dosyayı okuyup çeşit başına Recall@k ve MRR tablosunu basar.
+üstüne ancak ``--uzerine-yaz`` ile yazılır, böylece işaretler kaybolmaz. ``hakem`` aynı
+havuzu LLM hakemle işaretleyip gümüş etiket dosyasını yazar (docs/15, K12); kullanıcının
+``etiketler.md`` dosyasına dokunmaz. ``ozet`` işaretli dosyayı okuyup çeşit başına
+Recall@k ve MRR tablosunu basar.
 
 Her çalıştırma ücretlidir; rüya içeren istekler için sorgu önbelleği açılır (docs/03, 5.2).
 """
@@ -22,6 +25,7 @@ import argparse
 from pathlib import Path
 
 from ruya.config import ayarlar
+from ruya.degerlendirme import hakem
 from ruya.degerlendirme.getirme_deneyi import (
     CESITLER,
     deney_kos,
@@ -71,6 +75,24 @@ def _etiket(args: argparse.Namespace) -> None:
     print(f"Etiket dosyası: {cikti}")
 
 
+def _hakem(args: argparse.Namespace) -> None:
+    ayar = ayarlar().model_copy(update={"sorgu_onbellegi": True})
+    siralamalar = args.siralamalar or ayar.veri("deneyler", "getirme", "siralamalar.jsonl")
+    etiketler = args.etiketler or ayar.veri("deneyler", "getirme", "etiketler.md")
+    cikti = args.cikti or ayar.veri("deneyler", "getirme", "etiketler_gumus.md")
+
+    satirlar = satirlari_oku(siralamalar)
+    havuz_ = havuz(satirlar, k=args.k)
+    metinler = {ornek.id: ornek.metin for ornek in jsonl_oku(args.dataset, TestOrnegi)}
+    bag = varsayilan_bagimliliklar(ayar)
+    sonuc = hakem.gumus_etiketle(havuz_, satirlar, metinler, bag.depo, bag.istemci)
+    hakem.etiketleri_isaretle(etiketler, sonuc, cikti)
+
+    print(f"İşaretlenen anahtar: {len(sonuc)}")
+    print(f"Hata veren anahtar: {len(havuz_) - len(sonuc)}")
+    print(f"Gümüş etiket dosyası: {cikti}")
+
+
 def _bicimle(deger: float | int | None) -> str:
     if deger is None:
         return "—"
@@ -112,6 +134,14 @@ def main(argv: list[str] | None = None) -> None:
     etiket.add_argument("--k", type=int, default=5)
     etiket.add_argument("--uzerine-yaz", action="store_true", help="var olan dosyanın üstüne yaz")
     etiket.set_defaults(islev=_etiket)
+
+    hakem_komut = alt.add_parser("hakem", help="havuzu LLM hakemle işaretle, gümüş etiket yaz")
+    hakem_komut.add_argument("--siralamalar", type=Path)
+    hakem_komut.add_argument("--etiketler", type=Path)
+    hakem_komut.add_argument("--cikti", type=Path)
+    hakem_komut.add_argument("--dataset", type=Path, default=Path("eval/dataset/ruyalar_v1.jsonl"))
+    hakem_komut.add_argument("--k", type=int, default=5)
+    hakem_komut.set_defaults(islev=_hakem)
 
     ozet_komut = alt.add_parser("ozet", help="çeşit başına Recall@k ve MRR tablosu")
     ozet_komut.add_argument("--siralamalar", type=Path)
