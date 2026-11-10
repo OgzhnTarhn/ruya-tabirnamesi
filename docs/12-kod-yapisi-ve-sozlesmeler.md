@@ -117,8 +117,10 @@ Durum: ✅ hazır ve testli · 🧩 arayüz hazır, gövde `NotImplementedError`
 | `kayit.py` | `sorgu_logla` (rüya metni olmadan), `gecmise_yaz` (yalnızca `RUYA_GECMIS=on`) | ✅ |
 | `degerlendirme/metrikler.py` | `sembol_recall`, `sembol_precision`, `esleme_dogrulugu`, `recall_at_k`, `kaynak_cesitliligi`, `atif_kapsami`, `yasak_ifadeler` | ✅ |
 | `degerlendirme/calistir.py` | `degerlendir(veri_seti, etiket, bag) -> rapor yolu` | ✅ |
+| `degerlendirme/getirme_deneyi.py` | `CESITLER`, `deney_kos(ornekler, bag, cikti) -> Path`, `havuz(satirlar, k)`, `etiket_dosyasi_yaz(...)`, `etiketleri_oku(yol)`, `recall_at_k`, `mrr`, `ozet(satirlar, etiketler, k)` (D1/D2, [15](15-kalan-isler-plani.md) K4–K5) | 🕓 |
 | `app/gradio_app.py` | `arayuz_kur(bag)`, `baslat(bag)` (`share=False`), `yorum_akisi(girdi, bag)` (boru hattını ayrı iş parçacığında koşar, ara metinleri sırayla verir; Yorumla düğmesi bunu akıtır) | ✅ |
 | `eval/run_eval.py` | CLI: `--dataset`, `--etiket` | ✅ (gövde `degerlendir`'e bağlı) |
+| `eval/getirme_deneyi.py` | CLI: `kos --alt-kume`, `etiket`, `ozet` | 🕓 |
 | `scripts/download_sources.py` | CLI: `--asama`, `--kaynak`, `--yeniden` | ✅ |
 | `notebooks/_kurulum.py` | Anahtar kontrolü, autoreload, yolların gösterimi | 🔁 bilgisayara uyarlanacak |
 
@@ -219,7 +221,7 @@ Tasarım: [13](13-hibrit-getirme.md).
 | `index/parcalar.py` | `Parca`, `parcala(maddeler) -> list[Parca]` |
 | `index/bm25.py` | `Bm25Indeksi`: `kur`, `ara(terimler, k)`, `kaydet`, `yukle` |
 | `index/build_vectors.py` | `VektorDeposu` (numpy), `hibrit_indeks_kur(...)`, `HibritIndeks.yukle(klasor)` |
-| `pipeline/hibrit.py` | `getirme_sorgusu`, `rrf`, `hibrit_getir(...) -> Getirilenler` |
+| `pipeline/hibrit.py` | `getirme_sorgusu`, `rrf`, `hibrit_getir(...) -> Getirilenler`, `siralama(eslesmeler, depo, indeks, istemci, *, kollar, rerank, gelenekler, k) -> dict[str, list[tuple[str, float]]]` (deney için: eşiksiz, kaynak sınırsız, bağlam koşulsuz sıralı adaylar) |
 | `enrich/kosul_kurallari.py` | `kosullari_cikar(metin_tr) -> list[Kosul]`, `maddelere_uygula(maddeler)` |
 
 `Getirilenler` anahtarı `symbol_id` ya da `serbest:<ad>`; ortak işlev `schemas.getirme_anahtari(eslesme)`.
