@@ -98,6 +98,62 @@
   "hafta": null
  },
  {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "havuz",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "etiket_dosyasi_yaz",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "etiketleri_oku",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "recall_at_k",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "mrr",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "ozet",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "deney_kos",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/getirme_deneyi.py",
+  "islev": "satirlari_oku",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
   "modul": "degerlendirme/metrikler.py",
   "islev": "sembol_recall",
   "birim": "degerlendirme",
@@ -513,6 +569,13 @@
  {
   "modul": "pipeline/hibrit.py",
   "islev": "getirme_sorgusu",
+  "birim": "pipeline",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "pipeline/hibrit.py",
+  "islev": "siralama",
   "birim": "pipeline",
   "durum": "hazir",
   "hafta": null

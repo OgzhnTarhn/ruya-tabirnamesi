@@ -403,5 +403,86 @@
   "talimatlar": "cikarim_v3, sentez_v3",
   "olcut": "Ort. maliyet ($)",
   "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Sembol recall",
+  "deger": 0.96
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Sembol precision",
+  "deger": 0.87
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Olumsuzlama hatası",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Eşleme doğruluğu",
+  "deger": 0.87
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Kaynak çeşitliliği",
+  "deger": 2.8
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Atıf kapsamı",
+  "deger": 1.0
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Etik ihlal",
+  "deger": 0.0
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Medyan süre (sn)",
+  "deger": 165.0
+ },
+ {
+  "tarih": "2026-11-10",
+  "etiket": "asama3-paralel-sentez",
+  "commit": "696aa88",
+  "test_seti": "45 rüya (sentetik; 429'la düşen 9'u tek başına yeniden koşuldu)",
+  "talimatlar": "cikarim_v4, sentez_sembol_v2 + genel_yorum_v1",
+  "olcut": "Ort. maliyet ($)",
+  "deger": 0.0
  }
 ]

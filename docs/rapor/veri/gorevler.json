@@ -304,8 +304,8 @@
   "asama": "Aşama 0",
   "baslik": "Aşama 0: Zenginleştirme ve indeks",
   "gorev": "docs/terimler.md: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "durum": "suruyor",
+  "durum_etiket": "Sürüyor"
  },
  {
   "id": "h03-05",
@@ -315,8 +315,8 @@
   "asama": "Aşama 0",
   "baslik": "Aşama 0: Zenginleştirme ve indeks",
   "gorev": "docs/kurallar.md (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "durum": "suruyor",
+  "durum_etiket": "Sürüyor"
  },
  {
   "id": "h03-06",
@@ -578,7 +578,7 @@
   "bitis": "2026-12-13",
   "asama": "Aşama 2",
   "baslik": "Aşama 2: Reranker, Freud, deneyler",
-  "gorev": "Deneyler D1 (embedding), D2 (reranker), D3 (N değeri) ve docs/deneyler/ notları",
+  "gorev": "Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve docs/deneyler/ notları (10 Kasım: D3 bitti, N=1 kalır; D1/D2 etiket bekliyor)",
   "durum": "bekliyor",
   "durum_etiket": "Bekliyor"
  },
@@ -743,9 +743,9 @@
   "bitis": "2027-01-17",
   "asama": "Aşama 4",
   "baslik": "Aşama 4: Deney ve kapanış",
-  "gorev": "D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (sentez ve çıkarım)",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (10 Kasım, yalnız sentez; deepseek kalır, D4)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h12-02",
@@ -754,9 +754,9 @@
   "bitis": "2027-01-17",
   "asama": "Aşama 4",
   "baslik": "Aşama 4: Deney ve kapanış",
-  "gorev": "D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "~~D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)~~ yapılmayacak (15 K8)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h12-03",
