@@ -46,6 +46,8 @@ Recall@5 LLM hakemin etiketiyle; süre hedefin çok üstünde; bir çeviri hatas
 
 ## 3. İş sırası
 
+**Durum (21 Kasım):** K1–K5 bitti; kalan yalnız K6 (`v1.0` etiketi ve push, kullanıcı).
+
 | # | İş | Yapan | Çıktı |
 |---|---|---|---|
 | K1 | Arayüz yenilemesi ([16](16-arayuz-plani.md), U1–U6) | orkestra + Claude | kod, testler, ekran görüntüleri |
