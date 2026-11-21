@@ -154,6 +154,41 @@
   "hafta": null
  },
  {
+  "modul": "degerlendirme/hakem.py",
+  "islev": "hakem_istegi",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/hakem.py",
+  "islev": "hakem_sec",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/hakem.py",
+  "islev": "gumus_etiketle",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/hakem.py",
+  "islev": "etiketleri_isaretle",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
+  "modul": "degerlendirme/hakem.py",
+  "islev": "calistir",
+  "birim": "degerlendirme",
+  "durum": "hazir",
+  "hafta": null
+ },
+ {
   "modul": "degerlendirme/metrikler.py",
   "islev": "sembol_recall",
   "birim": "degerlendirme",

@@ -31,5 +31,16 @@
   "iskelet_islev": 0,
   "tamam_gorev": 61,
   "toplam_gorev": 71
+ },
+ {
+  "tarih": "2026-11-21",
+  "commit_sayisi": 207,
+  "gecen_test": 888,
+  "atlanan_test": 2,
+  "basarisiz_test": 0,
+  "hazir_islev": 113,
+  "iskelet_islev": 0,
+  "tamam_gorev": 66,
+  "toplam_gorev": 71
  }
 ]

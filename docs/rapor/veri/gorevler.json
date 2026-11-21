@@ -304,8 +304,8 @@
   "asama": "Aşama 0",
   "baslik": "Aşama 0: Zenginleştirme ve indeks",
   "gorev": "docs/terimler.md: taslak hazır (23 Ekim); Hafta 1 çevirileriyle büyüt, satırları kontrol et",
-  "durum": "suruyor",
-  "durum_etiket": "Sürüyor"
+  "durum": "gecikti",
+  "durum_etiket": "Gecikti"
  },
  {
   "id": "h03-05",
@@ -315,8 +315,8 @@
   "asama": "Aşama 0",
   "baslik": "Aşama 0: Zenginleştirme ve indeks",
   "gorev": "docs/kurallar.md (şablon hazır): TDV, Balaban ve Elbir & Uludüz okumalarından kendi cümlelerinle notlar",
-  "durum": "suruyor",
-  "durum_etiket": "Sürüyor"
+  "durum": "gecikti",
+  "durum_etiket": "Gecikti"
  },
  {
   "id": "h03-06",
@@ -369,9 +369,9 @@
   "bitis": "2026-11-22",
   "asama": "Aşama 1",
   "baslik": "Aşama 1: Boru hattı (adım 1–3)",
-  "gorev": "Test setindeki beklenen_maddeler alanlarını doldur",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "Test setindeki beklenen_maddeler alanlarını doldur (isteğe bağlı: data/deneyler/getirme/etiketler.md işaretlenirse; şimdilik LLM hakemin gümüş etiketi kullanıldı)",
+  "durum": "suruyor",
+  "durum_etiket": "Sürüyor"
  },
  {
   "id": "h05-01",
@@ -435,9 +435,9 @@
   "bitis": "2026-11-29",
   "asama": "Aşama 1",
   "baslik": "Aşama 1: Sentez, arayüz, ölçüm",
-  "gorev": "v0.1-mvp etiketi (karar sende)",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "~~v0.1-mvp etiketi~~ ara etiket atılmayacak; tek v1.0 (17 S1)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h05-07",
@@ -578,9 +578,9 @@
   "bitis": "2026-12-13",
   "asama": "Aşama 2",
   "baslik": "Aşama 2: Reranker, Freud, deneyler",
-  "gorev": "Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve docs/deneyler/ notları (10 Kasım: D3 bitti, N=1 kalır; D1/D2 etiket bekliyor)",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve docs/deneyler/ notları (D3 10 Kasım: N=1 kalır; D1/D2 11 Kasım, gümüş etiketle: reranker ve vektör kolu kalır, D1-D2)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h07-04",
@@ -600,9 +600,9 @@
   "bitis": "2026-12-13",
   "asama": "Aşama 2",
   "baslik": "Aşama 2: Reranker, Freud, deneyler",
-  "gorev": "v0.2 etiketi",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "~~v0.2 etiketi~~ ara etiket atılmayacak (17 S1)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h08-01",
@@ -688,9 +688,9 @@
   "bitis": "2027-01-03",
   "asama": "Tampon",
   "baslik": "Tampon (yılbaşı)",
-  "gorev": "Geride kalan işler",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "Geride kalan işler (21 Kasım: arayüz yenilendi, 16; kalanlar 17)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h10-02",
@@ -732,9 +732,9 @@
   "bitis": "2027-01-10",
   "asama": "Aşama 3",
   "baslik": "Aşama 3: Uzlaşı/ayrışma çıktısı",
-  "gorev": "v0.3 etiketi (karar sende)",
-  "durum": "bekliyor",
-  "durum_etiket": "Bekliyor"
+  "gorev": "~~v0.3 etiketi~~ ara etiket atılmayacak (17 S1)",
+  "durum": "tamam",
+  "durum_etiket": "Tamam"
  },
  {
   "id": "h12-01",
@@ -776,7 +776,7 @@
   "bitis": "2027-01-17",
   "asama": "Aşama 4",
   "baslik": "Aşama 4: Deney ve kapanış",
-  "gorev": "v1.0 etiketi",
+  "gorev": "v1.0 etiketi ve push (kullanıcı; 17 K6)",
   "durum": "bekliyor",
   "durum_etiket": "Bekliyor"
  }
