@@ -462,13 +462,15 @@ uv run python scripts/arayuz_ac.py
 ```
 
 - Yalnızca yerelde (`localhost`) açılır; `share=True` kullanılmaz, rüyalar internete açılmaz.
-- **Rüya metni** kutusu ve **Yorumla** düğmesi.
-- **Rüya defterinden oku:** Fotoğraf yüklenir, EVREN'deki `deepseek-ocr-2` modeli el yazısını metne çevirir (OCR).
+- **21 Kasım yenilemesi** ([16](16-arayuz-plani.md)): tek sütunlu, sade bir sayfa. Arayüz iki dosyaya ayrıldı: `app/sunum.py` bütün metinleri ve HTML parçalarını üreten **saf** işlevleri tutar (Gradio içe aktarmaz, sunucu açmadan test edilir); `app/gradio_app.py` yalnız yerleşimi kurar, `app/stil.css` görünümü verir. Model metni HTML'e girmeden önce kaçırılır (`html.escape`); yalnız `*eser adı*` kalıbı italiğe çevrilir.
+- **Rüya kutusu**, üç **örnek rüya** ve **Yorumla** düğmesi; üstte kapalı "Nasıl çalışır?" bölümü.
+- **Fotoğraftan oku:** Fotoğraf yüklenir, EVREN'deki `deepseek-ocr-2` modeli el yazısını metne çevirir (OCR). Fotoğraf saklanmaz.
 - **Bağlam (isteğe bağlı):** cinsiyet, medeni hâl, mevsim, gurbette mi. Koşul bonusunu besler. Sistem bunları asla tahmin etmez, yalnızca kullanıcının verdiğini kullanır.
-- **Gelenek seçimi:** boş bırakılırsa hepsi; "psikanalitik" seçilirse Freud da girer.
-- **Yorum sekmesi:** atıflı yorum; bir atıf seçilince maddenin tam metni görünür.
-- **Akış (10 Kasım):** Yorum geldikçe görünür. Boru hattı ayrı bir iş parçacığında çalışır ve her aşamada (`esleme`, `getirme`, her biten sembol için `sentez`) kaydın bir kopyasıyla haber verir; arayüz bu haberleri bir kuyruktan okuyup ekrana yazar. Kullanıcı birkaç saniyede sembolleri, sonra sembol yorumlarını tek tek görür; uyarı ve genel yorum en sonda gelir.
-- **Hata ayıklama sekmesi:** `SorguKaydi`'nin tamamı JSON olarak; her adımın çıktısı ve süresi.
+- **Gelenek seçimi:** boş bırakılırsa İslami klasik ve Batı halk kaynaklarında aranır; Freud yalnız "Psikanalitik" seçilirse girer. (Eski arayüz burada yanlışlıkla "boş: hepsi" diyordu.)
+- **İlerleme şeridi ve akış:** Boru hattı ayrı bir iş parçacığında çalışır ve her aşamada (`esleme`, `getirme`, her biten sembol için `sentez`) kaydın bir kopyasıyla haber verir; arayüz bunları bir kuyruktan okur. Ekranda üç adım (Semboller · Kaynaklar · Yorum) ilerler; semboller rozet olarak birkaç saniyede, sembol yorumları hazır oldukça görünür.
+- **Sonuç:** Genel yorum ayrı kutuda; her sembol başlıklı bir bölüm; rüyada olumsuz geçen semboller soluk ve üstü çizili rozet. Her kaynak açılır bir satırdır: alıntı, Türkçe çeviri, asıl metin ve künye. Uyarı metni sayfanın altında bir kez durur.
+- **Geliştirici ayrıntıları:** sayfanın en altında kapalı bölüm; `SorguKaydi`'nin izleri JSON olarak, her adımın süresi ve tokenı.
+- **Ders:** Birim testleri HTML'in içeriğini denetler ama görünüşü denetlemez. Koyu temada okunmayan başlık ve çift çerçeve ancak tarayıcıda açınca görüldü: CSS değişkenleri `:root`'ta tanımlanınca Gradio'nun koyu tema değerleri yerine açık tema değerleri sabitleniyordu.
 
 ---
 
@@ -649,9 +651,9 @@ Planlama ve doğrulama Claude Code'da, kodun bir kısmı **orkestra** ile EVREN 
 4. **Kategoriler kullanılmıyor:** Bab ve HVDC kategorileri sözlükte var, kodda yok.
 5. **Eşzamanlılık sınırı:** Geçit hesap başına 4 eşzamanlı istek kabul ediyor; iki rüya aynı anda yorumlanırsa ya da ölçümle kod yazan agent'lar aynı anda çalışırsa istekler 429 alır.
 
-**Senin yapacakların:** sözlüğü, test setini ve çevirileri gözden geçirmek; 10 yanıtın atıflarını, 20 koşulu, 20 kapsam etiketini elle kontrol etmek; Brill ve OpenITI lisanslarını doğrulamak; `v0.1-mvp` etiketine karar vermek.
+**Senin yapacakların:** sözlüğü, test setini ve çevirileri gözden geçirmek; 10 yanıtın atıflarını, 20 koşulu, 20 kapsam etiketini elle kontrol etmek; Brill ve OpenITI lisanslarını doğrulamak; `v1.0` etiketini atıp push etmek.
 
-**Sıradaki işler:** Sıra ve kararlar [15 · Kalan işler planı](15-kalan-isler-plani.md)'nda. D1/D2 etiket bekliyor; D3 ve D4 bitti, D5 yapılmayacak.
+**Sıradaki işler:** Proje kapanıyor; son sonuçlar ve kalanlar [17 · Kapanış planı](17-kapanis-plani.md)'nda. D1–D4 bitti (D1/D2 LLM hakemin gümüş etiketiyle), D5 yapılmayacak. İnsan etiketleri gelirse D1/D2 aynı komutla yeniden hesaplanır.
 
 ---
 
