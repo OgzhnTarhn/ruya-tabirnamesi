@@ -26,6 +26,8 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 | 13 | [Hibrit getirme](docs/13-hibrit-getirme.md) | BM25, vektör, HyDE, RRF, reranker; araştırma ve kararlar |
 | 14 | [Ders notu](docs/14-ders-notu.md) | Projeyi baştan sona ders gibi anlatır: RAG kavramları, veri hattı, bir rüyanın yolculuğu, ölçme, dersler |
 | 15 | [Kalan işler planı](docs/15-kalan-isler-plani.md) | 10 Kasım sonrası iş sırası, kritik kararlar, deney planı |
+| 16 | [Arayüz yenileme planı](docs/16-arayuz-plani.md) | Sade arayüz tasarımı, arayüz metinleri, uygulama adımları |
+| 17 | [Kapanış planı](docs/17-kapanis-plani.md) | Son sonuçlar, `v1.0` öncesi işler |
 | — | [Kaynaklar](docs/KAYNAKLAR.md) | Künyeler, lisanslar, atıf metinleri |
 | — | [Terimler](docs/terimler.md) | Çeviride kullanılan tabir terimleri |
 | — | [Kurallar](docs/kurallar.md) | Okuma notların (şablon, Hafta 3) |

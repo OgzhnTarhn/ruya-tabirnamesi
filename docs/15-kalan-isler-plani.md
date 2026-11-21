@@ -43,6 +43,9 @@ senin etiketlerini bekliyor.
 reranker ve vektör kolu kalır, HyDE kaldırma adayı. README, ders notu ve pano güncellendi.
 Kalan: senin etiketlerin (2.1), Faz 4.
 
+**21 Kasım:** Kalan iş sırası [17 · Kapanış planı](17-kapanis-plani.md)'na taşındı (tek `v1.0`
+etiketi, arayüz yenilemesi [16](16-arayuz-plani.md)).
+
 ### Faz 1 · 10–14 Kasım: temel ölçüm ve getirme deney aracı
 
 | # | İş | Yapan | Çıktı |
