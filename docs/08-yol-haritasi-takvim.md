@@ -100,7 +100,7 @@ gantt
 - [x] `pipeline/extract.py` ve `prompts/cikarim_v1.md`: JSON şemalı sembol çıkarımı
 - [x] `pipeline/map.py`: birebir eşleme, zeyrek ile kök eşleme ve testleri
 - [x] `pipeline/retrieve.py`: `symbol_id` ile getirme, kaynak başına N sınırı, nitelik sıralaması ve testleri
-- [ ] Test setindeki `beklenen_maddeler` alanlarını doldur
+- [ ] Test setindeki `beklenen_maddeler` alanlarını doldur (isteğe bağlı: `data/deneyler/getirme/etiketler.md` işaretlenirse; şimdilik LLM hakemin gümüş etiketi kullanıldı)
 
 ### Hafta 5 · 23–29 Kasım · Aşama 1: Sentez, arayüz, ölçüm → **v0.1-mvp**
 
@@ -109,7 +109,7 @@ gantt
 - [x] `app/gradio_app.py` (2 Kasım; `05_arayuz.ipynb` yerine `scripts/arayuz_ac.py`): rüya kutusu, yanıt, tıklanabilir atıflar, hata ayıklama sekmesi, uyarı metni (`share` kapalı)
 - [x] `degerlendirme/calistir.py`, ilk ölçüm raporu (`data/raporlar/`) ve `docs/olcumler.md`
 - [x] MVP kabul ölçütlerinin kontrolü (7 Kasım, [01](01-gereksinimler.md); hepsi sağlandı)
-- [ ] `v0.1-mvp` etiketi (karar sende)
+- [x] ~~`v0.1-mvp` etiketi~~ ara etiket atılmayacak; tek `v1.0` ([17](17-kapanis-plani.md) S1)
 
 ### Öne alınan: hibrit getirme (3 Kasım, kullanıcı kararı)
 
@@ -133,9 +133,9 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 - [x] `ingest/freud.py`: paragraf bazlı, "yöntem" katmanı
 - [x] Reranker entegrasyonu (`qwen3-reranker-8b`)
-- [ ] Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları (10 Kasım: D3 bitti, N=1 kalır; D1/D2 etiket bekliyor)
+- [x] Deneyler D1 (vektör kolu), D2 (reranker), D3 (N değeri) ve `docs/deneyler/` notları (D3 10 Kasım: N=1 kalır; D1/D2 11 Kasım, gümüş etiketle: reranker ve vektör kolu kalır, [D1-D2](deneyler/D1-D2-getirme.md))
 - [x] Gelenek seçimi arayüzü (İG-03)
-- [ ] `v0.2` etiketi
+- [x] ~~`v0.2` etiketi~~ ara etiket atılmayacak ([17](17-kapanis-plani.md) S1)
 
 ### Hafta 8 · 14–20 Aralık · Aşama 3: İbn Sirin ve koşullar
 
@@ -152,21 +152,21 @@ Ayrıntı: [13](13-hibrit-getirme.md). Deneyler ve yeni ölçümler ertelendi.
 
 ### Hafta 10 · 28 Aralık – 3 Ocak · Tampon (yılbaşı)
 
-- [ ] Geride kalan işler
+- [x] Geride kalan işler (21 Kasım: arayüz yenilendi, [16](16-arayuz-plani.md); kalanlar [17](17-kapanis-plani.md))
 - [x] Test setini 40–50 rüyaya genişlet, özel testleri ekle (45 sentetik rüya; gözden geçirmen bekliyor)
 
 ### Hafta 11 · 4–10 Ocak · Aşama 3: Uzlaşı/ayrışma çıktısı → **v0.3**
 
 - [x] `prompts/sentez_v3.md`: koşullu yorum, "Uzlaşılan / Ayrışan" çıktısı ve dayanak açıklamaları ("Diğer vecihler" bölümü yok)
 - [x] Tam ölçüm ve v1 ile karşılaştırma (6 Kasım, 45 rüya; [olcumler](olcumler.md))
-- [ ] `v0.3` etiketi (karar sende)
+- [x] ~~`v0.3` etiketi~~ ara etiket atılmayacak ([17](17-kapanis-plani.md) S1)
 
 ### Hafta 12 · 11–17 Ocak · Aşama 4: Deney ve kapanış → **v1.0**
 
 - [x] D4: EVREN'deki başka bir sohbet modeliyle karşılaştırma (10 Kasım, yalnız sentez; deepseek kalır, [D4](deneyler/D4-model.md))
 - [x] ~~D5 (isteğe bağlı): yerel açık model (Gemma, Qwen)~~ yapılmayacak ([15](15-kalan-isler-plani.md) K8)
 - [x] Son README: kurulum, mimari özeti, ölçüm tablosu, öğrendiklerim (7 Kasım; öğrendiklerin ayrıntısı [14](14-ders-notu.md), bölüm 11)
-- [ ] `v1.0` etiketi
+- [ ] `v1.0` etiketi ve push (kullanıcı; [17](17-kapanis-plani.md) K6)
 
 ## İsteğe bağlı devam (Ocak sonrası)
 
