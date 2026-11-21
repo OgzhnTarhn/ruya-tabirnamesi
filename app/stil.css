@@ -1,0 +1,354 @@
+/* Rüya Tabirnamesi — tek sütun, ortalanmış, sakin bir arayüz (docs/16).
+   Nötr renkler Gradio değişkenlerinden gelir; böylece koyu tema da çalışır. */
+
+/* Değişkenler :root'ta değil kapsayıcıda tanımlanır: Gradio'nun tema değişkenleri (koyu tema
+   dahil) burada çözülür; :root'ta tanımlansa açık tema değerleri sabitlenirdi. */
+.gradio-container {
+  --ruya-vurgu: #2b3a67;
+  --ruya-vurgu-ustu: #ffffff;
+  --ruya-vurgu-yumusak: rgba(43, 58, 103, 0.08);
+  --ruya-vurgu-cizgi: rgba(43, 58, 103, 0.28);
+  --ruya-yazi: var(--body-text-color, #1f2430);
+  --ruya-soluk: var(--body-text-color-subdued, #5b6270);
+  --ruya-zemin: var(--background-fill-secondary, #f6f7f9);
+  --ruya-cizgi: var(--border-color-primary, #d9dce3);
+  --ruya-yaricap: 12px;
+  --ruya-bosluk: 1.5rem;
+  --ruya-sans: system-ui, "Segoe UI", Roboto, sans-serif;
+  --ruya-serif: Georgia, "Times New Roman", serif;
+}
+
+.dark .gradio-container,
+.dark.gradio-container {
+  --ruya-vurgu: #a5b4fc;
+  --ruya-vurgu-ustu: #11152a;
+  --ruya-vurgu-yumusak: rgba(165, 180, 252, 0.1);
+  --ruya-vurgu-cizgi: rgba(165, 180, 252, 0.35);
+}
+
+/* --- Sayfa çerçevesi ------------------------------------------------------ */
+
+.gradio-container {
+  max-width: 760px !important;
+  margin: 0 auto !important;
+  padding: 2rem 1.25rem 3rem !important;
+  font-family: var(--ruya-sans);
+  color: var(--ruya-yazi);
+}
+
+.ruya-sayfa {
+  gap: var(--ruya-bosluk);
+}
+
+/* --- Başlık --------------------------------------------------------------- */
+
+.ruya-baslik {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.ruya-baslik h1 {
+  font-family: var(--ruya-serif);
+  font-size: 2.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  color: var(--ruya-yazi);
+}
+
+.ruya-baslik p {
+  margin: 0 auto;
+  max-width: 34rem;
+  color: var(--ruya-soluk);
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+/* --- Girdi kartı ---------------------------------------------------------- */
+
+.ruya-kart {
+  background: var(--ruya-zemin);
+  border: 1px solid var(--ruya-cizgi);
+  border-radius: var(--ruya-yaricap);
+  padding: 1.25rem;
+  gap: 1rem;
+}
+
+.ruya-kart .block {
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent;
+}
+
+/* gr.Group sınıfı iki iç içe öğeye verir; iç çerçeve ve Gradio'nun gri form zemini kalkar. */
+.ruya-kart .ruya-kart {
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.ruya-kart .styler,
+.ruya-kart .form {
+  background: transparent !important;
+  gap: 0.75rem;
+}
+
+/* --- Sonuç alanı ---------------------------------------------------------- */
+
+.ruya-sonuc-alani {
+  min-height: 4rem;
+}
+
+.ruya-bos {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--ruya-soluk);
+  border: 1px dashed var(--ruya-cizgi);
+  border-radius: var(--ruya-yaricap);
+  font-size: 0.95rem;
+}
+
+.ruya-sonuc {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ruya-guvenlik {
+  font-size: 0.85rem;
+  color: var(--ruya-soluk);
+  border-left: 3px solid var(--ruya-cizgi);
+  padding-left: 0.75rem;
+  line-height: 1.5;
+}
+
+.ruya-genel {
+  background: var(--ruya-vurgu-yumusak);
+  border-radius: var(--ruya-yaricap);
+  padding: 1rem 1.15rem;
+}
+
+.ruya-genel p {
+  margin: 0.35rem 0 0;
+  line-height: 1.65;
+}
+
+.ruya-etiket {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ruya-vurgu);
+}
+
+.ruya-bolum {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.ruya-bolum h3 {
+  font-family: var(--ruya-serif);
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--ruya-yazi);
+}
+
+.ruya-bolum p {
+  margin: 0;
+  line-height: 1.7;
+}
+
+/* --- Sembol rozetleri ----------------------------------------------------- */
+
+.ruya-rozetler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+}
+
+.ruya-rozet {
+  display: inline-block;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--ruya-vurgu-yumusak);
+  border: 1px solid var(--ruya-vurgu-cizgi);
+  color: var(--ruya-vurgu);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.ruya-rozet--olumsuz {
+  background: transparent;
+  border-color: var(--ruya-cizgi);
+  color: var(--ruya-soluk);
+  text-decoration: line-through;
+}
+
+/* --- Kaynaklar (details/summary) ------------------------------------------ */
+
+.ruya-kaynaklar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ruya-kaynak {
+  border: 1px solid var(--ruya-cizgi);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  background: transparent;
+}
+
+.ruya-kaynak summary {
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--ruya-soluk);
+  line-height: 1.5;
+}
+
+.ruya-kaynak[open] summary {
+  color: var(--ruya-yazi);
+  margin-bottom: 0.5rem;
+}
+
+.ruya-alinti {
+  margin: 0.5rem 0;
+  padding: 0.35rem 0.85rem;
+  border-left: 3px solid var(--ruya-vurgu-cizgi);
+  color: var(--ruya-soluk);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+.ruya-ceviri,
+.ruya-asli,
+.ruya-not {
+  margin: 0.35rem 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ruya-soluk);
+}
+
+.ruya-ceviri {
+  color: var(--ruya-yazi);
+}
+
+.ruya-asli {
+  direction: auto;
+}
+
+.ruya-not {
+  font-size: 0.8rem;
+}
+
+/* --- Bulunamayanlar ------------------------------------------------------- */
+
+.ruya-bulunamayan {
+  background: var(--ruya-zemin);
+  border-radius: var(--ruya-yaricap);
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: var(--ruya-soluk);
+}
+
+.ruya-bulunamayan p {
+  margin: 0.2rem 0;
+  line-height: 1.55;
+}
+
+/* --- İlerleme şeridi ------------------------------------------------------ */
+
+.ruya-ilerleme {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0 0 0.5rem;
+  padding: 0;
+}
+
+.ruya-adim {
+  flex: 1;
+  text-align: center;
+  padding: 0.45rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  border: 1px solid var(--ruya-cizgi);
+  color: var(--ruya-soluk);
+  background: transparent;
+}
+
+.ruya-adim--tamam {
+  background: var(--ruya-vurgu);
+  border-color: var(--ruya-vurgu);
+  color: var(--ruya-vurgu-ustu);
+}
+
+.ruya-adim--suruyor {
+  border-color: var(--ruya-vurgu);
+  color: var(--ruya-vurgu);
+  background: var(--ruya-vurgu-yumusak);
+  animation: ruya-nabiz 1.6s ease-in-out infinite;
+}
+
+.ruya-adim--bekliyor {
+  opacity: 0.6;
+}
+
+@keyframes ruya-nabiz {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+/* --- Hata kutusu ---------------------------------------------------------- */
+
+.ruya-hata {
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--ruya-yaricap);
+  border: 1px solid #c0392b;
+  background: rgba(192, 57, 43, 0.08);
+  color: var(--ruya-yazi);
+  line-height: 1.55;
+}
+
+/* --- Alt bilgi ------------------------------------------------------------ */
+
+.ruya-uyari,
+.ruya-uyari p {
+  font-size: 0.78rem !important;
+  color: var(--ruya-soluk);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* --- Mobil ---------------------------------------------------------------- */
+
+@media (max-width: 480px) {
+  .gradio-container {
+    padding: 1.25rem 0.85rem 2rem !important;
+  }
+
+  .ruya-baslik h1 {
+    font-size: 1.6rem;
+  }
+
+  .ruya-ilerleme {
+    gap: 0.3rem;
+  }
+
+  .ruya-adim {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.25rem;
+  }
+
+  .ruya-kart {
+    padding: 0.9rem;
+  }
+}

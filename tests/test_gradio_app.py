@@ -7,9 +7,8 @@ from pathlib import Path
 
 import pytest
 
-from ruya.etik import GUVENLIK_NOTU, REDDEDILDI_MESAJI, SEMBOL_YOK_MESAJI, UYARI_METNI
+from ruya.etik import GUVENLIK_NOTU, REDDEDILDI_MESAJI, UYARI_METNI
 from ruya.hatalar import ApiAnahtariYok, LLMHatasi, ModelReddetti, YanitKesildi
-from ruya.index.store import BellekDeposu
 from ruya.schemas import (
     Aday,
     AdimOlcumu,
@@ -31,7 +30,7 @@ KOK = Path(__file__).resolve().parents[1]
 if str(KOK) not in sys.path:
     sys.path.insert(0, str(KOK))
 
-from app import gradio_app  # noqa: E402
+from app import gradio_app, sunum  # noqa: E402
 
 MADDE = Madde(
     entry_id="nablusi:0412",
@@ -86,74 +85,6 @@ def yorum() -> Yorum:
         guvenlik_notu=GUVENLIK_NOTU,
         uyari=UYARI_METNI,
     )
-
-
-@pytest.fixture
-def depo() -> BellekDeposu:
-    return BellekDeposu([MADDE])
-
-
-# --- yorum_metni ------------------------------------------------------------
-
-
-def test_yorum_metni_bolumleri_ve_numarali_atiflari_yazar(yorum):
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-    assert "Yılan düşmanla karşılaşmaya işarettir." in metin
-    assert "Siyah olması kaygıyı artırır." in metin
-    assert "[1]" in metin
-    assert "[2]" in metin
-    assert ATIF.baslik in metin
-    assert "Miller · Yılan" in metin
-
-
-def test_yorum_metni_bulunamayanlari_listeler(yorum):
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-    assert "Kaynaklarda bulunamayanlar" in metin
-    assert "deniz" in metin
-
-
-def test_yorum_metni_guvenlik_notu_basta_uyari_sonda(yorum):
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-    assert metin.startswith(GUVENLIK_NOTU)
-    assert metin.rstrip().endswith(UYARI_METNI)
-
-
-def test_yorum_metni_guvenlik_notu_yoksa_baslamaz(yorum):
-    yorum.guvenlik_notu = None
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-    assert not metin.startswith(GUVENLIK_NOTU)
-    assert metin.rstrip().endswith(UYARI_METNI)
-
-
-def test_yorum_metni_yorum_yoksa_mesaji_dondurur():
-    metin = gradio_app.yorum_metni(_kayit(yorum=None, mesaj=SEMBOL_YOK_MESAJI))
-    assert SEMBOL_YOK_MESAJI in metin
-    assert UYARI_METNI not in metin
-
-
-def test_yorum_metni_genel_yorumu_guvenlik_notundan_sonra_ve_bolumlerden_once_yazar(yorum):
-    yorum.genel_yorum = "Gelenekte bu rüya genel olarak hayra yorulur."
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-
-    parcalar = metin.split("\n\n")
-    assert parcalar[0] == GUVENLIK_NOTU
-    assert parcalar[1] == f"Genel yorum: {yorum.genel_yorum}"
-    assert parcalar[2] == yorum.bolumler[0].metin
-
-
-def test_yorum_metni_genel_yorum_yoksa_genel_yorum_yazmaz(yorum):
-    metin = gradio_app.yorum_metni(_kayit(yorum=yorum))
-
-    assert "Genel yorum" not in metin
-
-
-# --- atif_ayrintilari -------------------------------------------------------
-
-
-def test_atif_ayrintilari_ceviri_ve_asli_gosterir(depo):
-    ayrinti = gradio_app.atif_ayrintilari(_kayit(), "nablusi:0412", depo)
-    assert MADDE.metin_tr in ayrinti
-    assert MADDE.metin_asli in ayrinti
 
 
 # --- hata_ayiklama ----------------------------------------------------------
@@ -237,41 +168,6 @@ def test_baslat_yerel_ve_paylasimsiz_acar(monkeypatch):
     assert demo.cagrilar[0]["server_name"] == "127.0.0.1"
 
 
-# --- ara_metin --------------------------------------------------------------
-
-
-def test_ara_metin_esleme_sembolleri_listeler():
-    kayit = _kayit()
-    metin = gradio_app.ara_metin("esleme", kayit)
-    assert "Semboller bulundu" in metin
-    for eslesme in kayit.eslesmeler:
-        assert eslesme.sembol.yalin in metin
-
-
-def test_ara_metin_getirme_yorum_yaziliyor_der():
-    metin = gradio_app.ara_metin("getirme", _kayit())
-    assert "yorum yazılıyor" in metin.lower()
-
-
-def test_ara_metin_sentez_bolumleri_atiflari_ve_durumu_yazar(yorum):
-    kayit = _kayit(yorum=yorum)
-    metin = gradio_app.ara_metin("sentez", kayit)
-
-    for bolum in yorum.bolumler:
-        assert bolum.metin in metin
-    assert "[1]" in metin
-    assert "[2]" in metin
-    assert ATIF.baslik in metin
-    assert "genel yorum yazılıyor" in metin.lower()
-    assert UYARI_METNI not in metin
-
-
-def test_ara_metin_bilinmeyen_asama_bos_degil():
-    metin = gradio_app.ara_metin("bilinmeyen", _kayit())
-    assert isinstance(metin, str)
-    assert metin.strip()
-
-
 # --- yorum_akisi ------------------------------------------------------------
 
 
@@ -292,9 +188,10 @@ def test_yorum_akisi_ara_ve_son_metinleri_sirayla_yayar(monkeypatch, yorum):
     parcalar = list(gradio_app.yorum_akisi(RuyaGirdisi(metin="rüya"), bag=None))
 
     assert parcalar == [
-        (gradio_app.ara_metin("esleme", k1), None),
-        (gradio_app.ara_metin("sentez", k2), None),
-        (gradio_app.yorum_metni(final), final),
+        (sunum.ilerleme_html("baslangic"), None),
+        (sunum.akis_html("esleme", k1), None),
+        (sunum.akis_html("sentez", k2), None),
+        (sunum.akis_html("bitti", final), final),
     ]
 
 
@@ -311,5 +208,6 @@ def test_yorum_akisi_hata_mesajini_yayar_ve_bitirir(monkeypatch):
 
     parcalar = list(gradio_app.yorum_akisi(RuyaGirdisi(metin="rüya"), bag=None))
 
-    assert parcalar[0] == (gradio_app.ara_metin("esleme", k1), None)
-    assert parcalar[-1] == (gradio_app.hata_mesaji(LLMHatasi("x")), None)
+    assert parcalar[0] == (sunum.ilerleme_html("baslangic"), None)
+    assert parcalar[1] == (sunum.akis_html("esleme", k1), None)
+    assert parcalar[-1] == (sunum.hata_html(gradio_app.hata_mesaji(LLMHatasi("x"))), None)

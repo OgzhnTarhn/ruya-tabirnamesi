@@ -17,7 +17,9 @@ from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
-from ruya.etik import REDDEDILDI_MESAJI, SEMBOL_YOK_MESAJI, UYARI_METNI
+from app import sunum
+
+from ruya.etik import REDDEDILDI_MESAJI, UYARI_METNI
 from ruya.hatalar import (
     ApiAnahtariYok,
     LLMHatasi,
@@ -28,7 +30,7 @@ from ruya.hatalar import (
     YanitKesildi,
 )
 from ruya.pipeline.run import Bagimliliklar, yorumla
-from ruya.schemas import Baglam, RuyaGirdisi, SorguKaydi, Yorum
+from ruya.schemas import Baglam, RuyaGirdisi, SorguKaydi
 
 # docs/03, bölüm 5.4: hata sınıfı → kullanıcıya gösterilen Türkçe mesaj.
 HATA_MESAJLARI: dict[type[RuyaHatasi], str] = {
@@ -43,84 +45,18 @@ HATA_MESAJLARI: dict[type[RuyaHatasi], str] = {
     SozlukHatasi: ("Sembol sözlüğü okunamadı. Kurulumu denetleyip yeniden deneyin."),
 }
 
-GELENEKLER: list[tuple[str, str]] = [
-    ("İslami klasik", "islami_klasik"),
-    ("Batı halk", "bati_halk"),
-    ("Psikanalitik", "psikanalitik"),
-]
-
 
 # --- Saf yardımcılar (sunucu açmadan test edilir) ---------------------------
 
 
-def _bolum_satirlari(yorum: Yorum) -> list[str]:
-    """Bölüm metinleri ve numaralı atıf satırları; yorum_metni ve ara_metin paylaşır."""
-    satirlar: list[str] = []
-    numara = 0
-    for bolum in yorum.bolumler:
-        satirlar.append(bolum.metin)
-        for atif in bolum.atiflar:
-            numara += 1
-            satir = f"[{numara}] {atif.baslik}"
-            if atif.alinti:
-                satir += f" — “{atif.alinti}”"
-            satirlar.append(satir)
-    return satirlar
-
-
-def yorum_metni(kayit: SorguKaydi) -> str:
-    """Yorum sekmesinin metni: güvenlik notu başta, numaralı atıflar, uyarı sonda."""
-    yorum = kayit.yorum
-    if yorum is None:
-        return kayit.mesaj or SEMBOL_YOK_MESAJI
-
-    parcalar: list[str] = []
-    if yorum.guvenlik_notu:
-        parcalar.append(yorum.guvenlik_notu)
-    if yorum.genel_yorum:
-        parcalar.append(f"Genel yorum: {yorum.genel_yorum}")
-
-    parcalar.extend(_bolum_satirlari(yorum))
-
-    if yorum.bulunamayanlar:
-        parcalar.append("Kaynaklarda bulunamayanlar: " + ", ".join(yorum.bulunamayanlar))
-
-    parcalar.append(yorum.uyari or UYARI_METNI)
-    return "\n\n".join(parcalar)
-
-
-def _sembol_listesi(kayit: SorguKaydi) -> str:
-    """Eşlenen sembollerin yalın adları, virgülle ayrılmış."""
-    return ", ".join(eslesme.sembol.yalin for eslesme in kayit.eslesmeler)
-
-
-def ara_metin(asama: str, kayit: SorguKaydi) -> str:
-    """İlerleme aşamasının kullanıcıya gösterilen metni (akış sırasında)."""
-    if asama == "esleme":
-        return f"Semboller bulundu: {_sembol_listesi(kayit)}. Kaynaklar aranıyor…"
-    if asama == "getirme":
-        return f"Kaynaklar bulundu, yorum yazılıyor…\n\nSemboller: {_sembol_listesi(kayit)}"
-    if asama == "sentez":
-        hazir = len(kayit.yorum.bolumler) if kayit.yorum is not None else 0
-        parcalar = [
-            f"Yorum yazılıyor: {hazir} bölüm hazır; kalan semboller ve "
-            "genel yorum yazılıyor…"
-        ]
-        if kayit.yorum is not None:
-            parcalar.extend(_bolum_satirlari(kayit.yorum))
-        return "\n\n".join(parcalar)
-    return "Yorum hazırlanıyor…"
-
-
-def yorum_akisi(
-    girdi: RuyaGirdisi, bag: Bagimliliklar
-) -> Iterator[tuple[str, SorguKaydi | None]]:
+def yorum_akisi(girdi: RuyaGirdisi, bag: Bagimliliklar) -> Iterator[tuple[str, SorguKaydi | None]]:
     """Boru hattını ayrı bir iş parçacığında çalıştırır, ilerlemeyi parça parça yayar.
 
-    Her parça ``(metin, kayıt)`` çiftidir: ilerleme metinlerinde kayıt ``None``, sonda
-    yorum metniyle birlikte tam kayıt döner. ``RuyaHatasi`` kullanıcı mesajına çevrilir;
+    Her parça ``(html, kayıt)`` çiftidir: ilerleme parçalarında kayıt ``None``, sonda
+    yorum HTML'iyle birlikte tam kayıt döner. ``RuyaHatasi`` kullanıcı mesajına çevrilir;
     diğer hatalar iş parçacığından ana iş parçacığına taşınıp yeniden fırlatılır.
     """
+    depo = getattr(bag, "depo", None)
     kuyruk: queue.Queue[tuple[str, Any]] = queue.Queue()
 
     def _bildir(asama: str, kayit: SorguKaydi) -> None:
@@ -134,6 +70,8 @@ def yorum_akisi(
         else:
             kuyruk.put(("son", kayit))
 
+    yield sunum.ilerleme_html("baslangic"), None
+
     is_parcacigi = threading.Thread(target=_calistir, daemon=True)
     is_parcacigi.start()
 
@@ -141,35 +79,15 @@ def yorum_akisi(
         tur, veri = kuyruk.get()
         if tur == "ara":
             asama, kayit = veri
-            yield ara_metin(asama, kayit), None
+            yield sunum.akis_html(asama, kayit, depo), None
         elif tur == "son":
-            yield yorum_metni(veri), veri
+            yield sunum.akis_html("bitti", veri, depo), veri
             return
         else:
             if isinstance(veri, RuyaHatasi):
-                yield hata_mesaji(veri), None
+                yield sunum.hata_html(hata_mesaji(veri)), None
                 return
             raise veri
-
-
-def atif_ayrintilari(kayit: SorguKaydi, entry_id: str, depo: Any) -> str:
-    """Bir atıf tıklanınca gösterilen ayrıntı: çeviri ve asıl metin (İG-41)."""
-    if not entry_id:
-        return "Ayrıntısı gösterilecek bir atıf seçilmedi."
-    try:
-        madde = depo.madde(entry_id)
-    except (KeyError, TypeError):
-        return f"{entry_id} maddesi depoda bulunamadı."
-
-    satirlar = [f"**{madde.yazar} · {madde.eser}** ({madde.entry_id})"]
-    if madde.metin_tr:
-        satirlar.append(f"Çeviri: {madde.metin_tr}")
-    else:
-        satirlar.append("Çeviri: henüz yok.")
-    satirlar.append(f"Asıl metin ({madde.dil}): {madde.metin_asli}")
-    if madde.atif_notu:
-        satirlar.append(f"Atıf notu: {madde.atif_notu}")
-    return "\n\n".join(satirlar)
 
 
 def hata_ayiklama(kayit: SorguKaydi) -> dict[str, Any]:
@@ -289,33 +207,18 @@ def _baglam_kur(
     return Baglam(**alanlar)
 
 
-def _atif_secenekleri(kayit: SorguKaydi | None) -> list[tuple[str, str]]:
-    """Atıf açılır listesinin seçenekleri: (etiket, entry_id), tekrarsız."""
-    if kayit is None or kayit.yorum is None:
-        return []
-    secenekler: list[tuple[str, str]] = []
-    gorulen: set[str] = set()
-    for bolum in kayit.yorum.bolumler:
-        for atif in bolum.atiflar:
-            if atif.entry_id in gorulen:
-                continue
-            gorulen.add(atif.entry_id)
-            secenekler.append((atif.baslik, atif.entry_id))
-    return secenekler
-
-
 def arayuz_kur(bag: Bagimliliklar) -> Any:
-    """``gr.Blocks`` döndürür.
+    """``gr.Blocks`` döndürür; tek sütunlu, ortalanmış bir sayfa kurar (docs/16).
 
-    - Rüya kutusu (en fazla 3.000 karakter), isteğe bağlı bağlam alanları, gelenek seçimi
-      ve "Yorumla" düğmesi.
-    - Rüya kutusunun altında "Rüya defterinden oku (fotoğraf)" akordeonu: fotoğraftaki metni
-      OCR ile okuyup rüya kutusuna yazar (İG-40). Görsel saklanmaz, loglanmaz.
-    - "Yorum" sekmesi: yanıt, tıklanınca aslı ve çevirisi açılan atıflar, altta uyarı metni.
-    - "Hata ayıklama" sekmesi: çıkarılan semboller, eşlemeler (yöntem, güven), getirilen
-      maddeler ve skorları, adım süreleri, token ve maliyet. Hepsi SorguKaydi'ndan okunur.
+    - Başlık şeridi (``sunum.BASLIK`` + ``sunum.ALT_BASLIK``) ve "Nasıl çalışır?" akordeonu.
+    - Girdi kartı: rüya kutusu (3.000 karakter, ipucu metni), örnek rüyalar, kapalı
+      "Fotoğraftan oku" akordeonu (İG-40; görsel saklanmaz, loglanmaz), kapalı "Bağlam"
+      akordeonu (Türkçe etiketli açılır listeler), gelenek seçimi ve "Yorumla" düğmesi.
+    - Sonuç alanı: tek bir ``gr.HTML``; akış sırasında ilerleme şeridi, sembol rozetleri ve
+      yorum bölümleri, kaynaklar ``<details>`` olarak görünür.
+    - Uyarı metni sayfada bir kez, alt bilgide.
+    - Sayfanın en altında kapalı "Geliştirici ayrıntıları" akordeonu: ham ``SorguKaydi`` izleri.
     - HataSinifi → kullanıcı mesajı eşlemesi docs/03 bölüm 5.4'e göre.
-    - Yorum akışlıdır: semboller ve bölümler hazır oldukça görünür.
     """
     import gradio as gr  # ağır paket: yalnızca işlevin içinde (docs/12, bölüm 1)
 
@@ -326,16 +229,11 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
         mevsim: str | None,
         gurbette: str | None,
         gelenekler: list[str] | None,
-    ) -> Iterator[tuple[str, SorguKaydi | None, Any, dict[str, Any]]]:
-        """Yorumla düğmesi: boru hattını akışlı çalıştırır, sekme çıktılarını döndürür."""
+    ) -> Iterator[tuple[str, SorguKaydi | None, dict[str, Any]]]:
+        """Yorumla düğmesi: boru hattını akışlı çalıştırır, sonuç ve izleri döndürür."""
         metin = (metin or "").strip()
         if not metin:
-            yield (
-                "Lütfen rüyanızı yazın.",
-                None,
-                gr.update(choices=[], value=None),
-                {},
-            )
+            yield sunum.hata_html("Lütfen rüyanızı yazın."), None, {}
             return
         girdi = RuyaGirdisi(
             metin=metin[:3000],
@@ -344,20 +242,9 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
         )
         for parca, kayit in yorum_akisi(girdi, bag):
             if kayit is None:
-                yield parca, None, gr.update(choices=[], value=None), {}
+                yield parca, None, {}
                 continue
-            secenekler = _atif_secenekleri(kayit)
-            yield (
-                parca,
-                kayit,
-                gr.update(choices=secenekler, value=None),
-                hata_ayiklama(kayit),
-            )
-
-    def _atif_goster(kayit: SorguKaydi | None, entry_id: str | None) -> str:
-        if kayit is None or not entry_id:
-            return "Bir atıf seçin."
-        return atif_ayrintilari(kayit, entry_id, bag.depo)
+            yield parca, kayit, hata_ayiklama(kayit)
 
     def _gorselden_oku(dosya: str | None) -> str:
         """Fotoğraftan okunan metni rüya kutusuna yazar; görsel ve metin loglanmaz."""
@@ -366,64 +253,96 @@ def arayuz_kur(bag: Bagimliliklar) -> Any:
     with gr.Blocks(title="Rüya Tabirnamesi") as demo:
         kayit_durumu = gr.State(None)
 
-        gr.Markdown("# Rüya Tabirnamesi\nKlasik tabirname geleneğinden kaynaklı yorumlar.")
-        with gr.Column():
-            metin = gr.Textbox(
-                label="Rüyanız",
-                placeholder="Rüyanızı kendi cümlelerinizle anlatın…",
-                lines=6,
-                max_length=3000,
+        with gr.Column(elem_classes="ruya-sayfa"):
+            gr.HTML(
+                '<header class="ruya-baslik">'
+                f"<h1>{sunum.BASLIK}</h1>"
+                f"<p>{sunum.ALT_BASLIK}</p>"
+                "</header>"
             )
-            with gr.Accordion("Rüya defterinden oku (fotoğraf)", open=False):
-                foto = gr.Image(type="filepath", label="Rüya defteri fotoğrafı")
-                oku = gr.Button("Metni oku")
-                gr.Markdown(
-                    "Fotoğraf yalnızca EVREN servisine gönderilir, saklanmaz."
+            with gr.Accordion("Nasıl çalışır?", open=False):
+                gr.Markdown(sunum.NASIL_CALISIR)
+
+            with gr.Group(elem_classes="ruya-kart"):
+                metin = gr.Textbox(
+                    label="Rüyanız",
+                    info=sunum.RUYA_IPUCU,
+                    lines=6,
+                    max_length=3000,
+                    placeholder="Rüyamda …",
                 )
-            with gr.Accordion("Bağlam (isteğe bağlı)", open=False):
-                cinsiyet = gr.Dropdown(["kadin", "erkek"], label="Cinsiyet", value=None)
-                medeni_hal = gr.Dropdown(["evli", "bekar"], label="Medeni hâl", value=None)
-                mevsim = gr.Dropdown(
-                    ["ilkbahar", "yaz", "sonbahar", "kis"], label="Mevsim", value=None
+                gr.Examples(
+                    examples=[[ruya] for ruya in sunum.ORNEK_RUYALAR],
+                    inputs=[metin],
+                    label="Örnek rüyalar",
                 )
-                gurbette = gr.Dropdown(["evet", "hayır"], label="Gurbette mi?", value=None)
-            gelenekler = gr.CheckboxGroup(
-                choices=GELENEKLER,
-                label="Gelenek (boş: hepsi)",
-                value=None,
-            )
-            dugme = gr.Button("Yorumla", variant="primary")
-            gr.Markdown(
-                "Semboller ve yorumlar geldikçe görünür; tamamı birkaç dakika sürebilir."
+                with gr.Accordion("Fotoğraftan oku", open=False):
+                    gr.Markdown(sunum.FOTO_ACIKLAMASI)
+                    foto = gr.Image(type="filepath", label="Rüya defteri fotoğrafı")
+                    oku = gr.Button("Metni oku")
+                with gr.Accordion("Bağlam (isteğe bağlı)", open=False):
+                    gr.Markdown(sunum.BAGLAM_ACIKLAMASI)
+                    with gr.Row():
+                        cinsiyet = gr.Dropdown(
+                            choices=sunum.CINSIYET_SECENEKLERI,
+                            label="Cinsiyet",
+                            value=None,
+                        )
+                        medeni_hal = gr.Dropdown(
+                            choices=sunum.MEDENI_HAL_SECENEKLERI,
+                            label="Medeni hâl",
+                            value=None,
+                        )
+                        mevsim = gr.Dropdown(
+                            choices=sunum.MEVSIM_SECENEKLERI,
+                            label="Mevsim",
+                            value=None,
+                        )
+                        gurbette = gr.Dropdown(
+                            choices=sunum.GURBET_SECENEKLERI,
+                            label="Gurbette mi?",
+                            value=None,
+                        )
+                gelenekler = gr.CheckboxGroup(
+                    choices=sunum.GELENEKLER,
+                    label="Gelenek",
+                    info=sunum.GELENEK_ACIKLAMASI,
+                    value=None,
+                )
+                dugme = gr.Button("Yorumla", variant="primary", size="lg")
+
+            sonuc_html = gr.HTML(
+                '<div class="ruya-bos">Yorum burada görünecek.</div>',
+                elem_classes="ruya-sonuc-alani",
             )
 
-        with gr.Tabs():
-            with gr.Tab("Yorum"):
-                yanit = gr.Markdown("Yorum burada görünecek.")
-                atif_secimi = gr.Dropdown(
-                    choices=[], label="Atıflar (ayrıntı için seçin)", value=None
-                )
-                atif_ayrinti = gr.Markdown("")
-                gr.Markdown(UYARI_METNI)
-            with gr.Tab("Hata ayıklama"):
+            gr.Markdown(UYARI_METNI, elem_classes="ruya-uyari")
+
+            with gr.Accordion("Geliştirici ayrıntıları", open=False):
                 ayiklama = gr.JSON(label="SorguKaydi izleri")
 
         dugme.click(
             _calistir,
             inputs=[metin, cinsiyet, medeni_hal, mevsim, gurbette, gelenekler],
-            outputs=[yanit, kayit_durumu, atif_secimi, ayiklama],
+            outputs=[sonuc_html, kayit_durumu, ayiklama],
         )
         oku.click(_gorselden_oku, inputs=[foto], outputs=[metin])
-        atif_secimi.change(
-            _atif_goster,
-            inputs=[kayit_durumu, atif_secimi],
-            outputs=[atif_ayrinti],
-        )
 
     return demo
 
 
 def baslat(bag: Bagimliliklar) -> Any:
+    import gradio as gr  # ağır paket: yalnızca işlevin içinde (docs/12, bölüm 1)
+
     demo = arayuz_kur(bag)
-    demo.launch(share=False, server_name="127.0.0.1")
+    demo.launch(
+        share=False,
+        server_name="127.0.0.1",
+        theme=gr.themes.Soft(
+            primary_hue="indigo",
+            neutral_hue="slate",
+            font=["system-ui", "Segoe UI", "sans-serif"],
+        ),
+        css_paths=[Path(__file__).with_name("stil.css")],
+    )
     return demo
