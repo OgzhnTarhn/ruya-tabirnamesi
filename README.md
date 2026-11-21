@@ -2,8 +2,8 @@
 
 Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin (Nablusi, İbn Sirin'e atfedilen *Muntahab*) ve Batı kaynaklarının (Miller, Freud) ne dediğini getiren, sonra bunları **kaynak göstererek ve çelişkileri gizlemeden** Türkçe bir yorumda birleştiren kişisel bir öğrenme projesi.
 
-> **Durum (7 Kasım 2026):** Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme, OCR ve arayüz çalışıyor. Sözlük 143 sembol. MVP kabul ölçütleri sağlandı ([01](docs/01-gereksinimler.md)).
-> **Bilinen sorun:** Bir rüya medyan 177 saniye sürüyor; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
+> **Durum (21 Kasım 2026):** Proje tamamlandı. Dört kaynak (10.801 madde) çevrildi ve ayrıştırıldı; boru hattı, hibrit getirme, OCR ve arayüz çalışıyor. Sözlük 143 sembol. MVP kabul ölçütleri sağlandı ([01](docs/01-gereksinimler.md)); deneyler D1–D4 bitti. Son sonuçlar aşağıda, kapanış: [17](docs/17-kapanis-plani.md).
+> **Bilinen sınırlar:** Bir rüya medyan 165 saniye sürüyor (hedef 20–30 sn; arayüz sonucu geldikçe gösteriyor). Test seti sentetik; sözlük, test seti ve çeviriler henüz elle gözden geçirilmedi.
 > **Projeyi baştan öğrenmek için:** [14 · Ders notu](docs/14-ders-notu.md).
 
 ![Arayüz: genel yorum, sembol bölümleri ve açılan kaynak](docs/gorseller/arayuz-sonuc.jpg)
@@ -59,7 +59,26 @@ Rüya metni
 | 6 Kasım | Çıkarım talimatı v3, eşleme düzeltmeleri | 45 | %96 | %87 | %100 | — |
 | 10 Kasım | Çıkarım v4, paralel sentez, genel yorum | 45 | %96 | %87 | %100 | 165 sn |
 
-Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Arayüz yorumu geldikçe gösterir: semboller birkaç saniyede, sembol yorumları hazır oldukça. Deneyler: kaynak başına 1 madde (D3) ve sentezde `deepseek-v4.1-flash` (D4) kalıyor; vektör kolu ve reranker deneyleri (D1/D2) etiket bekliyor. Test seti sentetik ve gözden geçirilmedi; precision'daki "fazla" sembollerin çoğu rüyada gerçekten geçiyor. Ayrıntı: [olcumler](docs/olcumler.md).
+Bütün ölçümlerde olumsuzlama hatası ve yasak ifade 0. Ayrıntı: [olcumler](docs/olcumler.md).
+
+### Son sonuçlar (45 rüyalık test seti, son boru hattı)
+
+Boru hattı: `cikarim_v4` → eşleme → hibrit getirme (sözlük + BM25 + vektör + HyDE → RRF → reranker, eşik 0,15) → paralel sentez, kaynak başına 1 madde, bütün LLM adımları `deepseek-v4.1-flash`.
+
+| Ölçüt | Sonuç | Hedef (Aşama 3) |
+|---|---|---|
+| Sembol recall | **%96** | ≥ %90 ✔ |
+| Sembol precision | %87 | ≥ %90 ✘ |
+| Eşleme doğruluğu | %87 | ≥ %95 ✘ |
+| Getirme Recall@5 · MRR | **%88,6 · 0,951** (LLM hakemin etiketiyle) | ≥ %80 ✔ |
+| Kaynak çeşitliliği | 2,8 kaynak | ≥ 2 ✔ |
+| Atıf kapsamı | **%100** | %100 ✔ |
+| Olumsuzlama hatası · etik ihlal · sadakat ihlali (8 rüya elle) | 0 · 0 · 0 | 0 ✔ |
+| Medyan süre | 165 sn | ≤ 20 sn ✘ |
+
+- Hedefi tutmayanların nedeni: precision ve eşlemede "fazla" sayılan sembollerin çoğu rüyada gerçekten geçiyor, yani test setinin beklenen listeleri eksik. Süreyi ise çoğunlukla LLM geçidinin dalgalanması belirliyor (aynı istek 18 ile 151 sn arasında).
+- Deneyler ([deneyler](docs/deneyler/)): reranker en büyük katkıyı veriyor (D2, Recall@5'e +6,5 puan) ve kalıyor; vektör kolu +4 puanla kalıyor (D1); HyDE'nin katkısı gürültü düzeyinde, kaldırma adayı; kaynak başına 1 madde yetiyor (D3); sentezde `mimo-v2.6-pro` aynı kaliteyi daha yavaş verdi (D4).
+- Sınırlar: test seti sentetik ve gözden geçirilmedi; Recall@5 insan yerine LLM hakemin etiketiyle hesaplandı.
 
 ## Öğrendiklerim
 
