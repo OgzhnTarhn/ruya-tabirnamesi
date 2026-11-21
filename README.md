@@ -6,6 +6,8 @@ Anlattığın rüyadaki sembolleri bulan, her sembol için klasik tabirnamelerin
 > **Bilinen sorun:** Bir rüya medyan 177 saniye sürüyor; hedef 30 saniye. Sözlük, test seti ve çevirilerin gözden geçirilmesi bekliyor ([takvim](docs/08-yol-haritasi-takvim.md)).
 > **Projeyi baştan öğrenmek için:** [14 · Ders notu](docs/14-ders-notu.md).
 
+![Arayüz: genel yorum, sembol bölümleri ve açılan kaynak](docs/gorseller/arayuz-sonuc.jpg)
+
 ## Belgeler
 
 | # | Belge | İçerik |

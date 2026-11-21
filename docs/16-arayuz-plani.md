@@ -1,5 +1,7 @@
 # 16 · Arayüz Yenileme Planı (21 Kasım 2026)
 
+**Durum (21 Kasım):** U1–U6 bitti. Sunum `app/sunum.py`'de (saf, testli), yerleşim `app/gradio_app.py`'de, stil `app/stil.css`'te. Açık ve koyu temada, 375 px genişlikte ve gerçek bir rüyayla denendi. Ek olarak: model metnindeki `*eser adı*` italik gösterilir.
+
 Amaç: sade, modern ve anlaşılır bir arayüz. Boru hattına dokunulmaz; değişiklik
 `app/gradio_app.py`, onun testleri ve gerekirse küçük bir CSS dosyasıyla sınırlıdır.
 Gradio sürümü 6.30; `share=True` yok, yalnız `127.0.0.1` (CLAUDE.md).
